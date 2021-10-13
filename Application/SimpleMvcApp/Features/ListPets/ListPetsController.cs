@@ -1,14 +1,15 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
+using SimpleMvcApp.Features.NewPet;
 
-namespace SimpleMvcApp.Features.NewPet
+namespace SimpleMvcApp.Features.ListPets
 {
-    [Route("/pets/new")]
-    public class NewPetController : Controller
+    [Route("/pets/list")]
+    public class ListPetsController : Controller
     {
         private readonly ILogger<NewPetController> _logger;
 
-        public NewPetController(ILogger<NewPetController> logger)
+        public ListPetsController(ILogger<NewPetController> logger)
         {
             _logger = logger;
         }
