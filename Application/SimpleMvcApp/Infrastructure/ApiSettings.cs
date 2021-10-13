@@ -1,0 +1,8 @@
+﻿namespace SimpleMvcApp.Infrastructure
+{
+    // ReSharper disable once ClassNeverInstantiated.Global
+    public class ApiSettings
+    {
+        public string Url { get; set; }
+    }
+}

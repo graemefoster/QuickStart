@@ -6,13 +6,25 @@
 }
 
 <h2>Pets</h2>
-
+<ul id="petsList">
+    <li>Loading...</li>
+</ul>
 
 @section Scripts
 {
     <script>
-window.addEventListener("load", function () {
-    console.log('READY');
+    window.addEventListener("load", function () {
+        window.api.get('pets')
+            .then(response => response.json() )
+            .then(json => {
+                var list = document.getElementById('petsList');
+                list.textContent = '';
+                json.forEach(item => {
+                    var elem = document.createElement('li');
+                    elem.append(item.name);
+                    list.append(elem);
+                });
+            });
     }
 );
 </script>

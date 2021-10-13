@@ -16,6 +16,8 @@ namespace SimpleApiWithDatabase
 {
     public class Startup
     {
+        readonly string AllowSpecificOrigins = "_myAllowSpecificOrigins";
+        
         public Startup(IConfiguration configuration)
         {
             Configuration = configuration;
@@ -26,6 +28,14 @@ namespace SimpleApiWithDatabase
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddCors(options =>
+            {
+                options.AddPolicy(name: AllowSpecificOrigins,
+                    builder =>
+                    {
+                        builder.WithOrigins("https://sampleapp.localtest.me:4430");
+                    });
+            });
 
             services.AddControllers();
             services.AddSwaggerGen(c =>
@@ -47,6 +57,8 @@ namespace SimpleApiWithDatabase
             app.UseHttpsRedirection();
 
             app.UseRouting();
+
+            app.UseCors(AllowSpecificOrigins);
 
             app.UseAuthorization();
 

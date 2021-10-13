@@ -10,6 +10,8 @@ using Microsoft.AspNetCore.Mvc.Razor;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using SimpleMvcApp.Infrastructure;
+
 [assembly: AspMvcViewLocationFormat(@"~\Features\{1}\{0}.cshtml")]
 [assembly: AspMvcViewLocationFormat(@"~\Features\{0}.cshtml")]
 [assembly: AspMvcViewLocationFormat(@"~\Features\Shared\{0}.cshtml")]
@@ -33,6 +35,8 @@ namespace SimpleMvcApp
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            services.Configure<ApiSettings>(Configuration.GetSection("ApiSettings"));
+            
             services.AddControllersWithViews();
             services.AddRazorPages().AddRazorRuntimeCompilation();
             services.Configure<RazorViewEngineOptions>(x =>
