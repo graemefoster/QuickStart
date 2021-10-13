@@ -2,12 +2,22 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using JetBrains.Annotations;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
+using Microsoft.AspNetCore.Mvc.Razor;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+[assembly: AspMvcViewLocationFormat(@"~\Features\{1}\{0}.cshtml")]
+[assembly: AspMvcViewLocationFormat(@"~\Features\{0}.cshtml")]
+[assembly: AspMvcViewLocationFormat(@"~\Features\Shared\{0}.cshtml")]
+
+[assembly: AspMvcAreaViewLocationFormat(@"~\Areas\{2}\{1}\{0}.cshtml")]
+[assembly: AspMvcAreaViewLocationFormat(@"~\Areas\{2}\Features\{1}\{0}.cshtml")]
+[assembly: AspMvcAreaViewLocationFormat(@"~\Areas\{2}\{0}.cshtml")]
+[assembly: AspMvcAreaViewLocationFormat(@"~\Areas\{2}\Shared\{0}.cshtml")]
 
 namespace SimpleMvcApp
 {
@@ -24,6 +34,11 @@ namespace SimpleMvcApp
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddControllersWithViews();
+            services.AddRazorPages().AddRazorRuntimeCompilation();
+            services.Configure<RazorViewEngineOptions>(x =>
+            {
+                x.ViewLocationExpanders.Add(new FeatureLocationExpander());
+            });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -50,7 +65,7 @@ namespace SimpleMvcApp
             {
                 endpoints.MapControllerRoute(
                     name: "default",
-                    pattern: "{controller=Home}/{action=Index}/{id?}");
+                    pattern: "{controller=NewPet}/{action=Index}/{id?}");
             });
         }
     }
