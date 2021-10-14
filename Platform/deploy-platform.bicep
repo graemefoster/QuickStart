@@ -46,6 +46,13 @@ resource WebAppTest 'Microsoft.Web/sites@2021-01-15' = {
     serverFarmId: QuickStartServerFarm.id
     siteConfig: {
       minTlsVersion: '1.2'
+      linuxFxVersion: 'DOTNETCORE|LTS'
+      appSettings: [
+        {
+          name: 'ASPNETCORE_ENVIRONMENT'
+          value: 'Test'
+        }
+      ]
     }
   }
 }
@@ -61,6 +68,13 @@ resource WebApiTest 'Microsoft.Web/sites@2021-01-15' = {
     serverFarmId: QuickStartServerFarm.id
     siteConfig: {
       minTlsVersion: '1.2'
+      linuxFxVersion: 'DOTNETCORE|LTS'
+      appSettings: [
+        {
+          name: 'ASPNETCORE_ENVIRONMENT'
+          value: 'Test'
+        }
+      ]
     }
   }
 }
@@ -79,6 +93,13 @@ resource WebApp 'Microsoft.Web/sites@2021-01-15' = {
     serverFarmId: QuickStartServerFarm.id
     siteConfig: {
       minTlsVersion: '1.2'
+      linuxFxVersion: 'DOTNETCORE|LTS'
+      appSettings: [
+        {
+          name: 'ASPNETCORE_ENVIRONMENT'
+          value: 'Production'
+        }
+      ]
     }
   }
 }
@@ -92,6 +113,13 @@ resource WebAppGreen 'Microsoft.Web/sites/slots@2021-01-15' = {
     serverFarmId: QuickStartServerFarm.id
     siteConfig: {
       minTlsVersion: '1.2'
+      linuxFxVersion: 'DOTNETCORE|LTS'
+      appSettings: [
+        {
+          name: 'ASPNETCORE_ENVIRONMENT'
+          value: 'Production'
+        }
+      ]
     }
   }
 }
@@ -108,6 +136,13 @@ resource WebApi 'Microsoft.Web/sites@2021-01-15' = {
     serverFarmId: QuickStartServerFarm.id
     siteConfig: {
       minTlsVersion: '1.2'
+      linuxFxVersion: 'DOTNETCORE|LTS'
+      appSettings: [
+        {
+          name: 'ASPNETCORE_ENVIRONMENT'
+          value: 'Production'
+        }
+      ]
     }
   }
 }
@@ -124,6 +159,13 @@ resource WebApiGreen 'Microsoft.Web/sites/slots@2021-01-15' = {
     serverFarmId: QuickStartServerFarm.id
     siteConfig: {
       minTlsVersion: '1.2'
+      linuxFxVersion: 'DOTNETCORE|LTS'
+      appSettings: [
+        {
+          name: 'ASPNETCORE_ENVIRONMENT'
+          value: 'Production'
+        }
+      ]
     }
   }
 }
