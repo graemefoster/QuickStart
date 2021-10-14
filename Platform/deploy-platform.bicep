@@ -2,6 +2,9 @@ param resourceSuffix string
 param databaseAdministratorName string
 param databaseAdministratorObjectId string
 
+var testApiHostname = '${resourceSuffix}-api-${uniqueString(resourceGroup().name)}-test'
+var productionApiHostname = '${resourceSuffix}-api-${uniqueString(resourceGroup().name)}'
+
 resource QuickStartServerFarm 'Microsoft.Web/serverfarms@2021-01-15' = {
   name: '${resourceSuffix}-asp'
   location: resourceGroup().location
@@ -52,13 +55,17 @@ resource WebAppTest 'Microsoft.Web/sites@2021-01-15' = {
           name: 'ASPNETCORE_ENVIRONMENT'
           value: 'Test'
         }
+        {
+          name: 'ApiSettings__URL'
+          value: 'https://${testApiHostname}.azurewebsites.net/'
+        }
       ]
     }
   }
 }
 
 resource WebApiTest 'Microsoft.Web/sites@2021-01-15' = {
-  name: '${resourceSuffix}-api-${uniqueString(resourceGroup().name)}-test'
+  name: testApiHostname
   location: resourceGroup().location
   identity: {
     type: 'SystemAssigned'
@@ -99,6 +106,10 @@ resource WebApp 'Microsoft.Web/sites@2021-01-15' = {
           name: 'ASPNETCORE_ENVIRONMENT'
           value: 'Production'
         }
+        {
+          name: 'ApiSettings__URL'
+          value: 'https://${productionApiHostname}.azurewebsites.net/'
+        }
       ]
     }
   }
@@ -119,6 +130,10 @@ resource WebAppGreen 'Microsoft.Web/sites/slots@2021-01-15' = {
           name: 'ASPNETCORE_ENVIRONMENT'
           value: 'Production'
         }
+        {
+          name: 'ApiSettings__URL'
+          value: 'https://${productionApiHostname}.azurewebsites.net/'
+        }
       ]
     }
   }
@@ -126,7 +141,7 @@ resource WebAppGreen 'Microsoft.Web/sites/slots@2021-01-15' = {
 
 
 resource WebApi 'Microsoft.Web/sites@2021-01-15' = {
-  name: '${resourceSuffix}-api-${uniqueString(resourceGroup().name)}'
+  name: productionApiHostname
   location: resourceGroup().location
   identity: {
     type: 'SystemAssigned'
