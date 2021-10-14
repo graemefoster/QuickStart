@@ -14,6 +14,11 @@ resource QuickStartServerFarm 'Microsoft.Web/serverfarms@2021-01-15' = {
   }
 }
 
+resource CiCdIdentity 'Microsoft.ManagedIdentity/userAssignedIdentities@2018-11-30' = {
+  name: '${resourceSuffix}-cicd-umi'
+  location: resourceGroup().location
+}
+
 resource SqlDatabaseServer 'Microsoft.Sql/servers@2021-02-01-preview' = {
   name: '${resourceSuffix}-sqlserver'
   location: resourceGroup().location
@@ -25,7 +30,7 @@ resource SqlDatabaseServer 'Microsoft.Sql/servers@2021-02-01-preview' = {
       login: databaseAdministrator
       principalType: 'User'
       tenantId: subscription().tenantId
-      sid:databaseAdministratorObjectId
+      sid: databaseAdministratorObjectId
     }
   }
 }

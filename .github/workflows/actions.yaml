@@ -1,0 +1,30 @@
+name: Platform
+
+on:
+  push:
+    branches: [ main ]
+
+jobs:
+  dev-deploy:
+    runs-on: ubuntu-latest
+    environment: Test
+
+    # Steps represent a sequence of tasks that will be executed as part of the job
+    steps:
+      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
+      - uses: actions/checkout@v2
+
+      - name: Login to Azure
+        uses: azure/login@v1
+        with:
+          creds: ${{secrets.AZURE_CREDENTIALS}} 
+
+      - name: deploy
+        uses: azure/arm-deploy@v1
+        with:
+          subscriptionId: ${{ secrets.AZURE_SUBSCRIPTION }}
+          resourceGroupName: ${{ secrets.AZURE_RG }}
+          template: ./Platform/deploy-platform.bicep
+          parameters: resourceSuffix=${{ resourcePrefix }}
+          failOnStdErr: true
+
