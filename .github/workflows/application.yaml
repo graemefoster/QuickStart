@@ -1,15 +1,18 @@
 name: Application
 
+env:
+  AZURE_WEBAPP_PACKAGE_PATH: './packages'      # set this to the path to your web app project, defaults to the repository root
+
 on:
   push:
     branches: [ main ]
     paths:
       - 'Application/WebApp/**'
-
+  workflow_dispatch:
+    
 jobs:
-  deploy-app-to-test:
+  build-and-test-api:
     runs-on: ubuntu-latest
-    environment: Test
 
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
@@ -17,5 +20,33 @@ jobs:
     - uses: actions/setup-dotnet@v1
       with:
         dotnet-version: '5.0.x'
-    - run: dotnet build ./Application/WebApp/SimpleMvcApp/SimpleMvcApp.csproj
+    - run: dotnet restore
+    - run: dotnet build ./Application/Api/SimpleApiWithDatabase/SimpleApiWithDatabase.csproj --configuration Release --no-restore
+    - run: dotnet test ./Application/Api/ApiTests/ApiTests.csproj --no-restore
+    - run: dotnet publish ./Application/Api/SimpleApiWithDatabase/SimpleApiWithDatabase.csproj -c Release -o '${{ env.AZURE_WEBAPP_PACKAGE_PATH }}/published-api'  
+    - uses: actions/upload-artifact@v2
+      with:
+        name: api
+        path: '${{ env.AZURE_WEBAPP_PACKAGE_PATH }}/published-app/**'
+
+  deploy-to-test:
+    needs: build-and-test-api
+    runs-on: ubuntu-latest
+    environment: Test
+    steps:
+      - uses: azure/login@v1
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
+      - name: 'Run Azure webapp deploy action using publish profile credentials'
+        uses: actions/download-artifact@v2
+        with:
+          name: api
+          path: api
+      - uses: azure/webapps-deploy@v2
+        with: 
+          app-name: ${{ secrets.AZURE_WEBAPP_NAME }}
+          package: './api/'
+      - name: logout
+        run: |
+          az logout
 
