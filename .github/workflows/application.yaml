@@ -3,6 +3,8 @@ name: Application
 on:
   push:
     branches: [ main ]
+    paths:
+      - Application/WebApp
 
 jobs:
   deploy-app-to-test:
@@ -15,5 +17,5 @@ jobs:
     - uses: actions/setup-dotnet@v1
       with:
         dotnet-version: '5.0.x'
-    - run: dotnet build ./Application/SimpleMvcApp/SimpleMvcApp.csproj
+    - run: dotnet build ./Application/WebApp/SimpleMvcApp/SimpleMvcApp.csproj
 
