@@ -1,11 +1,11 @@
-name: Platform
+name: Application
 
 on:
   push:
     branches: [ main ]
 
 jobs:
-  deploy-to-test:
+  deploy-app-to-test:
     runs-on: ubuntu-latest
     environment: Test
 
@@ -16,4 +16,4 @@ jobs:
       with:
         dotnet-version: '5.0.x'
     - run: dotnet build ./Application/SimpleMvcApp/SimpleMvcApp.csproj
-    
+

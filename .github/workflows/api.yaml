@@ -1,11 +1,11 @@
-name: Platform
+name: Api
 
 on:
   push:
     branches: [ main ]
 
 jobs:
-  deploy-to-test:
+  deploy-api-to-test:
     runs-on: ubuntu-latest
     environment: Test
 

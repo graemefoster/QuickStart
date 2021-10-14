@@ -7,7 +7,6 @@ on:
 jobs:
   deploy-platform:
     runs-on: ubuntu-latest
-    environment: Test
 
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
