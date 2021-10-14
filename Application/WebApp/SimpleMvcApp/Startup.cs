@@ -38,7 +38,7 @@ namespace SimpleMvcApp
             services.Configure<ApiSettings>(Configuration.GetSection("ApiSettings"));
             
             services.AddControllersWithViews();
-            services.AddRazorPages().AddRazorRuntimeCompilation();
+            services.AddRazorPages(); //.AddRazorRuntimeCompilation();
             services.Configure<RazorViewEngineOptions>(x =>
             {
                 x.ViewLocationExpanders.Add(new FeatureLocationExpander());
