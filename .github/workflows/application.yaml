@@ -21,9 +21,8 @@ jobs:
       with:
         dotnet-version: '5.0.x'
     - run: dotnet restore
-    - run: dotnet build ./Application/Api/SimpleApiWithDatabase/SimpleApiWithDatabase.csproj --configuration Release --no-restore
-    - run: dotnet test ./Application/Api/ApiTests/ApiTests.csproj --no-restore
-    - run: dotnet publish ./Application/Api/SimpleApiWithDatabase/SimpleApiWithDatabase.csproj -c Release -o '${{ env.AZURE_WEBAPP_PACKAGE_PATH }}/published-app'
+    - run: dotnet build ./Application/WebApp/\SimpleMvcApp/\SimpleMvcApp.csproj --configuration Release --no-restore
+    - run: dotnet publish ./Application/WebApp/\SimpleMvcApp/\SimpleMvcApp.csproj -c Release -o '${{ env.AZURE_WEBAPP_PACKAGE_PATH }}/published-app'
     - uses: actions/upload-artifact@v2
       with:
         name: api
