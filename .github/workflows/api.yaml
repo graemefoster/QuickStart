@@ -4,7 +4,7 @@ on:
   push:
     branches: [ main ]
     paths:
-      - Application/Api
+      - 'Application/Api/**'
 
 jobs:
   deploy-api-to-test:

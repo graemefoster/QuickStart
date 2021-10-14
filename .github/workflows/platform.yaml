@@ -4,7 +4,7 @@ on:
   push:
     branches: [ main ]
     paths:
-      - Platform/
+      - 'Platform/**'
 
 jobs:
   deploy-platform:
