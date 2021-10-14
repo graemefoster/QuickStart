@@ -1,5 +1,4 @@
 param resourceSuffix string
-param databaseAdministrator string
 param databaseAdministratorObjectId string
 
 resource QuickStartServerFarm 'Microsoft.Web/serverfarms@2021-01-15' = {
@@ -27,8 +26,7 @@ resource SqlDatabaseServer 'Microsoft.Sql/servers@2021-02-01-preview' = {
     administrators: {
       azureADOnlyAuthentication: true
       administratorType: 'ActiveDirectory'
-      login: databaseAdministrator
-      principalType: 'User'
+      principalType: 'Application'
       tenantId: subscription().tenantId
       sid: databaseAdministratorObjectId
     }
