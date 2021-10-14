@@ -12,7 +12,7 @@ on:
   workflow_dispatch:
     
 jobs:
-  build-test-and-deploy-api:
+  build-and-test-api:
     runs-on: ubuntu-latest
 
     # Steps represent a sequence of tasks that will be executed as part of the job
@@ -31,6 +31,7 @@ jobs:
         path: '${{ env.AZURE_WEBAPP_PACKAGE_PATH }}/published-api/**'
 
   deploy-to-test:
+    needs: build-and-test-api
     runs-on: ubuntu-latest
     environment: Test
     steps:
