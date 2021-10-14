@@ -14,7 +14,6 @@ on:
 jobs:
   build-test-and-deploy-api:
     runs-on: ubuntu-latest
-    environment: Test
 
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
@@ -30,4 +29,24 @@ jobs:
       with:
         name: api
         path: '${{ env.AZURE_WEBAPP_PACKAGE_PATH }}/published-api/**'
+
+  deploy-to-test:
+    runs-on: ubuntu-latest
+    environment: Test
+    steps:
+      - uses: azure/login@v1
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
+      - name: 'Run Azure webapp deploy action using publish profile credentials'
+        uses: actions/download-artifact@v2
+        with:
+          name: api
+          path: api
+      - uses: azure/webapps-deploy@v2
+        with: 
+          app-name: ${{ secrets.AZURE_WEBAPP_NAME }}
+          package: './api/'
+      - name: logout
+        run: |
+          az logout
 
