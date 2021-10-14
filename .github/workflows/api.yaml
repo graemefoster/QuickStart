@@ -1,5 +1,9 @@
 name: Api
 
+env:
+  AZURE_WEBAPP_NAME: my-app-name    # set this to your application's name
+  AZURE_WEBAPP_PACKAGE_PATH: './packages'      # set this to the path to your web app project, defaults to the repository root
+
 on:
   push:
     branches: [ main ]
@@ -17,6 +21,8 @@ jobs:
     - uses: actions/setup-dotnet@v1
       with:
         dotnet-version: '5.0.x'
-    - run: dotnet build ./Application/Api/SimpleApiWithDatabase/SimpleApiWithDatabase.csproj
-    - run: dotnet test ./Application/Api/ApiTest.csproj
+    - run: dotnet restore
+    - run: dotnet build ./Application/Api/SimpleApiWithDatabase/SimpleApiWithDatabase.csproj --configuration Release --no-restore
+    - run: dotnet test ./Application/Api/ApiTests.csproj --no-restore
+    - run: dotnet publish ./Application/Api/SimpleApiWithDatabase/SimpleApiWithDatabase.csproj -c Release -o '${{ env.AZURE_WEBAPP_PACKAGE_PATH }}/published-api'  
 
