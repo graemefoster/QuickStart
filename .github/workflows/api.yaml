@@ -9,7 +9,8 @@ on:
     branches: [ main ]
     paths:
       - 'Application/Api/**'
-
+  workflow_dispatch:
+    
 jobs:
   deploy-api-to-test:
     runs-on: ubuntu-latest
