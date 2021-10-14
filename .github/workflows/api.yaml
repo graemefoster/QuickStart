@@ -24,6 +24,6 @@ jobs:
         dotnet-version: '5.0.x'
     - run: dotnet restore
     - run: dotnet build ./Application/Api/SimpleApiWithDatabase/SimpleApiWithDatabase.csproj --configuration Release --no-restore
-    - run: dotnet test ./Application/Api/ApiTests.csproj --no-restore
+    - run: dotnet test ./Application/Api/ApiTests/ApiTests.csproj --no-restore
     - run: dotnet publish ./Application/Api/SimpleApiWithDatabase/SimpleApiWithDatabase.csproj -c Release -o '${{ env.AZURE_WEBAPP_PACKAGE_PATH }}/published-api'  
 
