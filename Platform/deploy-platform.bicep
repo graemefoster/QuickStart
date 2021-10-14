@@ -46,7 +46,7 @@ resource WebAppTest 'Microsoft.Web/sites@2021-01-15' = {
     serverFarmId: QuickStartServerFarm.id
     siteConfig: {
       minTlsVersion: '1.2'
-      linuxFxVersion: 'DOTNET|5.0'
+      linuxFxVersion: 'DOTNETCORE|5.0'
       appSettings: [
         {
           name: 'ASPNETCORE_ENVIRONMENT'
@@ -68,7 +68,7 @@ resource WebApiTest 'Microsoft.Web/sites@2021-01-15' = {
     serverFarmId: QuickStartServerFarm.id
     siteConfig: {
       minTlsVersion: '1.2'
-      linuxFxVersion: 'DOTNET|5.0'
+      linuxFxVersion: 'DOTNETCORE|5.0'
       appSettings: [
         {
           name: 'ASPNETCORE_ENVIRONMENT'
@@ -93,7 +93,7 @@ resource WebApp 'Microsoft.Web/sites@2021-01-15' = {
     serverFarmId: QuickStartServerFarm.id
     siteConfig: {
       minTlsVersion: '1.2'
-      linuxFxVersion: 'DOTNET|5.0'
+      linuxFxVersion: 'DOTNETCORE|5.0'
       appSettings: [
         {
           name: 'ASPNETCORE_ENVIRONMENT'
@@ -113,7 +113,7 @@ resource WebAppGreen 'Microsoft.Web/sites/slots@2021-01-15' = {
     serverFarmId: QuickStartServerFarm.id
     siteConfig: {
       minTlsVersion: '1.2'
-      linuxFxVersion: 'DOTNET|5.0'
+      linuxFxVersion: 'DOTNETCORE|5.0'
       appSettings: [
         {
           name: 'ASPNETCORE_ENVIRONMENT'
@@ -136,7 +136,7 @@ resource WebApi 'Microsoft.Web/sites@2021-01-15' = {
     serverFarmId: QuickStartServerFarm.id
     siteConfig: {
       minTlsVersion: '1.2'
-      linuxFxVersion: 'DOTNET|5.0'
+      linuxFxVersion: 'DOTNETCORE|5.0'
       appSettings: [
         {
           name: 'ASPNETCORE_ENVIRONMENT'
@@ -159,7 +159,7 @@ resource WebApiGreen 'Microsoft.Web/sites/slots@2021-01-15' = {
     serverFarmId: QuickStartServerFarm.id
     siteConfig: {
       minTlsVersion: '1.2'
-      linuxFxVersion: 'DOTNET|5.0'
+      linuxFxVersion: 'DOTNETCORE|5.0'
       appSettings: [
         {
           name: 'ASPNETCORE_ENVIRONMENT'
