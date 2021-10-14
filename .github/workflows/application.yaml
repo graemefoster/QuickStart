@@ -1,0 +1,19 @@
+name: Platform
+
+on:
+  push:
+    branches: [ main ]
+
+jobs:
+  deploy-to-test:
+    runs-on: ubuntu-latest
+    environment: Test
+
+    # Steps represent a sequence of tasks that will be executed as part of the job
+    steps:
+    - uses: actions/checkout@v2
+    - uses: actions/setup-dotnet@v1
+      with:
+        dotnet-version: '5.0.x'
+    - run: dotnet build ./Application/SimpleMvcApp/SimpleMvcApp.csproj
+    
