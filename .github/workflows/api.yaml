@@ -16,4 +16,5 @@ jobs:
       with:
         dotnet-version: '5.0.x'
     - run: dotnet build ./Application/SimpleApiWithDatabase/SimpleApiWithDatabase.csproj
-    
+    - run: dotnet test ./Application/ApiTest.csproj
+

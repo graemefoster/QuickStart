@@ -4,6 +4,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SimpleMvcApp", "Application
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SimpleApiWithDatabase", "Application\SimpleApiWithDatabase\SimpleApiWithDatabase.csproj", "{55AF9EC7-D130-4C26-8C43-7E30E421DE7D}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{701C3FFA-7D6C-4C9D-BDF9-7B67A4CE1B91}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ApiTests", "Application\ApiTests\ApiTests.csproj", "{3F8B5B87-6D40-4E3B-96C6-1EF799E6375B}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -18,5 +22,12 @@ Global
 		{55AF9EC7-D130-4C26-8C43-7E30E421DE7D}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{55AF9EC7-D130-4C26-8C43-7E30E421DE7D}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{55AF9EC7-D130-4C26-8C43-7E30E421DE7D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3F8B5B87-6D40-4E3B-96C6-1EF799E6375B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3F8B5B87-6D40-4E3B-96C6-1EF799E6375B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3F8B5B87-6D40-4E3B-96C6-1EF799E6375B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3F8B5B87-6D40-4E3B-96C6-1EF799E6375B}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{3F8B5B87-6D40-4E3B-96C6-1EF799E6375B} = {701C3FFA-7D6C-4C9D-BDF9-7B67A4CE1B91}
 	EndGlobalSection
 EndGlobal
