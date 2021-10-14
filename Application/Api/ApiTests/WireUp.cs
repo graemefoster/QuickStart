@@ -10,6 +10,7 @@ namespace ApiTests
         public void Test1Is1()
         {
             1.ShouldBe(1);
+            
         }
     }
 }
