@@ -1,29 +1,16 @@
 param resourceSuffix string
 param databaseAdministrator string
+param databaseAdministratorObjectId string
 
 resource QuickStartServerFarm 'Microsoft.Web/serverfarms@2021-01-15' = {
   name: '${resourceSuffix}-asp'
   location: resourceGroup().location
   sku: {
-    name: 'F1'
+    name: 'S1'
   }
   kind: 'linux'
   properties: {
     reserved: true
-  }
-}
-resource WebApp 'Microsoft.Web/sites@2021-01-15' = {
-  name: '${resourceSuffix}${uniqueString(resourceGroup().name)}site'
-  location: resourceGroup().location
-  identity: {
-    type: 'SystemAssigned'
-  }
-  properties: {
-    httpsOnly: true
-    serverFarmId: QuickStartServerFarm.id
-    siteConfig: {
-      minTlsVersion: '1.2'
-    }
   }
 }
 
@@ -37,6 +24,60 @@ resource SqlDatabaseServer 'Microsoft.Sql/servers@2021-02-01-preview' = {
       administratorType: 'ActiveDirectory'
       login: databaseAdministrator
       principalType: 'User'
+      tenantId: subscription().tenantId
+      sid:databaseAdministratorObjectId
+    }
+  }
+}
+
+resource WebAppTest 'Microsoft.Web/sites@2021-01-15' = {
+  name: '${resourceSuffix}-${uniqueString(resourceGroup().name)}-test'
+  location: resourceGroup().location
+  identity: {
+    type: 'SystemAssigned'
+  }
+  properties: {
+    httpsOnly: true
+    serverFarmId: QuickStartServerFarm.id
+    siteConfig: {
+      minTlsVersion: '1.2'
+    }
+  }
+}
+
+resource SqlDatabaseTest 'Microsoft.Sql/servers/databases@2021-02-01-preview' = {
+  name: '${resourceSuffix}-test-sqldb'
+  parent: SqlDatabaseServer
+  location: resourceGroup().location
+}
+
+resource WebApp 'Microsoft.Web/sites@2021-01-15' = {
+  name: '${resourceSuffix}-${uniqueString(resourceGroup().name)}'
+  location: resourceGroup().location
+  identity: {
+    type: 'SystemAssigned'
+  }
+  properties: {
+    httpsOnly: true
+    serverFarmId: QuickStartServerFarm.id
+    siteConfig: {
+      minTlsVersion: '1.2'
+    }
+  }
+}
+
+resource WebAppGreen 'Microsoft.Web/sites/slots@2021-01-15' = {
+  parent: WebApp
+  name: 'green'
+  location: resourceGroup().location
+  identity: {
+    type: 'SystemAssigned'
+  }
+  properties: {
+    httpsOnly: true
+    serverFarmId: QuickStartServerFarm.id
+    siteConfig: {
+      minTlsVersion: '1.2'
     }
   }
 }
