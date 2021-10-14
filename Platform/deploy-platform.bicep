@@ -50,14 +50,8 @@ resource WebAppTest 'Microsoft.Web/sites@2021-01-15' = {
   }
 }
 
-resource SqlDatabaseTest 'Microsoft.Sql/servers/databases@2021-02-01-preview' = {
-  name: '${resourceSuffix}-test-sqldb'
-  parent: SqlDatabaseServer
-  location: resourceGroup().location
-}
-
-resource WebApp 'Microsoft.Web/sites@2021-01-15' = {
-  name: '${resourceSuffix}-${uniqueString(resourceGroup().name)}'
+resource WebApiTest 'Microsoft.Web/sites@2021-01-15' = {
+  name: '${resourceSuffix}-api-${uniqueString(resourceGroup().name)}-test'
   location: resourceGroup().location
   identity: {
     type: 'SystemAssigned'
@@ -71,8 +65,55 @@ resource WebApp 'Microsoft.Web/sites@2021-01-15' = {
   }
 }
 
+resource SqlDatabaseTest 'Microsoft.Sql/servers/databases@2021-02-01-preview' = {
+  name: '${resourceSuffix}-test-sqldb'
+  parent: SqlDatabaseServer
+  location: resourceGroup().location
+}
+
+resource WebApp 'Microsoft.Web/sites@2021-01-15' = {
+  name: '${resourceSuffix}-${uniqueString(resourceGroup().name)}'
+  location: resourceGroup().location
+  properties: {
+    httpsOnly: true
+    serverFarmId: QuickStartServerFarm.id
+    siteConfig: {
+      minTlsVersion: '1.2'
+    }
+  }
+}
+
 resource WebAppGreen 'Microsoft.Web/sites/slots@2021-01-15' = {
   parent: WebApp
+  name: 'green'
+  location: resourceGroup().location
+  properties: {
+    httpsOnly: true
+    serverFarmId: QuickStartServerFarm.id
+    siteConfig: {
+      minTlsVersion: '1.2'
+    }
+  }
+}
+
+
+resource WebApi 'Microsoft.Web/sites@2021-01-15' = {
+  name: '${resourceSuffix}-api-${uniqueString(resourceGroup().name)}'
+  location: resourceGroup().location
+  identity: {
+    type: 'SystemAssigned'
+  }
+  properties: {
+    httpsOnly: true
+    serverFarmId: QuickStartServerFarm.id
+    siteConfig: {
+      minTlsVersion: '1.2'
+    }
+  }
+}
+
+resource WebApiGreen 'Microsoft.Web/sites/slots@2021-01-15' = {
+  parent: WebApi
   name: 'green'
   location: resourceGroup().location
   identity: {
