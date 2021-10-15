@@ -60,12 +60,6 @@ resource WebAppTest 'Microsoft.Web/sites@2021-01-15' = {
         }
       ]
       netFrameworkVersion: '5.0'
-      metadata: [
-        {
-          name: 'CURRENT_STACK'
-          value: 'dotnet'
-        }
-      ]
     }
   }
 }
@@ -88,12 +82,6 @@ resource WebApiTest 'Microsoft.Web/sites@2021-01-15' = {
         }
       ]
       netFrameworkVersion: '5.0'
-      metadata: [
-        {
-          name: 'CURRENT_STACK'
-          value: 'dotnet'
-        }
-      ]
     }
   }
 }
@@ -123,12 +111,6 @@ resource WebApp 'Microsoft.Web/sites@2021-01-15' = {
         }
       ]
       netFrameworkVersion: '5.0'
-      metadata: [
-        {
-          name: 'CURRENT_STACK'
-          value: 'dotnet'
-        }
-      ]
     }
   }
 }
@@ -153,12 +135,6 @@ resource WebAppGreen 'Microsoft.Web/sites/slots@2021-01-15' = {
         }
       ]
       netFrameworkVersion: '5.0'
-      metadata: [
-        {
-          name: 'CURRENT_STACK'
-          value: 'dotnet'
-        }
-      ]
     }
   }
 }
@@ -182,12 +158,6 @@ resource WebApi 'Microsoft.Web/sites@2021-01-15' = {
         }
       ]
       netFrameworkVersion: '5.0'
-      metadata: [
-        {
-          name: 'CURRENT_STACK'
-          value: 'dotnet'
-        }
-      ]
     }
   }
 }
@@ -211,12 +181,6 @@ resource WebApiGreen 'Microsoft.Web/sites/slots@2021-01-15' = {
         }
       ]
       netFrameworkVersion: '5.0'
-      metadata: [
-        {
-          name: 'CURRENT_STACK'
-          value: 'dotnet'
-        }
-      ]
     }
   }
 }
