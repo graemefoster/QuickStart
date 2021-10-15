@@ -58,7 +58,7 @@ resource WebAppTest 'Microsoft.Web/sites@2021-01-15' = {
         }
         {
           name: 'ApiSettings__URL'
-          value: 'https://${testApiHostname}.azurewebsites.net/'
+          value: 'https://${testApiHostname}.azurewebsites.net'
         }
       ]
       linuxFxVersion: 'DOTNETCORE|5.0'
