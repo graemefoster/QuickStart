@@ -13,10 +13,6 @@ resource QuickStartServerFarm 'Microsoft.Web/serverfarms@2021-01-15' = {
   sku: {
     name: 'S1'
   }
-  kind: 'windows'
-  properties: {
-    reserved: true
-  }
 }
 
 resource CiCdIdentity 'Microsoft.ManagedIdentity/userAssignedIdentities@2018-11-30' = {
