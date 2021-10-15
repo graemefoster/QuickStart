@@ -59,7 +59,7 @@ resource WebAppTest 'Microsoft.Web/sites@2021-01-15' = {
           value: 'https://${testApiHostname}.azurewebsites.net/'
         }
       ]
-      netFrameworkVersion: '5.0'
+      linuxFxVersion: 'DOTNETCORE|5.0'
     }
   }
 }
@@ -81,7 +81,7 @@ resource WebApiTest 'Microsoft.Web/sites@2021-01-15' = {
           value: 'Test'
         }
       ]
-      netFrameworkVersion: '5.0'
+      linuxFxVersion: 'DOTNETCORE|5.0'
     }
   }
 }
@@ -110,7 +110,7 @@ resource WebApp 'Microsoft.Web/sites@2021-01-15' = {
           value: 'https://${productionApiHostname}.azurewebsites.net/'
         }
       ]
-      netFrameworkVersion: '5.0'
+      linuxFxVersion: 'DOTNETCORE|5.0'
     }
   }
 }
@@ -134,7 +134,7 @@ resource WebAppGreen 'Microsoft.Web/sites/slots@2021-01-15' = {
           value: 'https://${productionApiHostname}.azurewebsites.net/'
         }
       ]
-      netFrameworkVersion: '5.0'
+      linuxFxVersion: 'DOTNETCORE|5.0'
     }
   }
 }
@@ -157,7 +157,7 @@ resource WebApi 'Microsoft.Web/sites@2021-01-15' = {
           value: 'Production'
         }
       ]
-      netFrameworkVersion: '5.0'
+      linuxFxVersion: 'DOTNETCORE|5.0'
     }
   }
 }
@@ -180,7 +180,7 @@ resource WebApiGreen 'Microsoft.Web/sites/slots@2021-01-15' = {
           value: 'Production'
         }
       ]
-      netFrameworkVersion: '5.0'
+      linuxFxVersion: 'DOTNETCORE|5.0'
     }
   }
 }
