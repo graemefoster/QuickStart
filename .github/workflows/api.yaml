@@ -46,6 +46,10 @@ jobs:
         with:
           name: api
           path: api
+
+      - name: Update database
+        run: ls ./api/
+
       - uses: azure/webapps-deploy@v2
         with: 
           app-name: ${{ secrets.AZURE_WEBAPI_NAME }}

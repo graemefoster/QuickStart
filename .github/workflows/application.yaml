@@ -11,7 +11,7 @@ on:
   workflow_dispatch:
     
 jobs:
-  build-and-test-api:
+  build-and-test-app:
     runs-on: ubuntu-latest
 
     # Steps represent a sequence of tasks that will be executed as part of the job
@@ -25,11 +25,11 @@ jobs:
     - run: dotnet publish ./Application/WebApp/\SimpleMvcApp/\SimpleMvcApp.csproj -c Release -o '${{ env.AZURE_WEBAPP_PACKAGE_PATH }}/published-app'
     - uses: actions/upload-artifact@v2
       with:
-        name: api
+        name: app
         path: '${{ env.AZURE_WEBAPP_PACKAGE_PATH }}/published-app/**'
 
   deploy-to-test:
-    needs: build-and-test-api
+    needs: build-and-test-app
     runs-on: ubuntu-latest
     environment: Test
     steps:
@@ -39,16 +39,13 @@ jobs:
       - name: 'Run Azure webapp deploy action using publish profile credentials'
         uses: actions/download-artifact@v2
         with:
-          name: api
-          path: api
-
-      - name: Update database
-        run: ls ./api/
+          name: app
+          path: app
 
       - uses: azure/webapps-deploy@v2
         with: 
           app-name: ${{ secrets.AZURE_WEBAPP_NAME }}
-          package: './api/'
+          package: './app/'
       - name: logout
         run: |
           az logout
