@@ -107,7 +107,7 @@ resource WebApp 'Microsoft.Web/sites@2021-01-15' = {
         }
         {
           name: 'ApiSettings__URL'
-          value: 'https://${productionApiHostname}.azurewebsites.net/'
+          value: 'https://${productionApiHostname}.azurewebsites.net'
         }
       ]
       linuxFxVersion: 'DOTNETCORE|5.0'
@@ -131,7 +131,7 @@ resource WebAppGreen 'Microsoft.Web/sites/slots@2021-01-15' = {
         }
         {
           name: 'ApiSettings__URL'
-          value: 'https://${productionApiHostname}.azurewebsites.net/'
+          value: 'https://${productionApiHostname}.azurewebsites.net'
         }
       ]
       linuxFxVersion: 'DOTNETCORE|5.0'
