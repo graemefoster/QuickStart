@@ -11,7 +11,7 @@ resource QuickStartServerFarm 'Microsoft.Web/serverfarms@2021-01-15' = {
   sku: {
     name: 'S1'
   }
-  kind: 'linux'
+  kind: 'windows'
   properties: {
     reserved: true
   }
@@ -49,7 +49,6 @@ resource WebAppTest 'Microsoft.Web/sites@2021-01-15' = {
     serverFarmId: QuickStartServerFarm.id
     siteConfig: {
       minTlsVersion: '1.2'
-      linuxFxVersion: 'DOTNETCORE|5.0'
       appSettings: [
         {
           name: 'ASPNETCORE_ENVIRONMENT'
@@ -58,6 +57,12 @@ resource WebAppTest 'Microsoft.Web/sites@2021-01-15' = {
         {
           name: 'ApiSettings__URL'
           value: 'https://${testApiHostname}.azurewebsites.net/'
+        }
+      ]
+      metadata: [
+        {
+          name: 'CURRENT_STACK'
+          value: 'DOTNET|5.0'
         }
       ]
     }
@@ -75,11 +80,16 @@ resource WebApiTest 'Microsoft.Web/sites@2021-01-15' = {
     serverFarmId: QuickStartServerFarm.id
     siteConfig: {
       minTlsVersion: '1.2'
-      linuxFxVersion: 'DOTNETCORE|5.0'
       appSettings: [
         {
           name: 'ASPNETCORE_ENVIRONMENT'
           value: 'Test'
+        }
+      ]
+      metadata: [
+        {
+          name: 'CURRENT_STACK'
+          value: 'DOTNET|5.0'
         }
       ]
     }
@@ -100,7 +110,6 @@ resource WebApp 'Microsoft.Web/sites@2021-01-15' = {
     serverFarmId: QuickStartServerFarm.id
     siteConfig: {
       minTlsVersion: '1.2'
-      linuxFxVersion: 'DOTNETCORE|5.0'
       appSettings: [
         {
           name: 'ASPNETCORE_ENVIRONMENT'
@@ -109,6 +118,12 @@ resource WebApp 'Microsoft.Web/sites@2021-01-15' = {
         {
           name: 'ApiSettings__URL'
           value: 'https://${productionApiHostname}.azurewebsites.net/'
+        }
+      ]
+      metadata: [
+        {
+          name: 'CURRENT_STACK'
+          value: 'DOTNET|5.0'
         }
       ]
     }
@@ -124,7 +139,6 @@ resource WebAppGreen 'Microsoft.Web/sites/slots@2021-01-15' = {
     serverFarmId: QuickStartServerFarm.id
     siteConfig: {
       minTlsVersion: '1.2'
-      linuxFxVersion: 'DOTNETCORE|5.0'
       appSettings: [
         {
           name: 'ASPNETCORE_ENVIRONMENT'
@@ -133,6 +147,12 @@ resource WebAppGreen 'Microsoft.Web/sites/slots@2021-01-15' = {
         {
           name: 'ApiSettings__URL'
           value: 'https://${productionApiHostname}.azurewebsites.net/'
+        }
+      ]
+      metadata: [
+        {
+          name: 'CURRENT_STACK'
+          value: 'DOTNET|5.0'
         }
       ]
     }
@@ -151,11 +171,16 @@ resource WebApi 'Microsoft.Web/sites@2021-01-15' = {
     serverFarmId: QuickStartServerFarm.id
     siteConfig: {
       minTlsVersion: '1.2'
-      linuxFxVersion: 'DOTNETCORE|5.0'
       appSettings: [
         {
           name: 'ASPNETCORE_ENVIRONMENT'
           value: 'Production'
+        }
+      ]
+      metadata: [
+        {
+          name: 'CURRENT_STACK'
+          value: 'DOTNET|5.0'
         }
       ]
     }
@@ -174,11 +199,16 @@ resource WebApiGreen 'Microsoft.Web/sites/slots@2021-01-15' = {
     serverFarmId: QuickStartServerFarm.id
     siteConfig: {
       minTlsVersion: '1.2'
-      linuxFxVersion: 'DOTNETCORE|5.0'
       appSettings: [
         {
           name: 'ASPNETCORE_ENVIRONMENT'
           value: 'Production'
+        }
+      ]
+      metadata: [
+        {
+          name: 'CURRENT_STACK'
+          value: 'DOTNET|5.0'
         }
       ]
     }
