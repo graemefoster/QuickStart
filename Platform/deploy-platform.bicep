@@ -71,6 +71,9 @@ resource WebApiTest 'Microsoft.Web/sites@2021-01-15' = {
   properties: {
     httpsOnly: true
     serverFarmId: QuickStartServerFarm.id
+    cors: {
+      allowedOrigins: []
+    }
     siteConfig: {
       minTlsVersion: '1.2'
       appSettings: [
@@ -80,7 +83,7 @@ resource WebApiTest 'Microsoft.Web/sites@2021-01-15' = {
         }
         {
           name: 'ApiSettings__Cors__0'
-          value: 'https://${testAppHostname}.azurewebsites.net
+          value: 'https://${testAppHostname}.azurewebsites.net'
         }
       ]
       linuxFxVersion: 'DOTNETCORE|5.0'
@@ -153,6 +156,9 @@ resource WebApi 'Microsoft.Web/sites@2021-01-15' = {
     serverFarmId: QuickStartServerFarm.id
     siteConfig: {
       minTlsVersion: '1.2'
+      cors: {
+        allowedOrigins: []
+      }
       appSettings: [
         {
           name: 'ASPNETCORE_ENVIRONMENT'
@@ -180,6 +186,9 @@ resource WebApiGreen 'Microsoft.Web/sites/slots@2021-01-15' = {
     serverFarmId: QuickStartServerFarm.id
     siteConfig: {
       minTlsVersion: '1.2'
+      cors: {
+        allowedOrigins: []
+      }
       appSettings: [
         {
           name: 'ASPNETCORE_ENVIRONMENT'
