@@ -33,6 +33,7 @@ namespace SimpleApiWithDatabase
             Configuration.GetSection("ApiSettings").Bind(settings);
             services.AddCors(options =>
             {
+                Console.WriteLine($"Adding Cors for origins: {string.Join(',', settings.Cors)}.");
                 options.AddPolicy(name: AllowSpecificOrigins,
                     builder =>
                     {
