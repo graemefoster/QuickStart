@@ -6,11 +6,14 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using Microsoft.OpenApi.Models;
+using SimpleApiWithDatabase.Domain;
 using SimpleApiWithDatabase.Infrastructure;
 
 namespace SimpleApiWithDatabase
@@ -42,6 +45,11 @@ namespace SimpleApiWithDatabase
                             builder.WithOrigins(origin);
                         }
                     });
+            });
+
+            services.AddDbContext<PetsContext>((sp, bldr) =>
+            {
+                bldr.UseSqlServer(sp.GetService<IOptions<ApiSettings>>()!.Value.ConnectionString ?? "Data Source=.\\SQLEXPRESS;Integrated Security=SSPI;Initial Catalog=TestDatabase;app=Migrations");
             });
 
             services.AddControllers();
