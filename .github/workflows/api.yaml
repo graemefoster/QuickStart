@@ -24,14 +24,16 @@ jobs:
     - run: dotnet build ./Application/Api/SimpleApiWithDatabase/SimpleApiWithDatabase.csproj --configuration Release --no-restore
     - run: dotnet test ./Application/Api/ApiTests/ApiTests.csproj --no-restore
     - run: dotnet publish ./Application/Api/SimpleApiWithDatabase/SimpleApiWithDatabase.csproj -c Release -o '${{ env.AZURE_WEBAPP_PACKAGE_PATH }}/published-api'
-    - name: "Create ZIP"
-      run: |
-        Get-ChildItem ${{ env.AZURE_WEBAPP_PACKAGE_PATH }}/published-api | Compress-Archive -Destination .\backend.zip
-      shell: pwsh
     - uses: actions/upload-artifact@v2
+      name: 'Upload Api package'
       with:
         name: api
         path: '${{ env.AZURE_WEBAPP_PACKAGE_PATH }}/published-api/**'
+    - uses: actions/upload-artifact@v2
+      name: 'Upload Database script'
+      with:
+        name: database-script
+        path: './Application/DatabaseUpgrades/build-database.sql'
 
   deploy-to-test:
     needs: build-and-test-api
@@ -41,14 +43,23 @@ jobs:
       - uses: azure/login@v1
         with:
           creds: ${{ secrets.AZURE_CREDENTIALS }}
-      - name: 'Run Azure webapp deploy action using publish profile credentials'
+      - name: 'Download package'
         uses: actions/download-artifact@v2
         with:
           name: api
           path: api
+      - name: 'Download database script'
+        uses: actions/download-artifact@v2
+        with:
+          name: database-script
+          path: database-script
 
-      - name: Update database
-        run: ls ./api/
+      - name: 'Update database'
+        uses: azure/sql-action@v1
+        with:
+          server-name: ${{ secrets.AZURE_SQL_SERVER_NAME }}
+          connection-string: ${{ secrets.AZURE_SQL_CONNECTION_STRING }}
+          sql-file: './database-script/build-database.sql'
 
       - uses: azure/webapps-deploy@v2
         with: 
