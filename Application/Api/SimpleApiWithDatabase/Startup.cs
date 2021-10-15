@@ -11,6 +11,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.OpenApi.Models;
+using SimpleApiWithDatabase.Infrastructure;
 
 namespace SimpleApiWithDatabase
 {
@@ -28,12 +29,17 @@ namespace SimpleApiWithDatabase
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            var settings = new ApiSettings();
+            Configuration.GetSection("ApiSettings").Bind(settings);
             services.AddCors(options =>
             {
                 options.AddPolicy(name: AllowSpecificOrigins,
                     builder =>
                     {
-                        builder.WithOrigins("https://sampleapp.localtest.me:4430");
+                        foreach (var origin in settings.Cors)
+                        {
+                            builder.WithOrigins(origin);
+                        }
                     });
             });
 

@@ -2,8 +2,10 @@ param resourceSuffix string
 param databaseAdministratorName string
 param databaseAdministratorObjectId string
 
+var testAppHostname = '${resourceSuffix}-${uniqueString(resourceGroup().name)}-test'
 var testApiHostname = '${resourceSuffix}-api-${uniqueString(resourceGroup().name)}-test'
 var productionApiHostname = '${resourceSuffix}-api-${uniqueString(resourceGroup().name)}'
+var productionAppHostname = '${resourceSuffix}-${uniqueString(resourceGroup().name)}'
 
 resource QuickStartServerFarm 'Microsoft.Web/serverfarms@2021-01-15' = {
   name: '${resourceSuffix}-asp'
@@ -39,7 +41,7 @@ resource SqlDatabaseServer 'Microsoft.Sql/servers@2021-02-01-preview' = {
 }
 
 resource WebAppTest 'Microsoft.Web/sites@2021-01-15' = {
-  name: '${resourceSuffix}-${uniqueString(resourceGroup().name)}-test'
+  name: testAppHostname
   location: resourceGroup().location
   identity: {
     type: 'SystemAssigned'
@@ -80,6 +82,10 @@ resource WebApiTest 'Microsoft.Web/sites@2021-01-15' = {
           name: 'ASPNETCORE_ENVIRONMENT'
           value: 'Test'
         }
+        {
+          name: 'ApiSettings__Cors__0'
+          value: 'https://${testAppHostname}.azurewebsites.net/'
+        }
       ]
       linuxFxVersion: 'DOTNETCORE|5.0'
     }
@@ -93,7 +99,7 @@ resource SqlDatabaseTest 'Microsoft.Sql/servers/databases@2021-02-01-preview' = 
 }
 
 resource WebApp 'Microsoft.Web/sites@2021-01-15' = {
-  name: '${resourceSuffix}-${uniqueString(resourceGroup().name)}'
+  name: productionAppHostname
   location: resourceGroup().location
   properties: {
     httpsOnly: true
@@ -156,6 +162,10 @@ resource WebApi 'Microsoft.Web/sites@2021-01-15' = {
           name: 'ASPNETCORE_ENVIRONMENT'
           value: 'Production'
         }
+        {
+          name: 'ApiSettings__Cors__0'
+          value: 'https://${productionAppHostname}.azurewebsites.net/'
+        }
       ]
       linuxFxVersion: 'DOTNETCORE|5.0'
     }
@@ -178,6 +188,10 @@ resource WebApiGreen 'Microsoft.Web/sites/slots@2021-01-15' = {
         {
           name: 'ASPNETCORE_ENVIRONMENT'
           value: 'Production'
+        }
+        {
+          name: 'ApiSettings__Cors__0'
+          value: 'https://${productionAppHostname}.azurewebsites.net/'
         }
       ]
       linuxFxVersion: 'DOTNETCORE|5.0'
