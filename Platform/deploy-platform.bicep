@@ -80,7 +80,7 @@ resource WebApiTest 'Microsoft.Web/sites@2021-01-15' = {
         }
         {
           name: 'ApiSettings__Cors__0'
-          value: 'https://${testAppHostname}.azurewebsites.net/'
+          value: 'https://${testAppHostname}.azurewebsites.net
         }
       ]
       linuxFxVersion: 'DOTNETCORE|5.0'
