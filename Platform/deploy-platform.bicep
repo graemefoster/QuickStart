@@ -91,6 +91,10 @@ resource WebApiTest 'Microsoft.Web/sites@2021-01-15' = {
           name: 'ApiSettings__Cors__0'
           value: 'https://${testAppHostname}.azurewebsites.net'
         }
+        {
+          name: 'ApiSettings__ConnectionString'
+          value: '{{ secrets.AZURE_SQL_CONNECTION_STRING }}'
+        }
       ]
       linuxFxVersion: 'DOTNETCORE|5.0'
     }
@@ -171,6 +175,10 @@ resource WebApi 'Microsoft.Web/sites@2021-01-15' = {
           name: 'ApiSettings__Cors__0'
           value: 'https://${productionAppHostname}.azurewebsites.net'
         }
+        {
+          name: 'ApiSettings__ConnectionString'
+          value: '{{ secrets.AZURE_SQL_CONNECTION_STRING }}'
+        }
       ]
       linuxFxVersion: 'DOTNETCORE|5.0'
     }
@@ -197,6 +205,10 @@ resource WebApiGreen 'Microsoft.Web/sites/slots@2021-01-15' = {
         {
           name: 'ApiSettings__Cors__0'
           value: 'https://${productionAppHostname}.azurewebsites.net'
+        }
+        {
+          name: 'ApiSettings__ConnectionString'
+          value: '{{ secrets.AZURE_SQL_CONNECTION_STRING }}'
         }
       ]
       linuxFxVersion: 'DOTNETCORE|5.0'
