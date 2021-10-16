@@ -36,6 +36,15 @@ resource SqlDatabaseServer 'Microsoft.Sql/servers@2021-02-01-preview' = {
   }
 }
 
+resource SqlFirewallAllowAzureServices 'Microsoft.Sql/servers/firewallRules@2021-02-01-preview' = {
+  parent: SqlDatabaseServer
+  name: 'AllowAllAzureServices'
+  properties: {
+    startIpAddress: '0.0.0.0'
+    endIpAddress: '0.0.0.0'
+  }
+}
+
 resource WebAppTest 'Microsoft.Web/sites@2021-01-15' = {
   name: testAppHostname
   location: resourceGroup().location
