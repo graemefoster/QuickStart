@@ -1,7 +1,7 @@
 name: Api
 
 env:
-  AZURE_WEBAPP_PACKAGE_PATH: './packages'      # set this to the path to your web app project, defaults to the repository root
+  PACKAGE_PATH: './packages'      # set this to the path to your web app project, defaults to the repository root
 
 on:
   push:
@@ -11,6 +11,25 @@ on:
   workflow_dispatch:
     
 jobs:
+
+  build-database-deployer:
+    runs-on: ubuntu-latest
+
+    # Steps represent a sequence of tasks that will be executed as part of the job
+    steps:
+    - uses: actions/checkout@v2
+    - uses: actions/setup-dotnet@v1
+      with:
+        dotnet-version: '5.0.x'
+    - run: dotnet restore
+    - run: dotnet build ./SqlAadMigrationDeployer/SqlAadMigrationDeployer.csproj --configuration Release --no-restore
+    - run: dotnet publish ./SqlAadMigrationDeployer/SqlAadMigrationDeployer.csproj -c Release -o '${{ env.PACKAGE_PATH }}/database-deployer'
+    - uses: actions/upload-artifact@v2
+      name: 'Upload Database Deployer package'
+      with:
+        name: api
+        path: '${{ env.PACKAGE_PATH }}/database-deployer/**'
+
   build-and-test-api:
     runs-on: ubuntu-latest
 
@@ -23,12 +42,12 @@ jobs:
     - run: dotnet restore
     - run: dotnet build ./Application/Api/SimpleApiWithDatabase/SimpleApiWithDatabase.csproj --configuration Release --no-restore
     - run: dotnet test ./Application/Api/ApiTests/ApiTests.csproj --no-restore
-    - run: dotnet publish ./Application/Api/SimpleApiWithDatabase/SimpleApiWithDatabase.csproj -c Release -o '${{ env.AZURE_WEBAPP_PACKAGE_PATH }}/published-api'
+    - run: dotnet publish ./Application/Api/SimpleApiWithDatabase/SimpleApiWithDatabase.csproj -c Release -o '${{ env.PACKAGE_PATH }}/published-api'
     - uses: actions/upload-artifact@v2
       name: 'Upload Api package'
       with:
         name: api
-        path: '${{ env.AZURE_WEBAPP_PACKAGE_PATH }}/published-api/**'
+        path: '${{ env.PACKAGE_PATH }}/published-api/**'
     - uses: actions/upload-artifact@v2
       name: 'Upload Database script'
       with:
@@ -54,12 +73,14 @@ jobs:
           name: database-script
           path: database-script
 
-      - name: 'Update database'
-        uses: azure/sql-action@v1
+      - name: 'Download database deployer'
+        uses: actions/download-artifact@v2
         with:
-          server-name: ${{ secrets.AZURE_SQL_SERVER_NAME }}
-          connection-string: ${{ secrets.AZURE_SQL_CONNECTION_STRING }}
-          sql-file: './database-script/build-database.sql'
+          name: database-deployer
+          path: database-deployer
+
+      - name: 'Update database'
+        run: ./database-deployer/SqlAadMigrationDeployer.exe "${{  secrets.AZURE_SQL_CONNECTION_STRING }}" "./database-script/build-database.sql"
 
       - uses: azure/webapps-deploy@v2
         with: 
