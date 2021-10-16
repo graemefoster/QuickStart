@@ -2,10 +2,15 @@ param resourceSuffix string
 param databaseAdministratorName string
 param databaseAdministratorObjectId string
 
+var databaseServerName = '${resourceSuffix}-sqlserver'
+
 var testAppHostname = '${resourceSuffix}-${uniqueString(resourceGroup().name)}-test'
 var testApiHostname = '${resourceSuffix}-api-${uniqueString(resourceGroup().name)}-test'
+var testDatabaseName = '${resourceSuffix}-test-sqldb'
+
 var productionApiHostname = '${resourceSuffix}-api-${uniqueString(resourceGroup().name)}'
 var productionAppHostname = '${resourceSuffix}-${uniqueString(resourceGroup().name)}'
+var productionDatabaseName = '${resourceSuffix}-sqldb'
 
 resource QuickStartServerFarm 'Microsoft.Web/serverfarms@2021-01-15' = {
   name: '${resourceSuffix}-asp'
@@ -21,7 +26,7 @@ resource CiCdIdentity 'Microsoft.ManagedIdentity/userAssignedIdentities@2018-11-
 }
 
 resource SqlDatabaseServer 'Microsoft.Sql/servers@2021-02-01-preview' = {
-  name: '${resourceSuffix}-sqlserver'
+  name: databaseServerName
   location: resourceGroup().location
   properties: {
     minimalTlsVersion: '1.2'
@@ -93,7 +98,7 @@ resource WebApiTest 'Microsoft.Web/sites@2021-01-15' = {
         }
         {
           name: 'ApiSettings__ConnectionString'
-          value: '{{ secrets.AZURE_SQL_CONNECTION_STRING }}'
+          value: 'Data Source=${databaseServerName}.database.windows.net; Initial Catalog=${testDatabaseName};MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;app=Test Website'
         }
       ]
       linuxFxVersion: 'DOTNETCORE|5.0'
@@ -102,7 +107,7 @@ resource WebApiTest 'Microsoft.Web/sites@2021-01-15' = {
 }
 
 resource SqlDatabaseTest 'Microsoft.Sql/servers/databases@2021-02-01-preview' = {
-  name: '${resourceSuffix}-test-sqldb'
+  name: testDatabaseName
   parent: SqlDatabaseServer
   location: resourceGroup().location
 }
@@ -177,7 +182,7 @@ resource WebApi 'Microsoft.Web/sites@2021-01-15' = {
         }
         {
           name: 'ApiSettings__ConnectionString'
-          value: '{{ secrets.AZURE_SQL_CONNECTION_STRING }}'
+          value: 'Data Source=${databaseServerName}.database.windows.net; Initial Catalog=${productionDatabaseName};MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;app=Production Website'
         }
       ]
       linuxFxVersion: 'DOTNETCORE|5.0'
@@ -208,7 +213,7 @@ resource WebApiGreen 'Microsoft.Web/sites/slots@2021-01-15' = {
         }
         {
           name: 'ApiSettings__ConnectionString'
-          value: '{{ secrets.AZURE_SQL_CONNECTION_STRING }}'
+          value: 'Data Source=${databaseServerName}.database.windows.net; Initial Catalog=${productionDatabaseName};MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;app=Production Website'
         }
       ]
       linuxFxVersion: 'DOTNETCORE|5.0'
@@ -217,7 +222,7 @@ resource WebApiGreen 'Microsoft.Web/sites/slots@2021-01-15' = {
 }
 
 resource SqlDatabase 'Microsoft.Sql/servers/databases@2021-02-01-preview' = {
-  name: '${resourceSuffix}-sqldb'
+  name: productionDatabaseName
   parent: SqlDatabaseServer
   location: resourceGroup().location
 }
