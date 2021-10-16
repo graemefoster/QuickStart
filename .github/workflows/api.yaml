@@ -27,7 +27,7 @@ jobs:
     - uses: actions/upload-artifact@v2
       name: 'Upload Database Deployer package'
       with:
-        name: api
+        name: database-deployer
         path: '${{ env.PACKAGE_PATH }}/database-deployer/**'
 
   build-and-test-api:
