@@ -19,7 +19,10 @@ namespace SqlAadMigrationDeployer
 
             var cred = new DefaultAzureCredential();
             var token = await cred.GetTokenAsync(new TokenRequestContext(new[]
-                { "https://database.windows.net//.default" }));
+                { "https://database.windows.net/" }));
+            
+            Console.WriteLine($"Token: {token.Token}");
+            
             await using var connection = new SqlConnection(sqlConnection);
             connection.AccessToken = token.Token;
             await connection.OpenAsync();
