@@ -55,10 +55,20 @@ namespace SimpleApiWithDatabase
 
             services.AddDbContext<PetsContext>((sp, bldr) =>
             {
-                bldr.UseSqlServer(sp.GetService<IOptions<ApiSettings>>()!.Value.ConnectionString ??
-                                  "Data Source=.\\SQLEXPRESS;Integrated Security=SSPI;Initial Catalog=TestDatabase;app=Migrations");
+                var settings = sp.GetService<IOptions<ApiSettings>>()!.Value;
+                if (settings.ConnectionString == null)
+                {
+                    Console.WriteLine("No connection string detected. Defaulting to .\\sqlexpress");
+                    bldr.UseSqlServer("Data Source=.\\SQLEXPRESS;Integrated Security=SSPI;Initial Catalog=TestDatabase;app=Migrations");
+                }
+                else
+                {
+                    Console.WriteLine($"Connection string detected. ${settings.ConnectionString}");
+                    bldr.UseSqlServer(settings.ConnectionString);
+                }
                 if (Env.IsProduction())
                 {
+                    Console.WriteLine("Production Environment. Adding Aad Token interceptor for Database Context");
                     bldr.AddInterceptors(new GetAadTokenInterceptor());
                 }
             });
