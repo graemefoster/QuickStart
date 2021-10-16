@@ -73,9 +73,7 @@ namespace SqlAadMigrationDeployer
 
             if (nextPiece.Length != 0)
             {
-                Console.WriteLine("Unexpected SQL at the end");
-                Console.WriteLine(nextPiece.ToString());
-                yield return nextPiece.ToString();
+                yield return ReplaceVariables(nextPiece.ToString());
             }
         }
 
@@ -88,6 +86,7 @@ namespace SqlAadMigrationDeployer
                 var envVariableName = match.Groups[1].Captures[0].Value;
                 var envVariableValue = Environment.GetEnvironmentVariable(envVariableName);
                 sql = sql.Replace(match.Value, envVariableValue);
+                Console.WriteLine($"Replacing environment variable ${envVariableName}");
             }
 
             return sql;
