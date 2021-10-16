@@ -1,25 +1,19 @@
 using System;
-using System.Collections.Generic;
 using System.Data.Common;
-using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Azure.Core;
 using Azure.Identity;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.HttpsPolicy;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Diagnostics;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Microsoft.OpenApi.Models;
-using SimpleApiWithDatabase.Domain;
 using SimpleApiWithDatabase.Infrastructure;
 
 namespace SimpleApiWithDatabase
@@ -40,15 +34,19 @@ namespace SimpleApiWithDatabase
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            var settings = new ApiSettings();
-            Configuration.GetSection("ApiSettings").Bind(settings);
+            var settingsSection = Configuration.GetSection("ApiSettings");
+            var interimSettings = new ApiSettings();
+            settingsSection.Bind(interimSettings);
+            
+            services.Configure<ApiSettings>(settingsSection);
+            
             services.AddCors(options =>
             {
-                Console.WriteLine($"Adding Cors for origins: {string.Join(',', settings.Cors)}.");
+                Console.WriteLine($"Adding Cors for origins: {string.Join(',', interimSettings.Cors)}.");
                 options.AddPolicy(name: AllowSpecificOrigins,
                     builder =>
                     {
-                        foreach (var origin in settings.Cors)
+                        foreach (var origin in interimSettings.Cors)
                         {
                             builder.WithOrigins(origin);
                         }
