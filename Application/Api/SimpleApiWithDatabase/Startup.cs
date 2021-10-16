@@ -64,10 +64,10 @@ namespace SimpleApiWithDatabase
                 }
                 else
                 {
-                    Console.WriteLine($"Connection string detected. ${settings.ConnectionString}");
+                    Console.WriteLine($"Connection string detected. {settings.ConnectionString}");
                     bldr.UseSqlServer(settings.ConnectionString);
                 }
-                if (Env.IsProduction())
+                if (!Env.IsDevelopment())
                 {
                     Console.WriteLine("Production Environment. Adding Aad Token interceptor for Database Context");
                     bldr.AddInterceptors(new GetAadTokenInterceptor(sp.GetService<ILogger<GetAadTokenInterceptor>>()));
