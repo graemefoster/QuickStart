@@ -52,7 +52,7 @@ jobs:
       name: 'Upload Database script'
       with:
         name: database-script
-        path: './Application/DatabaseUpgrades/build-database.sql'
+        path: './Application/DatabaseUpgrades/*.sql'
 
   deploy-to-test:
     needs:
@@ -84,7 +84,12 @@ jobs:
         name: database-deployer
         path: database-deployer
 
-    - name: 'Update database'
+    - name: 'Configure Database'
+      run: dotnet ./database-deployer/SqlAadMigrationDeployer.dll "${{  secrets.AZURE_SQL_CONNECTION_STRING }}" "./database-script/configure-database.sql"
+      env:
+        MANAGED_IDENTITY_NAME: ${{secrets.AZURE_WEBAPI_NAME}}
+
+    - name: 'Update Database'
       run: dotnet ./database-deployer/SqlAadMigrationDeployer.dll "${{  secrets.AZURE_SQL_CONNECTION_STRING }}" "./database-script/build-database.sql"
 
     - uses: azure/webapps-deploy@v2
