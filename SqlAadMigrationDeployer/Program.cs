@@ -21,8 +21,6 @@ namespace SqlAadMigrationDeployer
             var token = await cred.GetTokenAsync(new TokenRequestContext(new[]
                 { "https://database.windows.net/" }));
             
-            Console.WriteLine($"... {Convert.ToBase64String(Encoding.UTF8.GetBytes(token.Token))}");
-            
             await using var connection = new SqlConnection(sqlConnection);
             connection.AccessToken = token.Token;
             await connection.OpenAsync();
@@ -36,6 +34,10 @@ namespace SqlAadMigrationDeployer
                 cmd.Transaction = (SqlTransaction)tran;
                 cmd.CommandText = part;
             }
+
+            await tran.CommitAsync();
+            Console.WriteLine("Successfully run migration script");
+            
         }
 
         /// <summary>
