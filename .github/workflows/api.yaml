@@ -55,6 +55,7 @@ jobs:
         path: './Application/DatabaseUpgrades/build-database.sql'
 
   deploy-to-test:
+    needs: build-database-deployer
     needs: build-and-test-api
     runs-on: ubuntu-latest
     environment: Test
