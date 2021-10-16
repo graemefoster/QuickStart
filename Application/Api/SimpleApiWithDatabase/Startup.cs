@@ -12,6 +12,7 @@ using Microsoft.EntityFrameworkCore.Diagnostics;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Microsoft.OpenApi.Models;
 using SimpleApiWithDatabase.Infrastructure;
@@ -69,7 +70,7 @@ namespace SimpleApiWithDatabase
                 if (Env.IsProduction())
                 {
                     Console.WriteLine("Production Environment. Adding Aad Token interceptor for Database Context");
-                    bldr.AddInterceptors(new GetAadTokenInterceptor());
+                    bldr.AddInterceptors(new GetAadTokenInterceptor(sp.GetService<ILogger<GetAadTokenInterceptor>>()));
                 }
             });
 
@@ -104,24 +105,39 @@ namespace SimpleApiWithDatabase
 
     public class GetAadTokenInterceptor : DbConnectionInterceptor
     {
+        private readonly ILogger<GetAadTokenInterceptor> _logger;
+
+        public GetAadTokenInterceptor(ILogger<GetAadTokenInterceptor> logger)
+        {
+            _logger = logger;
+        }
+        
         public override async ValueTask<InterceptionResult> ConnectionOpeningAsync(DbConnection connection,
             ConnectionEventData eventData, InterceptionResult result,
             CancellationToken cancellationToken = new CancellationToken())
         {
+            _logger.LogInformation("Fetching AAD Token");
+            
             var cred = new DefaultAzureCredential();
             var token = await cred.GetTokenAsync(new TokenRequestContext(new[]
                 { "https://database.windows.net/" }), cancellationToken);
             ((SqlConnection)connection).AccessToken = token.Token;
+
+            _logger.LogInformation("Attached token to connection");
             return await base.ConnectionOpeningAsync(connection, eventData, result, cancellationToken);
         }
 
         public override InterceptionResult ConnectionOpening(DbConnection connection, ConnectionEventData eventData,
             InterceptionResult result)
         {
+            _logger.LogInformation("Fetching AAD Token (sync)");
+
             var cred = new DefaultAzureCredential();
             var token =  cred.GetToken(new TokenRequestContext(new[]
                 { "https://database.windows.net/" }));
             ((SqlConnection)connection).AccessToken = token.Token;
+
+            _logger.LogInformation("Attached token to connection");
             return base.ConnectionOpening(connection, eventData, result);
         }
     }
