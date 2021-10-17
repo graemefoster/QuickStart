@@ -69,7 +69,7 @@ namespace SimpleApiWithDatabase
                 }
                 if (!Env.IsDevelopment())
                 {
-                    Console.WriteLine("Production Environment. Adding Aad Token interceptor for Database Context");
+                    Console.WriteLine("Not Development Environment. Adding Aad Token interceptor for Database Context");
                     bldr.AddInterceptors(new GetAadTokenInterceptor(sp.GetService<ILogger<GetAadTokenInterceptor>>()));
                 }
             });

@@ -22,22 +22,44 @@ namespace SqlAadMigrationDeployer
             var token = await cred.GetTokenAsync(new TokenRequestContext(new[]
                 { "https://database.windows.net/" }));
 
-            await using var connection = new SqlConnection(sqlConnection);
-            connection.AccessToken = token.Token;
-            await connection.OpenAsync();
+            var printOutput = new StringBuilder();
 
-            var parts = SplitSqlIntoBatches(await File.ReadAllTextAsync(scriptFile));
-            await using var tran = await connection.BeginTransactionAsync();
-
-            foreach (var part in parts)
+            try
             {
-                var cmd = connection.CreateCommand();
-                cmd.Transaction = (SqlTransaction)tran;
-                cmd.CommandText = part;
-            }
+                await using var connection = new SqlConnection(sqlConnection);
+                connection.AccessToken = token.Token;
+                connection.InfoMessage += (sender, eventArgs) => { printOutput.AppendLine(eventArgs.ToString()); };
+                await connection.OpenAsync();
 
-            await tran.CommitAsync();
-            Console.WriteLine("Successfully run migration script");
+                var parts = SplitSqlIntoBatches(await File.ReadAllTextAsync(scriptFile));
+                await using var tran = await connection.BeginTransactionAsync();
+
+                foreach (var part in parts)
+                {
+                    var cmd = connection.CreateCommand();
+                    cmd.Transaction = (SqlTransaction)tran;
+                    cmd.CommandText = part;
+                    await cmd.ExecuteNonQueryAsync();
+                }
+
+                await tran.CommitAsync();
+                Console.WriteLine();
+                Console.WriteLine("------------------------");
+                Console.WriteLine(printOutput.ToString());
+                Console.WriteLine("------------------------");
+                Console.WriteLine();
+                Console.WriteLine("Successfully run migration script");
+            }
+            catch (Exception)
+            {
+                Console.WriteLine();
+                Console.WriteLine("------------------------");
+                Console.WriteLine(printOutput.ToString());
+                Console.WriteLine("------------------------");
+                Console.WriteLine();
+                Console.WriteLine("Failed to run migration script");
+                throw;
+            }
         }
 
         /// <summary>
