@@ -24,16 +24,15 @@ namespace SqlAadMigrationDeployer
 
             var printOutput = new StringBuilder();
 
+            await using var connection = new SqlConnection(sqlConnection);
+            connection.AccessToken = token.Token;
+            connection.InfoMessage += (sender, eventArgs) => { printOutput.AppendLine(eventArgs.ToString()); };
+            await connection.OpenAsync();
+
+            var parts = SplitSqlIntoBatches(await File.ReadAllTextAsync(scriptFile));
+            await using var tran = await connection.BeginTransactionAsync();
             try
             {
-                await using var connection = new SqlConnection(sqlConnection);
-                connection.AccessToken = token.Token;
-                connection.InfoMessage += (sender, eventArgs) => { printOutput.AppendLine(eventArgs.ToString()); };
-                await connection.OpenAsync();
-
-                var parts = SplitSqlIntoBatches(await File.ReadAllTextAsync(scriptFile));
-                await using var tran = await connection.BeginTransactionAsync();
-
                 foreach (var part in parts)
                 {
                     var cmd = connection.CreateCommand();
@@ -52,6 +51,15 @@ namespace SqlAadMigrationDeployer
             }
             catch (Exception)
             {
+                try
+                {
+                    await tran.RollbackAsync();
+                }
+                catch
+                {
+                    //not much we can do here
+                }
+
                 Console.WriteLine();
                 Console.WriteLine("------------------------");
                 Console.WriteLine(printOutput.ToString());
@@ -108,7 +116,7 @@ namespace SqlAadMigrationDeployer
                 var envVariableName = match.Groups[1].Captures[0].Value;
                 var envVariableValue = Environment.GetEnvironmentVariable(envVariableName);
                 sql = sql.Replace(match.Value, envVariableValue);
-                Console.WriteLine($"Replacing environment variable ${envVariableName}");
+                Console.WriteLine($"Replacing environment variable {envVariableName} with {Convert.ToBase64String(Encoding.UTF8.GetBytes(envVariableValue ?? "????"))}");
             }
 
             return sql;
