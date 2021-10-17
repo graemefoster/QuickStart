@@ -116,7 +116,7 @@ namespace SqlAadMigrationDeployer
                 var envVariableName = match.Groups[1].Captures[0].Value;
                 var envVariableValue = Environment.GetEnvironmentVariable(envVariableName);
                 sql = sql.Replace(match.Value, envVariableValue);
-                Console.WriteLine($"Replacing environment variable {envVariableName}");
+                Console.WriteLine($"Replacing environment variable {envVariableName} with {envVariableValue ?? "????")}");
             }
 
             return sql;
