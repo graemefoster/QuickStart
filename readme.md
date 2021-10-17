@@ -27,5 +27,8 @@ GO
 CREATE USER [<OtherUser2>] FROM EXTERNAL PROVIDER;
 GO
 
+-- For more information see here:
+-- https://docs.microsoft.com/en-us/azure/azure-sql/database/authentication-aad-service-principal-tutorial
+-- https://github.com/MicrosoftDocs/sql-docs/issues/2323
+
 ```
-(https://docs.microsoft.com/en-us/azure/azure-sql/database/authentication-aad-service-principal-tutorial)
