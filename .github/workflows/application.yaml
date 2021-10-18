@@ -74,3 +74,14 @@ jobs:
         run: |
           az logout
 
+  deploy-to-production:
+    needs:
+      - deploy-to-production-green
+    runs-on: ubuntu-latest
+    environment: Production-Green
+    steps:
+      - uses: azure/login@v1
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
+      - run: az webapp deployment slot swap --slot green --action swap --name ${{ secrets.AZURE_WEBAPP_NAME }} --resource-group ${{ secrets.AZURE_RG }} 
+
