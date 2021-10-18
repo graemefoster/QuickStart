@@ -99,7 +99,7 @@ jobs:
         az logout
 
 
-  deploy-to-prod-green:
+  deploy-to-prodruction-green:
     needs:
       - deploy-to-test
     runs-on: ubuntu-latest
