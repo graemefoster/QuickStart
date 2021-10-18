@@ -8,27 +8,10 @@ QuickStart provides Github Actions pipelines, and Azure DevOps pipelines.
 
 Feel free to use this as a QuickStart for your own pipelines.
 
-> If you cannot give the CI/CD service principal Azure AD Directory Reader then there's a bit of effort to get the Database migration going. 
-Change the Sql Server AAD Admin to someone who does have the Directory Reader role. Then manually add the Service Principal users to the database using
+## Getting new users into the database
+The standard approach for adding an AAD principal into a SQL database is this: ``` CREATE USER [<Name>] FROM EXTERNAL PROVIDER ```. But this requires the logged in user to have Directory Reader permissions which is a high level permission.
 
-``` sql
-CREATE USER [<Name>] FROM EXTERNAL PROVIDER; 
-GO
-EXEC sp_addrolemember 'db_owner', [<Name>]
-GO
-
--- This is supposed to let your principal add new users, but in my attmpt, I still got an error if the principal making the connection didn't have AAD Directory Reader, regardless of the server principal.
--- GRANT ALTER ANY USER TO [<Name>]
--- GO
-
---You'll need to do this for each user you want :(
-CREATE USER [<OtherUser1>] FROM EXTERNAL PROVIDER;
-GO
-CREATE USER [<OtherUser2>] FROM EXTERNAL PROVIDER;
-GO
+If you cannot give the CI/CD service principal Azure AD Directory Reader then there's a 'special' form of SQL to add the user without needing an AAD lookup: ``` CREATE USER [<Name>] WITH SID=<Binary representation of Application ID>, TYPE=E ```. See https://github.com/MicrosoftDocs/sql-docs/issues/2323 for more information.
 
 -- For more information see here:
 -- https://docs.microsoft.com/en-us/azure/azure-sql/database/authentication-aad-service-principal-tutorial
--- https://github.com/MicrosoftDocs/sql-docs/issues/2323
-
-```
