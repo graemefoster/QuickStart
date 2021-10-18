@@ -55,13 +55,10 @@ namespace SqlAadMigrationDeployer
 
                     //Ignoring injection as the principal executing this is intended to be CI/CD and will have a high level of access.
                     cmd.CommandText = @$"
-print 'Checking for user'
-IF NOT EXISTS (SELECT name FROM [sys].[server_principals] WHERE name = N'{applicationName}')
+IF NOT EXISTS (SELECT name FROM [sys].[database_principals] WHERE name = N'{applicationName}' AND TYPE='E')
 BEGIN
-    print 'Adding user to database'
     CREATE USER [{applicationName}] WITH SID={FormatSqlByteLiteral(Guid.Parse(applicationId).ToByteArray())}, TYPE=E; 
 END
-print 'Adding user to role'
 EXEC sp_addrolemember '{role}', '{applicationName}'
 ";
 
