@@ -51,7 +51,9 @@ jobs:
           az logout
 
   deploy-to-production-green:
-    needs: build-and-test-app
+    needs: 
+      - build-and-test-app
+      - deploy-to-test
     runs-on: ubuntu-latest
     environment: Production-Green
     steps:
