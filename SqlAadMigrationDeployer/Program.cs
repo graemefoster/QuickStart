@@ -56,8 +56,10 @@ namespace SqlAadMigrationDeployer
                     cmd.CommandText = @$"
 IF NOT EXISTS (SELECT name FROM [sys].[server_principals] WHERE name = N'{applicationName}')
 BEGIN
-    CREATE USER [{applicationName}] WITH SID={FormatSqlByteLiteral(Guid.Parse(applicationId).ToByteArray())}, TYPE=E; EXEC sp_addrolemember '{role}', '{applicationName}'
-END";
+    CREATE USER [{applicationName}] WITH SID={FormatSqlByteLiteral(Guid.Parse(applicationId).ToByteArray())}, TYPE=E; 
+END
+EXEC sp_addrolemember '{role}', '{applicationName}'
+";
                     await cmd.ExecuteNonQueryAsync();
                 }
 
