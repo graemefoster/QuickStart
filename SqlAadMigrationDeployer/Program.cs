@@ -15,8 +15,9 @@ namespace SqlAadMigrationDeployer
     {
         static async Task Main(string[] args)
         {
-            var sqlConnection = args[0];
-            var scriptFile = args[1];
+            var command = args[0];
+
+            var sqlConnection = args[1];
 
             var cred = new DefaultAzureCredential();
             var token = await cred.GetTokenAsync(new TokenRequestContext(new[]
@@ -29,15 +30,30 @@ namespace SqlAadMigrationDeployer
             connection.InfoMessage += (sender, eventArgs) => { printOutput.AppendLine(eventArgs.ToString()); };
             await connection.OpenAsync();
 
-            var parts = SplitSqlIntoBatches(await File.ReadAllTextAsync(scriptFile));
             await using var tran = await connection.BeginTransactionAsync();
             try
             {
-                foreach (var part in parts)
+                if (command == "migrate")
                 {
+                    var scriptFile = args[2];
+                    var parts = SplitSqlIntoBatches(await File.ReadAllTextAsync(scriptFile));
+                    foreach (var part in parts)
+                    {
+                        var cmd = connection.CreateCommand();
+                        cmd.Transaction = (SqlTransaction)tran;
+                        cmd.CommandText = part;
+                        await cmd.ExecuteNonQueryAsync();
+                    }
+                } else if (command == "add-managed-identity")
+                {
+                    var applicationName = args[2];
+                    var applicationId = args[3];
+                    var role = args[4];
+                    
                     var cmd = connection.CreateCommand();
                     cmd.Transaction = (SqlTransaction)tran;
-                    cmd.CommandText = part;
+                    //Ignoring injection as the principal executing this is intended to be CI/CD and will have a high level of access.
+                    cmd.CommandText = $"CREATE USER [{applicationName}] WITH SID={FormatSqlByteLiteral(Guid.Parse(applicationId).ToByteArray())}, TYPE=E; EXEC sp_addrolemember '{role}', '{applicationName}'";
                     await cmd.ExecuteNonQueryAsync();
                 }
 
@@ -120,6 +136,26 @@ namespace SqlAadMigrationDeployer
             }
 
             return sql;
+        }
+        
+        /// <summary>
+        /// https://github.com/MicrosoftDocs/sql-docs/issues/2323
+        /// </summary>
+        /// <param name="bytes"></param>
+        /// <returns></returns>
+        private static string FormatSqlByteLiteral(byte[] bytes)
+        {
+            var stringBuilder = new StringBuilder();
+            stringBuilder.Append("0x");
+            foreach (var @byte in bytes)
+            {
+                if (@byte < 16)
+                {
+                    stringBuilder.Append("0");
+                }
+                stringBuilder.Append(Convert.ToString(@byte, 16));
+            }
+            return stringBuilder.ToString();
         }
     }
 }
