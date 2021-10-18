@@ -69,6 +69,7 @@ jobs:
         with: 
           app-name: ${{ secrets.AZURE_WEBAPP_NAME }}
           package: './app/'
+          slot-name: 'green'
       - name: logout
         run: |
           az logout
