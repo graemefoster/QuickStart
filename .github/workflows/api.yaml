@@ -101,8 +101,6 @@ jobs:
 
   deploy-to-prod-green:
     needs:
-      - build-database-deployer
-      - build-and-test-api
       - deploy-to-test
     runs-on: ubuntu-latest
     environment: Production-Green

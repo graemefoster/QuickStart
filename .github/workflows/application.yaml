@@ -52,7 +52,6 @@ jobs:
 
   deploy-to-production-green:
     needs: 
-      - build-and-test-app
       - deploy-to-test
     runs-on: ubuntu-latest
     environment: Production-Green
