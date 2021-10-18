@@ -85,7 +85,7 @@ jobs:
         path: database-deployer
 
     - name: 'Fetch AAD Application Id'
-      run: $applicationId = (az ad sp list --display-name "${{ secrets.AZURE_WEBAPI_NAME }}" --query [0].appId -o tsv)
+      run: $applicationId = $(az ad sp list --display-name "${{ secrets.AZURE_WEBAPI_NAME }}" --query [0].appId -o tsv)
 
     - name: 'Allow access to AAD Application'
       run: dotnet ./database-deployer/SqlAadMigrationDeployer.dll add-managed-identity "${{  secrets.AZURE_SQL_CONNECTION_STRING }}" "${{ secrets.AZURE_WEBAPI_NAME }}" "$applicationId" "db_owner"
