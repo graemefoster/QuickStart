@@ -50,3 +50,25 @@ jobs:
         run: |
           az logout
 
+  deploy-to-production-green:
+    needs: build-and-test-app
+    runs-on: ubuntu-latest
+    environment: Production-Green
+    steps:
+      - uses: azure/login@v1
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
+      - name: 'Run Azure webapp deploy action using publish profile credentials'
+        uses: actions/download-artifact@v2
+        with:
+          name: app
+          path: app
+
+      - uses: azure/webapps-deploy@v2
+        with: 
+          app-name: ${{ secrets.AZURE_WEBAPP_NAME }}
+          package: './app/'
+      - name: logout
+        run: |
+          az logout
+

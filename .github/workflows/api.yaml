@@ -98,3 +98,48 @@ jobs:
       run: |
         az logout
 
+
+  deploy-to-prod-green:
+    needs:
+      - build-database-deployer
+      - build-and-test-api
+    runs-on: ubuntu-latest
+    environment: Production-Green
+    steps:
+    - uses: actions/setup-dotnet@v1
+      with:
+        dotnet-version: '5.0.x'
+    - uses: azure/login@v1
+      with:
+        creds: ${{ secrets.AZURE_CREDENTIALS }}
+    - name: 'Download package'
+      uses: actions/download-artifact@v2
+      with:
+        name: api
+        path: api
+    - name: 'Download database script'
+      uses: actions/download-artifact@v2
+      with:
+        name: database-script
+        path: database-script
+
+    - name: 'Download database deployer'
+      uses: actions/download-artifact@v2
+      with:
+        name: database-deployer
+        path: database-deployer
+
+    - name: 'Allow access to AAD Application'
+      run: dotnet ./database-deployer/SqlAadMigrationDeployer.dll add-managed-identity "${{  secrets.AZURE_SQL_CONNECTION_STRING }}" "${{ secrets.AZURE_WEBAPI_NAME }}" "${{ secrets.AZURE_WEBAPI_APPID }}" "db_owner"
+
+    - name: 'Update Database'
+      run: dotnet ./database-deployer/SqlAadMigrationDeployer.dll migrate "${{  secrets.AZURE_SQL_CONNECTION_STRING }}" "./database-script/build-database.sql"
+
+    - uses: azure/webapps-deploy@v2
+      with: 
+        app-name: ${{ secrets.AZURE_WEBAPI_NAME }}
+        package: './api/'
+    - name: logout
+      run: |
+        az logout
+
