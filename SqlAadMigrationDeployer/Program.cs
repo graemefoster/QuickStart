@@ -53,7 +53,11 @@ namespace SqlAadMigrationDeployer
                     var cmd = connection.CreateCommand();
                     cmd.Transaction = (SqlTransaction)tran;
                     //Ignoring injection as the principal executing this is intended to be CI/CD and will have a high level of access.
-                    cmd.CommandText = $"CREATE USER [{applicationName}] WITH SID={FormatSqlByteLiteral(Guid.Parse(applicationId).ToByteArray())}, TYPE=E; EXEC sp_addrolemember '{role}', '{applicationName}'";
+                    cmd.CommandText = @$"
+IF NOT EXISTS (SELECT name FROM [sys].[server_principals] WHERE name = N'{applicationName}')
+BEGIN
+    CREATE USER [{applicationName}] WITH SID={FormatSqlByteLiteral(Guid.Parse(applicationId).ToByteArray())}, TYPE=E; EXEC sp_addrolemember '{role}', '{applicationName}'
+END";
                     await cmd.ExecuteNonQueryAsync();
                 }
 
