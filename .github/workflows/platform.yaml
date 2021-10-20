@@ -25,7 +25,7 @@ jobs:
         with:
           subscriptionId: ${{ secrets.AZURE_SUBSCRIPTION }}
           resourceGroupName: ${{ secrets.AZURE_RG }}
-          template: ./Platform/deploy-platform.bicep
+          template: ./Platform/deploy-quickstart.bicep
           parameters: resourceSuffix=${{ secrets.RESOURCE_PREFIX }} databaseAdministratorObjectId=${{ secrets.DEPLOYMENTPRINCIPAL_ID }} databaseAdministratorName=${{ secrets.DEPLOYMENTPRINCIPAL_NAME }}
           failOnStdErr: true
 
