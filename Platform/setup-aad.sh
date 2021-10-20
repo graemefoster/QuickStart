@@ -99,7 +99,7 @@ _=$(az ad sp create --id $AAD_WEBSITE_APPLICATION_ID)
 echo "Created service principal to represent APP in directory"
 
 #Get a secret so we can do a code exchange in the app
-WEBSITE_CLIENT_SECRET=$(az ad app credential reset --id $AAD_WEBSITE_APPLICATION_ID --credential-description 'AADClientSecret' --append --query "passwords[0].value" -o tsv)
+WEBSITE_CLIENT_SECRET=$(az ad app credential reset --id $AAD_WEBSITE_APPLICATION_ID --credential-description 'AADClientSecret' --append --query "password" -o tsv)
 
 echo "::set-output name=applicationClientId::${AAD_WEBSITE_APPLICATION_ID}"
 echo "::set-output name=applicationClientSecret::${WEBSITE_CLIENT_SECRET}"
