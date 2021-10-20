@@ -1,62 +1,35 @@
-param testAppKeyVaultName string
-param productionAppKeyVaultName string
-
-param testAppAadClientId string
-param productionAppAadClientId string
-
-param testAppHostname string
-param productionAppHostname string
-
-param testApiHostname string
-param productionApiHostname string
+param appKeyVaultName string
+param appAadClientId string
+param appHostname string
+param apiHostname string
 
 @secure()
-param testAppClientSecret string
+param appClientSecret string
 
-@secure()
-param productionAppClientSecret string
-
-resource TestAppClientSecret 'Microsoft.KeyVault/vaults/secrets@2021-06-01-preview' = if (!empty(testAppClientSecret)) {
-  name: '${testAppKeyVaultName}/ApplicationClientSecret'
+resource AppClientSecret 'Microsoft.KeyVault/vaults/secrets@2021-06-01-preview' = if (!empty(appClientSecret)) {
+  name: '${appKeyVaultName}/ApplicationClientSecret'
   properties: {
     contentType: 'application/text'
-    value: testAppClientSecret
-  }
-}
-resource ProductionAppClientSecret 'Microsoft.KeyVault/vaults/secrets@2021-06-01-preview' = if (!empty(productionAppClientSecret)) {
-  name: '${productionAppKeyVaultName}/ApplicationClientSecret'
-  properties: {
-    contentType: 'application/text'
-    value: productionAppClientSecret
+    value: appClientSecret
   }
 }
 
-resource TestWebAppConfiguration 'Microsoft.Web/sites/config@2021-02-01' = {
-  name: '${testAppHostname}/appSettings'
+resource WebAppConfiguration 'Microsoft.Web/sites/config@2021-02-01' = {
+  name: '${appHostname}/appSettings'
   properties: {
     'ASPNETCORE_ENVIRONMENT': 'Test'
-    'ApiSettings__URL': 'https://${testApiHostname}.azurewebsites.net'
-    'AzureAD__ClientId': testAppAadClientId
-    'AzureAD__ClientSecret': 'https://${testAppKeyVaultName}.${environment().suffixes.keyvaultDns}/secrets/ApplicationClientSecret'
+    'ApiSettings__URL': 'https://${apiHostname}.azurewebsites.net'
+    'AzureAD__ClientId': appAadClientId
+    'AzureAD__ClientSecret': '@Microsoft.KeyVault(VaultName=${appKeyVaultName};SecretName=ApplicationClientSecret)'
     }
 }
 
-resource ProductionWebAppConfiguration 'Microsoft.Web/sites/config@2021-02-01' = {
-  name: '${productionAppHostname}/appSettings'
+resource SlotWebAppConfiguration 'Microsoft.Web/sites/slots/config@2021-02-01' = {
+  name: '${appHostname}/green/appsettings'
   properties: {
     'ASPNETCORE_ENVIRONMENT': 'Test'
-    'ApiSettings__URL': 'https://${productionApiHostname}.azurewebsites.net'
-    'AzureAD__ClientId': productionAppAadClientId
-    'AzureAD__ClientSecret': 'https://${productionAppKeyVaultName}.${environment().suffixes.keyvaultDns}/secrets/ApplicationClientSecret'
-    }
-}
-
-resource ProductionSlotWebAppConfiguration 'Microsoft.Web/sites/slots/config@2021-02-01' = {
-  name: '${productionAppHostname}/green/appsettings'
-  properties: {
-    'ASPNETCORE_ENVIRONMENT': 'Test'
-    'ApiSettings__URL': 'https://${productionApiHostname}.azurewebsites.net'
-    'AzureAD__ClientId': productionAppAadClientId
-    'AzureAD__ClientSecret': 'https://${productionAppKeyVaultName}.${environment().suffixes.keyvaultDns}/secrets/AzureAdClientSecret'
+    'ApiSettings__URL': 'https://${apiHostname}.azurewebsites.net'
+    'AzureAD__ClientId': appAadClientId
+    'AzureAD__ClientSecret': '@Microsoft.KeyVault(VaultName=${appKeyVaultName};SecretName=ApplicationClientSecret)'
     }
 }

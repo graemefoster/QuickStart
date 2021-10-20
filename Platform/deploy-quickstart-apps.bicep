@@ -4,6 +4,7 @@ param resourceSuffix string
 param platformResourceGroupName string
 param serverFarmId string
 param databaseServerName string
+param environment string
 
 resource platformResourceGroup 'Microsoft.Resources/resourceGroups@2021-04-01' = {
   name: platformResourceGroupName
@@ -20,7 +21,6 @@ resource appResourceGroup 'Microsoft.Resources/resourceGroups@2021-04-01' = {
   location: deployment().location
 }
 
-
 // Databases need to live in the same resource group as the server. We could push the server into the API RG
 // but its quite common to use a sql server pool, and have many databases for different apis / apps contained in it.
 // For this Quickstart the approach taken is to keep the server in the platform, and put the databases with it.
@@ -30,6 +30,7 @@ module DatabaseDeployment './deploy-api-database.bicep' = {
   params: {
     resourceSuffix: resourceSuffix
     databaseServerName: databaseServerName
+    environment: 'prod'
   }
 }
 
@@ -39,6 +40,7 @@ module WebApiDeployment './deploy-api.bicep' = {
   params: {
     resourceSuffix: resourceSuffix
     serverFarmId: serverFarmId
+    environment : environment
   }
 }
 
@@ -47,24 +49,16 @@ module WebAppDeployment './deploy-app.bicep' = {
   scope: appResourceGroup
   params: {
     resourceSuffix: resourceSuffix
-    productionApiHostname: WebApiDeployment.outputs.productionApiHostname
-    testApiHostname: WebApiDeployment.outputs.testApiHostname
+    apiHostname: WebApiDeployment.outputs.apiHostname
     serverFarmId: serverFarmId
+    environment: environment
   }
 }
 
 
 output apiResourceGroupName string = apiResourceGroup.name
 output appResourceGroupName string = appResourceGroup.name
-
-output testApplicationHostname string = WebAppDeployment.outputs.testAppHostname
-output productionApplicationHostname string = WebAppDeployment.outputs.productionAppHostname
-
-output testApiHostname string = WebApiDeployment.outputs.testApiHostname
-output productionApiHostname string = WebApiDeployment.outputs.productionApiHostname
-
-output testApplicationKeyVaultName string = WebAppDeployment.outputs.testAppKeyVaultName
-output productionApplicationKeyVaultName string = WebAppDeployment.outputs.productionAppKeyVaultName
-
-output testDatabaseName string = DatabaseDeployment.outputs.testApiDatabaseName
-output productionDatabaseName string = DatabaseDeployment.outputs.productionApiDatabaseName
+output applicationHostname string = WebAppDeployment.outputs.appHostname
+output apiHostname string = WebApiDeployment.outputs.apiHostname
+output applicationKeyVaultName string = WebAppDeployment.outputs.appKeyVaultName
+output databaseName string = DatabaseDeployment.outputs.apiDatabaseName

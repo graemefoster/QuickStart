@@ -37,9 +37,9 @@ jobs:
             databaseAdministratorName=${{ secrets.DEPLOYMENTPRINCIPAL_NAME }}
           failOnStdErr: true
 
-      - name: Deploy Applications and Databases
+      - name: Deploy Test Applications and Databases
         uses: azure/arm-deploy@v1
-        id: 'appsDeploy'
+        id: 'testAppsDeploy'
         with:
           subscriptionId: ${{ secrets.AZURE_SUBSCRIPTION }}
           scope: 'subscription'
@@ -50,6 +50,23 @@ jobs:
             platformResourceGroupName=${{ steps.platformDeploy.outputs.platformResourceGroupName }} 
             serverFarmId=${{ steps.platformDeploy.outputs.serverFarmId }} 
             databaseServerName=${{ steps.platformDeploy.outputs.databaseServerName }}
+            environment=test
+          failOnStdErr: true
+
+      - name: Deploy Production Applications and Databases
+        uses: azure/arm-deploy@v1
+        id: 'prodAppsDeploy'
+        with:
+          subscriptionId: ${{ secrets.AZURE_SUBSCRIPTION }}
+          scope: 'subscription'
+          region: 'australiaeast'
+          template: ./Platform/deploy-quickstart-apps.bicep
+          parameters: >
+            resourceSuffix=${{ secrets.RESOURCE_PREFIX }} 
+            platformResourceGroupName=${{ steps.platformDeploy.outputs.platformResourceGroupName }} 
+            serverFarmId=${{ steps.platformDeploy.outputs.serverFarmId }} 
+            databaseServerName=${{ steps.platformDeploy.outputs.databaseServerName }}
+            environment=prod
           failOnStdErr: true
 
       - name: Logout of Azure
@@ -65,15 +82,15 @@ jobs:
         id: setup-test-aad
         run: >
           ./Platform/setup-aad.sh
-          ${{ steps.appsDeploy.outputs.testApplicationHostname }} 
-          ${{ steps.appsDeploy.outputs.testApiHostname }}
+          ${{ steps.testAppsDeploy.outputs.applicationHostname }} 
+          ${{ steps.testAppsDeploy.outputs.apiHostname }}
 
       - name: Create AAD Applications for production web-app / web-api
         id: setup-prod-aad
         run: >
           ./Platform/setup-aad.sh 
-          ${{ steps.appsDeploy.outputs.productionApplicationHostname }}
-          ${{ steps.appsDeploy.outputs.productionApiHostname }}
+          ${{ steps.prodAppsDeploy.outputs.applicationHostname }}
+          ${{ steps.prodAppsDeploy.outputs.apiHostname }}
 
       - name: Logout of Azure
         run: |
@@ -84,10 +101,9 @@ jobs:
         with:
           creds: ${{secrets.AZURE_CREDENTIALS}} 
 
-
-      - name: Configure Applications
+      - name: Configure Test Applications
         uses: azure/arm-deploy@v1
-        id: 'configurationDeploy'
+        id: 'testConfigurationDeploy'
         with:
           subscriptionId: ${{ secrets.AZURE_SUBSCRIPTION }}
           scope: 'subscription'
@@ -97,18 +113,32 @@ jobs:
             apiResourceGroupName=${{ steps.appsDeploy.outputs.apiResourceGroupName }}
             appResourceGroupName=${{ steps.appsDeploy.outputs.appResourceGroupName }}
             databaseServerName=${{ steps.platformDeploy.outputs.databaseServerName }}
-            testDatabaseName=${{ steps.appsDeploy.outputs.testDatabaseName }}
-            testAppHostname=${{ steps.appsDeploy.outputs.testApplicationHostname }}
-            testApiHostname=${{ steps.appsDeploy.outputs.testApiHostname }}
-            testAppKeyVaultName=${{ steps.appsDeploy.outputs.testApplicationKeyVaultName }}
-            testAppClientId=${{ steps.setup-test-aad.outputs.applicationClientId }}
-            testApiClientId=${{ steps.setup-test-aad.outputs.apiClientId }}
-            testAppClientSecret=${{ steps.setup-test-aad.outputs.applicationClientSecret }}
-            productionDatabaseName=${{ steps.appsDeploy.outputs.productionDatabaseName }}
-            productionAppHostname=${{ steps.appsDeploy.outputs.productionApplicationHostname }}
-            productionApiHostname=${{ steps.appsDeploy.outputs.productionApiHostname }}
-            productionAppKeyVaultName=${{ steps.appsDeploy.outputs.productionApplicationKeyVaultName }}
-            productionAppClientId=${{ steps.setup-prod-aad.outputs.applicationClientId }}
-            productionApiClientId=${{ steps.setup-prod-aad.outputs.apiClientId }}
-            productionAppClientSecret=${{ steps.setup-prod-aad.outputs.applicationClientSecret }}
+            databaseName=${{ steps.testAppsDeploy.outputs.databaseName }}
+            appHostname=${{ steps.testAppsDeploy.outputs.applicationHostname }}
+            apiHostname=${{ steps.testAppsDeploy.outputs.apiHostname }}
+            appKeyVaultName=${{ steps.testAppsDeploy.outputs.applicationKeyVaultName }}
+            appClientId=${{ steps.setup-test-aad.outputs.applicationClientId }}
+            apiClientId=${{ steps.setup-test-aad.outputs.apiClientId }}
+            appClientSecret=${{ steps.setup-test-aad.outputs.applicationClientSecret }}
+          failOnStdErr: true
+
+      - name: Configure Production Applications
+        uses: azure/arm-deploy@v1
+        id: 'productionConfigurationDeploy'
+        with:
+          subscriptionId: ${{ secrets.AZURE_SUBSCRIPTION }}
+          scope: 'subscription'
+          region: 'australiaeast'
+          template: ./Platform/deploy-quickstart-apps-configuration.bicep
+          parameters: >
+            apiResourceGroupName=${{ steps.appsDeploy.outputs.apiResourceGroupName }}
+            appResourceGroupName=${{ steps.appsDeploy.outputs.appResourceGroupName }}
+            databaseServerName=${{ steps.platformDeploy.outputs.databaseServerName }}
+            databaseName=${{ steps.prodAppsDeploy.outputs.databaseName }}
+            appHostname=${{ steps.prodAppsDeploy.outputs.applicationHostname }}
+            apiHostname=${{ steps.prodAppsDeploy.outputs.apiHostname }}
+            appKeyVaultName=${{ steps.prodAppsDeploy.outputs.applicationKeyVaultName }}
+            appClientId=${{ steps.setup-test-aad.outputs.applicationClientId }}
+            apiClientId=${{ steps.setup-test-aad.outputs.apiClientId }}
+            appClientSecret=${{ steps.setup-test-aad.outputs.applicationClientSecret }}
           failOnStdErr: true

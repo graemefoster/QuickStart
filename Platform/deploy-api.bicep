@@ -1,27 +1,11 @@
 param resourceSuffix string
 param serverFarmId string
+param environment string
 
-var testApiHostname = '${resourceSuffix}-api-${uniqueString(resourceGroup().name)}-test'
-var productionApiHostname = '${resourceSuffix}-api-${uniqueString(resourceGroup().name)}'
-
-resource WebApiTest 'Microsoft.Web/sites@2021-01-15' = {
-  name: testApiHostname
-  location: resourceGroup().location
-  identity: {
-    type: 'SystemAssigned'
-  }
-  properties: {
-    httpsOnly: true
-    serverFarmId: serverFarmId
-    siteConfig: {
-      minTlsVersion: '1.2'
-      windowsFxVersion: 'DOTNETCORE|5.0'
-    }
-  }
-}
+var apiHostname = '${resourceSuffix}-api-${uniqueString(resourceGroup().name)}-${environment}'
 
 resource WebApi 'Microsoft.Web/sites@2021-01-15' = {
-  name: productionApiHostname
+  name: apiHostname
   location: resourceGroup().location
   identity: {
     type: 'SystemAssigned'
@@ -53,5 +37,4 @@ resource WebApiGreen 'Microsoft.Web/sites/slots@2021-01-15' = {
   }
 }
 
-output productionApiHostname string = productionApiHostname
-output testApiHostname string = testApiHostname
+output apiHostname string = apiHostname
