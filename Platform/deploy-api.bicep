@@ -15,7 +15,7 @@ resource WebApi 'Microsoft.Web/sites@2021-01-15' = {
     serverFarmId: serverFarmId
     siteConfig: {
       minTlsVersion: '1.2'
-      windowsFxVersion: 'DOTNET|5.0'
+      netFrameworkVersion: 'v5.0'
     }
   }
 }
@@ -32,7 +32,7 @@ resource WebApiGreen 'Microsoft.Web/sites/slots@2021-01-15' = {
     serverFarmId: serverFarmId
     siteConfig: {
       minTlsVersion: '1.2'
-      windowsFxVersion: 'DOTNET|5.0'
+      netFrameworkVersion: 'v5.0'
     }
   }
 }
