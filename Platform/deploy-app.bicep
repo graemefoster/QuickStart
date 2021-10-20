@@ -161,3 +161,6 @@ resource ProdGreenKeyVaultAuth 'Microsoft.Authorization/roleAssignments@2020-08-
 
 output testAppHostname string = testAppHostname
 output productionAppHostname string = productionAppHostname
+
+output testAppKeyVaultName string = testAppKeyVaultName
+output productionAppKeyVaultName string = productionAppKeyVaultName

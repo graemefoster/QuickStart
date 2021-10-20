@@ -1,11 +1,12 @@
 targetScope = 'subscription'
 
 param resourceSuffix string
-param databaseAdministratorName string
-param databaseAdministratorObjectId string
+param platformResourceGroupName string
+param serverFarmId string
+param databaseServerName string
 
 resource platformResourceGroup 'Microsoft.Resources/resourceGroups@2021-04-01' = {
-  name: '${resourceSuffix}-platform-rg'
+  name: platformResourceGroupName
   location: deployment().location
 }
 
@@ -19,15 +20,6 @@ resource appResourceGroup 'Microsoft.Resources/resourceGroups@2021-04-01' = {
   location: deployment().location
 }
 
-module PlatformDeployment './deploy-platform.bicep' = {
-  name: 'DeployPlatform'
-  scope: platformResourceGroup
-  params: {
-    resourceSuffix: resourceSuffix
-    databaseAdministratorName: databaseAdministratorName
-    databaseAdministratorObjectId: databaseAdministratorObjectId
-  }
-}
 
 // Databases need to live in the same resource group as the server. We could push the server into the API RG
 // but its quite common to use a sql server pool, and have many databases for different apis / apps contained in it.
@@ -37,7 +29,7 @@ module DatabaseDeployment './deploy-api-database.bicep' = {
   scope: platformResourceGroup
   params: {
     resourceSuffix: resourceSuffix
-    databaseServerName: PlatformDeployment.outputs.databaseServerName
+    databaseServerName: databaseServerName
   }
 }
 
@@ -46,7 +38,7 @@ module WebApiDeployment './deploy-api.bicep' = {
   scope: apiResourceGroup
   params: {
     resourceSuffix: resourceSuffix
-    serverFarmId: PlatformDeployment.outputs.serverFarmId
+    serverFarmId: serverFarmId
   }
 }
 
@@ -57,23 +49,22 @@ module WebAppDeployment './deploy-app.bicep' = {
     resourceSuffix: resourceSuffix
     productionApiHostname: WebApiDeployment.outputs.productionApiHostname
     testApiHostname: WebApiDeployment.outputs.testApiHostname
-    serverFarmId: PlatformDeployment.outputs.serverFarmId
+    serverFarmId: serverFarmId
   }
 }
 
-module PostConfigureApiDeployment './configure-api.bicep' = {
-  name: 'PostConfigureApiDeployment'
-  scope: apiResourceGroup
-  params: {
-    resourceSuffix: resourceSuffix
-    databaseServerName: PlatformDeployment.outputs.databaseServerName
-    productionAppHostname: WebAppDeployment.outputs.productionAppHostname
-    testAppHostname: WebAppDeployment.outputs.testAppHostname
-  }
-}
+
+output apiResourceGroupName string = apiResourceGroup.name
+output appResourceGroupName string = appResourceGroup.name
 
 output testApplicationHostname string = WebAppDeployment.outputs.testAppHostname
 output productionApplicationHostname string = WebAppDeployment.outputs.productionAppHostname
+
 output testApiHostname string = WebApiDeployment.outputs.testApiHostname
 output productionApiHostname string = WebApiDeployment.outputs.productionApiHostname
 
+output testApplicationKeyVaultName string = WebAppDeployment.outputs.testAppKeyVaultName
+output productionApplicationKeyVaultName string = WebAppDeployment.outputs.productionAppKeyVaultName
+
+output testDatabaseName string = DatabaseDeployment.outputs.testApiDatabaseName
+output productionDatabaseName string = DatabaseDeployment.outputs.productionApiDatabaseName
