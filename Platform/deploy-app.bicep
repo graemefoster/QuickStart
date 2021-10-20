@@ -54,7 +54,7 @@ resource WebAppTest 'Microsoft.Web/sites@2021-01-15' = {
   }
 }
 
-resource TestKeyVaultAuth 'Microsoft.Authorization/roleAssignments@2020-10-01-preview' = {
+resource TestKeyVaultAuth 'Microsoft.Authorization/roleAssignments@2021-04-01-preview' = {
   name: guid('${testAppHostname}-read-${testAppKeyVaultName}')
   scope: TestAppKeyVault
   properties: {
