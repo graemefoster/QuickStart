@@ -147,22 +147,22 @@ jobs:
         uses: actions/setup-dotnet@v1
         with:
           dotnet-version: '5.0.x'
-      - run: dotnet restore
+      - run: dotnet restore ./SqlAadMigrationDeployer/SqlAadMigrationDeployer.csproj
 
       - name: Build Database Migrator
         run: dotnet build ./SqlAadMigrationDeployer/SqlAadMigrationDeployer.csproj --configuration Release --no-restore
 
       - name: Grant access to database to Test Api
-        run: dotnet run ./SqlAadMigrationDeployer/SqlAadMigrationDeployer.csproj add-managed-identity "${{ steps.testAppsDeploy.outputs.databaseConnectionString }}" "${{ steps.testAppsDeploy.outputs.apiHostname }}" "${{ steps.testAppsDeploy.outputs.managedIdentityPrincipalId }}" "db_owner"
+        run: dotnet run --project ./SqlAadMigrationDeployer/SqlAadMigrationDeployer.csproj add-managed-identity "${{ steps.testAppsDeploy.outputs.databaseConnectionString }}" "${{ steps.testAppsDeploy.outputs.apiHostname }}" "${{ steps.testAppsDeploy.outputs.managedIdentityPrincipalId }}" "db_owner"
 
       - name: Grant access to database to Test Green Slot Api
-        run: dotnet run ./SqlAadMigrationDeployer/SqlAadMigrationDeployer.csproj add-managed-identity "${{ steps.testAppsDeploy.outputs.databaseConnectionString }}" "${{ steps.testAppsDeploy.outputs.apiHostname }}/slots/green" "${{ steps.testAppsDeploy.outputs.greenManagedIdentityPrincipalId }}" "db_owner"
+        run: dotnet run --project ./SqlAadMigrationDeployer/SqlAadMigrationDeployer.csproj add-managed-identity "${{ steps.testAppsDeploy.outputs.databaseConnectionString }}" "${{ steps.testAppsDeploy.outputs.apiHostname }}/slots/green" "${{ steps.testAppsDeploy.outputs.greenManagedIdentityPrincipalId }}" "db_owner"
 
       - name: Grant access to database to Production Api
-        run: dotnet run ./SqlAadMigrationDeployer/SqlAadMigrationDeployer.csproj add-managed-identity "${{ steps.prodAppsDeploy.outputs.databaseConnectionString }}" "${{ steps.prodAppsDeploy.outputs.apiHostname }}" "${{ steps.prodAppsDeploy.outputs.managedIdentityPrincipalId }}" "db_owner"
+        run: dotnet run --project ./SqlAadMigrationDeployer/SqlAadMigrationDeployer.csproj add-managed-identity "${{ steps.prodAppsDeploy.outputs.databaseConnectionString }}" "${{ steps.prodAppsDeploy.outputs.apiHostname }}" "${{ steps.prodAppsDeploy.outputs.managedIdentityPrincipalId }}" "db_owner"
 
       - name: Grant access to database to Production Green Slot Api
-        run: dotnet run ./SqlAadMigrationDeployer/SqlAadMigrationDeployer.csproj add-managed-identity "${{ steps.prodAppsDeploy.outputs.databaseConnectionString }}" "${{ steps.prodAppsDeploy.outputs.apiHostname }}/slots/green" "${{ steps.prodAppsDeploy.outputs.greenManagedIdentityPrincipalId }}" "db_owner"
+        run: dotnet run --project ./SqlAadMigrationDeployer/SqlAadMigrationDeployer.csproj add-managed-identity "${{ steps.prodAppsDeploy.outputs.databaseConnectionString }}" "${{ steps.prodAppsDeploy.outputs.apiHostname }}/slots/green" "${{ steps.prodAppsDeploy.outputs.greenManagedIdentityPrincipalId }}" "db_owner"
 
       - name: Logout of Azure
         run: |
