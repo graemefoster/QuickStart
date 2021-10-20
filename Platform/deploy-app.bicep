@@ -157,7 +157,7 @@ resource ProdGreenKeyVaultAuth 'Microsoft.Authorization/roleAssignments@2020-08-
     principalId: WebAppGreen.identity.principalId
     principalType: 'ServicePrincipal'
   }
-}
+} 
 
 output testAppHostname string = testAppHostname
 output productionAppHostname string = productionAppHostname
