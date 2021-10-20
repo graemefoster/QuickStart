@@ -4,5 +4,6 @@
     {
         public string[] Cors { get; set; }
         public string ConnectionString { get; set; }
+        public string UserAssignedClientId { get; set; }
     }
 }

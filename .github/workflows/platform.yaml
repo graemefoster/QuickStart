@@ -119,6 +119,7 @@ jobs:
             appKeyVaultName=${{ steps.testAppsDeploy.outputs.applicationKeyVaultName }}
             appClientId=${{ steps.setup-test-aad.outputs.applicationClientId }}
             apiClientId=${{ steps.setup-test-aad.outputs.apiClientId }}
+            apiUserAssignedClientId=${{ steps.testAppsDeploy.outputs.managedIdentityAppId }}
             appClientSecret=${{ steps.setup-test-aad.outputs.applicationClientSecret }}
           failOnStdErr: true
 
@@ -140,6 +141,7 @@ jobs:
             appKeyVaultName=${{ steps.prodAppsDeploy.outputs.applicationKeyVaultName }}
             appClientId=${{ steps.setup-prod-aad.outputs.applicationClientId }}
             apiClientId=${{ steps.setup-prod-aad.outputs.apiClientId }}
+            apiUserAssignedClientId=${{ steps.prodAppsDeploy.outputs.managedIdentityAppId }}
             appClientSecret=${{ steps.setup-prod-aad.outputs.applicationClientSecret }}
           failOnStdErr: true
 

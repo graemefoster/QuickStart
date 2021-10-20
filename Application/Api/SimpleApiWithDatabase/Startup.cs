@@ -38,9 +38,9 @@ namespace SimpleApiWithDatabase
             var settingsSection = Configuration.GetSection("ApiSettings");
             var interimSettings = new ApiSettings();
             settingsSection.Bind(interimSettings);
-            
+
             services.Configure<ApiSettings>(settingsSection);
-            
+
             services.AddCors(options =>
             {
                 Console.WriteLine($"Adding Cors for origins: {string.Join(',', interimSettings.Cors)}.");
@@ -60,17 +60,21 @@ namespace SimpleApiWithDatabase
                 if (settings.ConnectionString == null)
                 {
                     Console.WriteLine("No connection string detected. Defaulting to .\\sqlexpress");
-                    bldr.UseSqlServer("Data Source=.\\SQLEXPRESS;Integrated Security=SSPI;Initial Catalog=TestDatabase;app=Migrations");
+                    bldr.UseSqlServer(
+                        "Data Source=.\\SQLEXPRESS;Integrated Security=SSPI;Initial Catalog=TestDatabase;app=Migrations");
                 }
                 else
                 {
                     Console.WriteLine($"Connection string detected. {settings.ConnectionString}");
                     bldr.UseSqlServer(settings.ConnectionString);
                 }
+
                 if (!Env.IsDevelopment())
                 {
                     Console.WriteLine("Not Development Environment. Adding Aad Token interceptor for Database Context");
-                    bldr.AddInterceptors(new GetAadTokenInterceptor(sp.GetService<ILogger<GetAadTokenInterceptor>>()));
+                    bldr.AddInterceptors(new GetAadTokenInterceptor(
+                        sp.GetService<ILogger<GetAadTokenInterceptor>>(),
+                        sp.GetService<IOptions<ApiSettings>>()));
                 }
             });
 
@@ -106,21 +110,27 @@ namespace SimpleApiWithDatabase
     public class GetAadTokenInterceptor : DbConnectionInterceptor
     {
         private readonly ILogger<GetAadTokenInterceptor> _logger;
+        private readonly IOptions<ApiSettings> _settings;
 
-        public GetAadTokenInterceptor(ILogger<GetAadTokenInterceptor> logger)
+        public GetAadTokenInterceptor(ILogger<GetAadTokenInterceptor> logger, IOptions<ApiSettings> settings)
         {
             _logger = logger;
+            _settings = settings;
         }
-        
+
         public override async ValueTask<InterceptionResult> ConnectionOpeningAsync(DbConnection connection,
             ConnectionEventData eventData, InterceptionResult result,
             CancellationToken cancellationToken = new CancellationToken())
         {
             _logger.LogInformation("Fetching AAD Token");
-            
-            var cred = new DefaultAzureCredential();
+
+            var cred = new DefaultAzureCredential(new DefaultAzureCredentialOptions()
+            {
+                ManagedIdentityClientId = _settings.Value.UserAssignedClientId
+            });
             var token = await cred.GetTokenAsync(new TokenRequestContext(new[]
                 { "https://database.windows.net/" }), cancellationToken);
+            
             ((SqlConnection)connection).AccessToken = token.Token;
 
             _logger.LogInformation("Attached token to connection");
@@ -133,7 +143,7 @@ namespace SimpleApiWithDatabase
             _logger.LogInformation("Fetching AAD Token (sync)");
 
             var cred = new DefaultAzureCredential();
-            var token =  cred.GetToken(new TokenRequestContext(new[]
+            var token = cred.GetToken(new TokenRequestContext(new[]
                 { "https://database.windows.net/" }));
             ((SqlConnection)connection).AccessToken = token.Token;
 
