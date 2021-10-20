@@ -4,7 +4,7 @@ param resourceSuffix string
 param platformResourceGroupName string
 param serverFarmId string
 param databaseServerName string
-param environment string
+param environmentName string
 
 resource platformResourceGroup 'Microsoft.Resources/resourceGroups@2021-04-01' = {
   name: platformResourceGroupName
@@ -30,7 +30,7 @@ module DatabaseDeployment './deploy-api-database.bicep' = {
   params: {
     resourceSuffix: resourceSuffix
     databaseServerName: databaseServerName
-    environment: 'prod'
+    environmentName: 'prod'
   }
 }
 
@@ -40,7 +40,7 @@ module WebApiDeployment './deploy-api.bicep' = {
   params: {
     resourceSuffix: resourceSuffix
     serverFarmId: serverFarmId
-    environment : environment
+    environmentName : environmentName
   }
 }
 
@@ -51,7 +51,7 @@ module WebAppDeployment './deploy-app.bicep' = {
     resourceSuffix: resourceSuffix
     apiHostname: WebApiDeployment.outputs.apiHostname
     serverFarmId: serverFarmId
-    environment: environment
+    environmentName: environmentName
   }
 }
 
@@ -62,3 +62,6 @@ output applicationHostname string = WebAppDeployment.outputs.appHostname
 output apiHostname string = WebApiDeployment.outputs.apiHostname
 output applicationKeyVaultName string = WebAppDeployment.outputs.appKeyVaultName
 output databaseName string = DatabaseDeployment.outputs.apiDatabaseName
+output databaseConnectionString string = DatabaseDeployment.outputs.apiDatabaseConnectionString
+output managedIdentityPrincipalId string = WebApiDeployment.outputs.managedIdentityId
+output greenManagedIdentityPrincipalId string = WebApiDeployment.outputs.greenManagedIdentityId

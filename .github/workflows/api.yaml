@@ -84,9 +84,6 @@ jobs:
         name: database-deployer
         path: database-deployer
 
-    - name: 'Allow access to AAD Application'
-      run: dotnet ./database-deployer/SqlAadMigrationDeployer.dll add-managed-identity "${{  secrets.AZURE_SQL_CONNECTION_STRING }}" "${{ secrets.AZURE_WEBAPI_NAME }}" "${{ secrets.AZURE_WEBAPI_APPID }}" "db_owner"
-
     - name: 'Update Database'
       run: dotnet ./database-deployer/SqlAadMigrationDeployer.dll migrate "${{  secrets.AZURE_SQL_CONNECTION_STRING }}" "./database-script/build-database.sql"
 
@@ -127,12 +124,6 @@ jobs:
       with:
         name: database-deployer
         path: database-deployer
-
-    - name: 'Allow access to AAD Application (Green)'
-      run: dotnet ./database-deployer/SqlAadMigrationDeployer.dll add-managed-identity "${{  secrets.AZURE_SQL_CONNECTION_STRING }}" "${{ secrets.AZURE_WEBAPI_NAME }}" "${{ secrets.AZURE_WEBAPI_APPID }}" "db_owner"
-
-    - name: 'Allow access to AAD Application (Main)'
-      run: dotnet ./database-deployer/SqlAadMigrationDeployer.dll add-managed-identity "${{  secrets.AZURE_SQL_CONNECTION_STRING }}" "${{ secrets.AZURE_WEBAPI_NAME }}/slots/green" "${{ secrets.AZURE_WEBAPI_GREEN_APPID }}" "db_owner"
 
     - name: 'Update Database'
       run: dotnet ./database-deployer/SqlAadMigrationDeployer.dll migrate "${{  secrets.AZURE_SQL_CONNECTION_STRING }}" "./database-script/build-database.sql"

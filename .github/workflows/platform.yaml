@@ -138,7 +138,32 @@ jobs:
             appHostname=${{ steps.prodAppsDeploy.outputs.applicationHostname }}
             apiHostname=${{ steps.prodAppsDeploy.outputs.apiHostname }}
             appKeyVaultName=${{ steps.prodAppsDeploy.outputs.applicationKeyVaultName }}
-            appClientId=${{ steps.setup-test-aad.outputs.applicationClientId }}
-            apiClientId=${{ steps.setup-test-aad.outputs.apiClientId }}
-            appClientSecret=${{ steps.setup-test-aad.outputs.applicationClientSecret }}
+            appClientId=${{ steps.setup-prod-aad.outputs.applicationClientId }}
+            apiClientId=${{ steps.setup-prod-aad.outputs.apiClientId }}
+            appClientSecret=${{ steps.setup-prod-aad.outputs.applicationClientSecret }}
           failOnStdErr: true
+
+      - name: Grant db_owner permission to Managed Identities
+        uses: actions/setup-dotnet@v1
+        with:
+          dotnet-version: '5.0.x'
+      - run: dotnet restore
+
+      - name: Build Database Migrator
+        run: dotnet build ./SqlAadMigrationDeployer/SqlAadMigrationDeployer.csproj --configuration Release --no-restore
+
+      - name: Grant access to database to Test Api
+        run: dotnet run ./SqlAadMigrationDeployer/SqlAadMigrationDeployer.csproj add-managed-identity "${{ steps.testAppsDeploy.outputs.databaseConnectionString }}" "${{ steps.testAppsDeploy.outputs.apiHostname }}" "${{ steps.testAppsDeploy.outputs.managedIdentityPrincipalId }}" "db_owner"
+
+      - name: Grant access to database to Test Green Slot Api
+        run: dotnet run ./SqlAadMigrationDeployer/SqlAadMigrationDeployer.csproj add-managed-identity "${{ steps.testAppsDeploy.outputs.databaseConnectionString }}" "${{ steps.testAppsDeploy.outputs.apiHostname }}/slots/green" "${{ steps.testAppsDeploy.outputs.greenManagedIdentityPrincipalId }}" "db_owner"
+
+      - name: Grant access to database to Production Api
+        run: dotnet run ./SqlAadMigrationDeployer/SqlAadMigrationDeployer.csproj add-managed-identity "${{ steps.prodAppsDeploy.outputs.databaseConnectionString }}" "${{ steps.prodAppsDeploy.outputs.apiHostname }}" "${{ steps.prodAppsDeploy.outputs.managedIdentityPrincipalId }}" "db_owner"
+
+      - name: Grant access to database to Production Green Slot Api
+        run: dotnet run ./SqlAadMigrationDeployer/SqlAadMigrationDeployer.csproj add-managed-identity "${{ steps.prodAppsDeploy.outputs.databaseConnectionString }}" "${{ steps.prodAppsDeploy.outputs.apiHostname }}/slots/green" "${{ steps.prodAppsDeploy.outputs.greenManagedIdentityPrincipalId }}" "db_owner"
+
+      - name: Logout of Azure
+        run: |
+          az logout

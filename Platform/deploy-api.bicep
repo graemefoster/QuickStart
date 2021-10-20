@@ -1,8 +1,8 @@
 param resourceSuffix string
 param serverFarmId string
-param environment string
+param environmentName string
 
-var apiHostname = '${resourceSuffix}-${uniqueString(resourceGroup().name)}-${environment}-api'
+var apiHostname = '${resourceSuffix}-${uniqueString(resourceGroup().name)}-${environmentName}-api'
 
 resource WebApi 'Microsoft.Web/sites@2021-01-15' = {
   name: apiHostname
@@ -38,3 +38,5 @@ resource WebApiGreen 'Microsoft.Web/sites/slots@2021-01-15' = {
 }
 
 output apiHostname string = apiHostname
+output managedIdentityId string = WebApi.identity.principalId
+output greenManagedIdentityId string = WebApiGreen.identity.principalId
