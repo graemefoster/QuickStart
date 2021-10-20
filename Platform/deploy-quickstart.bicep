@@ -29,12 +29,23 @@ module PlatformDeployment './deploy-platform.bicep' = {
   }
 }
 
+// Databases need to live in the same resource group as the server. We could push the server into the API RG
+// but its quite common to use a sql server pool, and have many databases for different apis / apps contained in it.
+// For this Quickstart the approach taken is to keep the server in the platform, and put the databases with it.
+module DatabaseDeployment './deploy-api-database.bicep' = {
+  name: 'DeployDatabase'
+  scope: platformResourceGroup
+  params: {
+    resourceSuffix: resourceSuffix
+    databaseServerName: PlatformDeployment.outputs.databaseServerName
+  }
+}
+
 module WebApiDeployment './deploy-api.bicep' = {
   name: 'DeployApi'
   scope: apiResourceGroup
   params: {
     resourceSuffix: resourceSuffix
-    databaseServerName: PlatformDeployment.outputs.databaseServerName
     serverFarmId: PlatformDeployment.outputs.serverFarmId
   }
 }
