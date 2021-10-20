@@ -45,7 +45,7 @@ resource WebApp 'Microsoft.Web/sites@2021-01-15' = {
           value: '@Microsoft.KeyVault(VaultName=${AppKeyVault.name};SecretName=AzureAdClientSecret)'
         }
       ]
-      windowsFxVersion: 'DOTNETCORE|5.0'
+      windowsFxVersion: 'DOTNET|5.0'
     }
   }
 }
@@ -87,7 +87,7 @@ resource WebAppGreen 'Microsoft.Web/sites/slots@2021-01-15' = {
           value: '@Microsoft.KeyVault(VaultName=${AppKeyVault.name};SecretName=AzureAdClientSecret)'
         }
       ]
-      windowsFxVersion: 'DOTNETCORE|5.0'
+      windowsFxVersion: 'DOTNET|5.0'
     }
   }
 }
