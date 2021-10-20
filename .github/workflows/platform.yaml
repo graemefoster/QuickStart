@@ -66,7 +66,7 @@ jobs:
             platformResourceGroupName=${{ steps.platformDeploy.outputs.platformResourceGroupName }} 
             serverFarmId=${{ steps.platformDeploy.outputs.serverFarmId }} 
             databaseServerName=${{ steps.platformDeploy.outputs.databaseServerName }}
-            environment=prod
+            environmentName=prod
           failOnStdErr: true
 
       - name: Logout of Azure
