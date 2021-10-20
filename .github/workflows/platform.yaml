@@ -63,11 +63,17 @@ jobs:
 
       - name: Create AAD Applications for test web-app / web-api
         id: setup-test-aad
-        run: ./Platform/setup-aad.sh ${{ steps.platformDeploy.outputs.testApplicationHostname }} ${{ steps.platformDeploy.outputs.testApiHostname }}
+        run: >
+          ./Platform/setup-aad.sh
+          ${{ steps.appsDeploy.outputs.testApplicationHostname }} 
+          ${{ steps.appsDeploy.outputs.testApiHostname }}
 
       - name: Create AAD Applications for production web-app / web-api
         id: setup-prod-aad
-        run: ./Platform/setup-aad.sh ${{ steps.platformDeploy.outputs.productionApplicationHostname }} ${{ steps.platformDeploy.outputs.productionApiHostname }}
+        run: >
+          ./Platform/setup-aad.sh 
+          ${{ steps.appsDeploy.outputs.productionApplicationHostname }}
+          ${{ steps.appsDeploy.outputs.productionApiHostname }}
 
       - name: Logout of Azure
         run: |
