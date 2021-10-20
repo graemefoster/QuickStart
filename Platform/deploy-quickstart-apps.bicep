@@ -49,7 +49,6 @@ module WebAppDeployment './deploy-app.bicep' = {
   scope: appResourceGroup
   params: {
     resourceSuffix: resourceSuffix
-    apiHostname: WebApiDeployment.outputs.apiHostname
     serverFarmId: serverFarmId
     environmentName: environmentName
   }

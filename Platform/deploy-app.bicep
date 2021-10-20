@@ -1,8 +1,6 @@
 param resourceSuffix string
 param serverFarmId string
-param apiHostname string
 param environmentName string
-param clientId string
 
 var appHostname = '${resourceSuffix}-${uniqueString(resourceGroup().name)}-${environmentName}-webapp'
 var appKeyVaultName = '${resourceSuffix}-app-${environmentName}-kv'
