@@ -71,3 +71,9 @@ module PostConfigureApiDeployment './configure-api.bicep' = {
     testAppHostname: WebAppDeployment.outputs.testAppHostname
   }
 }
+
+output testApplicationHostname string = WebAppDeployment.outputs.testAppHostname
+output productionApplicationHostname string = WebAppDeployment.outputs.productionAppHostname
+output testApiHostname string = WebApiDeployment.outputs.testApiHostname
+output productionApiHostname string = WebApiDeployment.outputs.productionApiHostname
+

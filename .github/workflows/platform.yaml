@@ -17,14 +17,6 @@ jobs:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
       - uses: actions/checkout@v2
 
-      - name: Login to Azure (AAD Principals)
-        uses: azure/login@v1
-        with:
-          cred: ${{secrets.AAD_AZURE_CREDENTIALS}}
-
-      - name: Create AAD Applications for web-app / web-api
-        run: ./Platform/setup-aad.sh
-
       - name: Login to Azure (Azure resources)
         uses: azure/login@v1
         with:
@@ -32,6 +24,7 @@ jobs:
 
       - name: deploy
         uses: azure/arm-deploy@v1
+        id: 'platformDeploy'
         with:
           subscriptionId: ${{ secrets.AZURE_SUBSCRIPTION }}
           scope: 'subscription'
@@ -39,6 +32,21 @@ jobs:
           template: ./Platform/deploy-quickstart.bicep
           parameters: resourceSuffix=${{ secrets.RESOURCE_PREFIX }} databaseAdministratorObjectId=${{ secrets.DEPLOYMENTPRINCIPAL_ID }} databaseAdministratorName=${{ secrets.DEPLOYMENTPRINCIPAL_NAME }}
           failOnStdErr: true
+
+      - name: logout
+        run: |
+          az logout
+
+      - name: Login to Azure (AAD Principals)
+        uses: azure/login@v1
+        with:
+          creds: ${{secrets.AAD_AZURE_CREDENTIALS}}
+
+      - name: Create AAD Applications for test web-app / web-api
+        run: ./Platform/setup-aad.sh ${{ steps.platformDeploy.outputs.testApplicationHostname }} ${{ steps.platformDeploy.outputs.testApiHostname }}
+
+      - name: Create AAD Applications for production web-app / web-api
+        run: ./Platform/setup-aad.sh ${{ steps.platformDeploy.outputs.productionApplicationHostname }} ${{ steps.platformDeploy.outputs.productionApiHostname }}
 
       - name: logout
         run: |
