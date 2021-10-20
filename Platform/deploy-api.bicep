@@ -8,7 +8,6 @@ var testDatabaseName = '${resourceSuffix}-test-sqldb'
 var productionApiHostname = '${resourceSuffix}-api-${uniqueString(resourceGroup().name)}'
 var productionDatabaseName = '${resourceSuffix}-sqldb'
 
-
 resource WebApiTest 'Microsoft.Web/sites@2021-01-15' = {
   name: testApiHostname
   location: resourceGroup().location
@@ -20,7 +19,7 @@ resource WebApiTest 'Microsoft.Web/sites@2021-01-15' = {
     serverFarmId: serverFarmId
     siteConfig: {
       minTlsVersion: '1.2'
-      linuxFxVersion: 'DOTNETCORE|5.0'
+      windowsFxVersion: 'DOTNETCORE|5.0'
     }
   }
 }
@@ -41,7 +40,7 @@ resource WebApi 'Microsoft.Web/sites@2021-01-15' = {
     serverFarmId: serverFarmId
     siteConfig: {
       minTlsVersion: '1.2'
-      linuxFxVersion: 'DOTNETCORE|5.0'
+      windowsFxVersion: 'DOTNETCORE|5.0'
     }
   }
 }
@@ -58,7 +57,7 @@ resource WebApiGreen 'Microsoft.Web/sites/slots@2021-01-15' = {
     serverFarmId: serverFarmId
     siteConfig: {
       minTlsVersion: '1.2'
-      linuxFxVersion: 'DOTNETCORE|5.0'
+      windowsFxVersion: 'DOTNETCORE|5.0'
     }
   }
 }
