@@ -11,6 +11,7 @@ param apiHostname string
 param appKeyVaultName string
 param appClientId string
 param apiClientId string
+param apiUserAssignedClientId string
 
 @secure()
 param appClientSecret string
@@ -34,6 +35,7 @@ module PostConfigureApiDeployment './configure-api.bicep' = {
     appHostname: appHostname
     apiHostname: apiHostname
     apiAadClientId: apiClientId
+    userAssignedClientId: apiUserAssignedClientId
   }
 }
 
