@@ -50,6 +50,8 @@ namespace SqlAadMigrationDeployer
                     var applicationId = args[3];
                     var role = args[4];
                     
+                    Console.WriteLine($"Adding App {applicationName} with appId {applicationId} to role {role}");
+                    
                     var cmd = connection.CreateCommand();
                     cmd.Transaction = (SqlTransaction)tran;
 

@@ -13,7 +13,7 @@ resource WebApiConfiguration 'Microsoft.Web/sites/config@2021-02-01' = {
     'ApiSettings__Cors__0': 'https://${appHostname}.azurewebsites.net'
     'ApiSettings__Cors__1': 'https://${appHostname}-green.azurewebsites.net'
     'AzureAD__ClientId': apiAadClientId
-    'ApiSettings__ConnectionString': 'Data Source=${databaseServerName}.database.windows.net; Initial Catalog=${databaseName};MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;app=Production Website'
+    'ApiSettings__ConnectionString': 'Data Source=${databaseServerName}.database.windows.net; Initial Catalog=${databaseName};MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;app=Website'
     }
 }
 
@@ -25,6 +25,6 @@ resource ProductionSlotWebApiConfiguration 'Microsoft.Web/sites/slots/config@202
     'ApiSettings__Cors__0': 'https://${appHostname}.azurewebsites.net'
     'ApiSettings__Cors__1': 'https://${appHostname}-green.azurewebsites.net'
     'AzureAD__ClientId': apiAadClientId
-    'ApiSettings__ConnectionString': 'Data Source=${databaseServerName}.database.windows.net; Initial Catalog=${databaseName};MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;app=Production (Green) Website'
+    'ApiSettings__ConnectionString': 'Data Source=${databaseServerName}.database.windows.net; Initial Catalog=${databaseName};MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;app=Green Slot Website'
     }
 }

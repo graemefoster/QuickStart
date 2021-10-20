@@ -53,6 +53,10 @@ jobs:
             environmentName=test
           failOnStdErr: true
 
+      - name: Get Application Id of Test Web Api Msi
+        run: |
+          az ad sp show --id ${{ steps.testAppsDeploy.outputs.managedIdentityPrincipalId }} --query "appId" -o tsv
+
       - name: Deploy Production Applications and Databases
         uses: azure/arm-deploy@v1
         id: 'prodAppsDeploy'
