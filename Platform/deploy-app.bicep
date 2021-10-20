@@ -2,6 +2,7 @@ param resourceSuffix string
 param serverFarmId string
 param apiHostname string
 param environmentName string
+param clientId string
 
 var appHostname = '${resourceSuffix}-${uniqueString(resourceGroup().name)}-${environmentName}-webapp'
 var appKeyVaultName = '${resourceSuffix}-app-${environmentName}-kv'
@@ -31,21 +32,7 @@ resource WebApp 'Microsoft.Web/sites@2021-01-15' = {
     serverFarmId: serverFarmId
     siteConfig: {
       minTlsVersion: '1.2'
-      appSettings: [
-        {
-          name: 'ASPNETCORE_ENVIRONMENT'
-          value: 'Test'
-        }
-        {
-          name: 'ApiSettings__URL'
-          value: 'https://${apiHostname}.azurewebsites.net'
-        }
-        {
-          name: 'AzureAD__ClientSecret'
-          value: '@Microsoft.KeyVault(VaultName=${AppKeyVault.name};SecretName=AzureAdClientSecret)'
-        }
-      ]
-      windowsFxVersion: 'DOTNET|5.0'
+      netFrameworkVersion: 'v5.0'
     }
   }
 }
@@ -73,21 +60,7 @@ resource WebAppGreen 'Microsoft.Web/sites/slots@2021-01-15' = {
     serverFarmId: serverFarmId
     siteConfig: {
       minTlsVersion: '1.2'
-      appSettings: [
-        {
-          name: 'ASPNETCORE_ENVIRONMENT'
-          value: 'Production'
-        }
-        {
-          name: 'ApiSettings__URL'
-          value: 'https://${apiHostname}.azurewebsites.net'
-        }
-        {
-          name: 'AzureAD__ClientSecret'
-          value: '@Microsoft.KeyVault(VaultName=${AppKeyVault.name};SecretName=AzureAdClientSecret)'
-        }
-      ]
-      windowsFxVersion: 'DOTNET|5.0'
+      netFrameworkVersion: 'v5.0'
     }
   }
 }
