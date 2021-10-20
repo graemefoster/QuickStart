@@ -30,7 +30,7 @@ module DatabaseDeployment './deploy-api-database.bicep' = {
   params: {
     resourceSuffix: resourceSuffix
     databaseServerName: databaseServerName
-    environmentName: 'prod'
+    environmentName: environmentName
   }
 }
 
