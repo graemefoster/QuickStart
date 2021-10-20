@@ -46,7 +46,7 @@ resource WebAppTest 'Microsoft.Web/sites@2021-01-15' = {
         }
         {
           name: 'AzureAD__ClientSecret'
-          value: 'https://${TestAppKeyVault.name}.${environment().suffixes.keyvaultDns}/secrets/AzureAdClientSecret'
+          value: '@Microsoft.KeyVault(VaultName=${TestAppKeyVault.name};SecretName=AzureAdClientSecret)'
         }
       ]
       windowsFxVersion: 'DOTNETCORE|5.0'
@@ -99,7 +99,7 @@ resource WebApp 'Microsoft.Web/sites@2021-01-15' = {
         }
         {
           name: 'AzureAD__ClientSecret'
-          value: 'https://${ProductionAppKeyVault.name}.${environment().suffixes.keyvaultDns}/secrets/AzureAdClientSecret'
+          value: '@Microsoft.KeyVault(VaultName=${ProductionAppKeyVault.name};SecretName=AzureAdClientSecret)'
         }
       ]
       windowsFxVersion: 'DOTNETCORE|5.0'
@@ -141,7 +141,7 @@ resource WebAppGreen 'Microsoft.Web/sites/slots@2021-01-15' = {
         }
         {
           name: 'AzureAD__ClientSecret'
-          value: 'https://${ProductionAppKeyVault.name}.${environment().suffixes.keyvaultDns}/secrets/AzureAdClientSecret'
+          value: '@Microsoft.KeyVault(VaultName=${ProductionAppKeyVault.name};SecretName=AzureAdClientSecret)'
         }
       ]
       windowsFxVersion: 'DOTNETCORE|5.0'
