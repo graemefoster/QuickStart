@@ -47,7 +47,7 @@ jobs:
           template: ./Platform/deploy-quickstart-apps.bicep
           parameters: >
             resourceSuffix=${{ secrets.RESOURCE_PREFIX }} 
-            platformResourceGroupName=${{ steps.platormDeploy.outputs.platformResourceGroupName }} 
+            platformResourceGroupName=${{ steps.platformDeploy.outputs.platformResourceGroupName }} 
             serverFarmId=${{ steps.platformDeploy.outputs.serverFarmId }} 
             databaseServerName=${{ steps.platformDeploy.outputs.databaseServerName }}
           failOnStdErr: true
