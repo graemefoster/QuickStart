@@ -26,6 +26,7 @@ jobs:
         with:
           subscriptionId: ${{ secrets.AZURE_SUBSCRIPTION }}
           scope: 'subscription'
+          region: 'australiaeast'
           template: ./Platform/deploy-quickstart.bicep
           parameters: resourceSuffix=${{ secrets.RESOURCE_PREFIX }} databaseAdministratorObjectId=${{ secrets.DEPLOYMENTPRINCIPAL_ID }} databaseAdministratorName=${{ secrets.DEPLOYMENTPRINCIPAL_NAME }}
           failOnStdErr: true
