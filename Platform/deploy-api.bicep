@@ -2,7 +2,7 @@ param resourceSuffix string
 param serverFarmId string
 param environment string
 
-var apiHostname = '${resourceSuffix}-api-${uniqueString(resourceGroup().name)}-${environment}'
+var apiHostname = '${resourceSuffix}-${uniqueString(resourceGroup().name)}-${environment}-api'
 
 resource WebApi 'Microsoft.Web/sites@2021-01-15' = {
   name: apiHostname

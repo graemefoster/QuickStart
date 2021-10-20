@@ -110,8 +110,8 @@ jobs:
           region: 'australiaeast'
           template: ./Platform/deploy-quickstart-apps-configuration.bicep
           parameters: >
-            apiResourceGroupName=${{ steps.appsDeploy.outputs.apiResourceGroupName }}
-            appResourceGroupName=${{ steps.appsDeploy.outputs.appResourceGroupName }}
+            apiResourceGroupName=${{ steps.testAppsDeploy.outputs.apiResourceGroupName }}
+            appResourceGroupName=${{ steps.testAppsDeploy.outputs.appResourceGroupName }}
             databaseServerName=${{ steps.platformDeploy.outputs.databaseServerName }}
             databaseName=${{ steps.testAppsDeploy.outputs.databaseName }}
             appHostname=${{ steps.testAppsDeploy.outputs.applicationHostname }}
@@ -131,8 +131,8 @@ jobs:
           region: 'australiaeast'
           template: ./Platform/deploy-quickstart-apps-configuration.bicep
           parameters: >
-            apiResourceGroupName=${{ steps.appsDeploy.outputs.apiResourceGroupName }}
-            appResourceGroupName=${{ steps.appsDeploy.outputs.appResourceGroupName }}
+            apiResourceGroupName=${{ steps.testAppsDeploy.outputs.apiResourceGroupName }}
+            appResourceGroupName=${{ steps.testAppsDeploy.outputs.appResourceGroupName }}
             databaseServerName=${{ steps.platformDeploy.outputs.databaseServerName }}
             databaseName=${{ steps.prodAppsDeploy.outputs.databaseName }}
             appHostname=${{ steps.prodAppsDeploy.outputs.applicationHostname }}
