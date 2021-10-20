@@ -4,7 +4,7 @@ param apiHostname string
 param environment string
 
 var appHostname = '${resourceSuffix}-${uniqueString(resourceGroup().name)}-${environment}-webapp'
-var appKeyVaultName = '${resourceSuffix}-${uniqueString(resourceGroup().name)}-app-${environment}-kv'
+var appKeyVaultName = '${resourceSuffix}-app-${environment}-kv'
 var secretsUserRoleId = '/subscriptions/${subscription().subscriptionId}/providers/Microsoft.Authorization/roleDefinitions/4633458b-17de-408a-b874-0445c86b69e6'
 
 resource AppKeyVault 'Microsoft.KeyVault/vaults@2021-06-01-preview' = {
