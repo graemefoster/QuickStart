@@ -81,7 +81,7 @@ jobs:
 
       - name: Configure Applications
         uses: azure/arm-deploy@v1
-        id: 'appsDeploy'
+        id: 'configurationDeploy'
         with:
           subscriptionId: ${{ secrets.AZURE_SUBSCRIPTION }}
           scope: 'subscription'
