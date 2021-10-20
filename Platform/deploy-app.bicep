@@ -80,6 +80,9 @@ resource ProductionAppKeyVault 'Microsoft.KeyVault/vaults@2021-06-01-preview' = 
 resource WebApp 'Microsoft.Web/sites@2021-01-15' = {
   name: productionAppHostname
   location: resourceGroup().location
+  identity: {
+    type: 'SystemAssigned'
+  }
   properties: {
     httpsOnly: true
     serverFarmId: serverFarmId
@@ -119,6 +122,9 @@ resource WebAppGreen 'Microsoft.Web/sites/slots@2021-01-15' = {
   parent: WebApp
   name: 'green'
   location: resourceGroup().location
+  identity: {
+    type: 'SystemAssigned'
+  }
   properties: {
     httpsOnly: true
     serverFarmId: serverFarmId

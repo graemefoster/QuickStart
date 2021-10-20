@@ -8,6 +8,7 @@ on:
   workflow_dispatch:
 
 jobs:
+
   deploy-platform:
     runs-on: ubuntu-latest
 
@@ -16,7 +17,15 @@ jobs:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
       - uses: actions/checkout@v2
 
-      - name: Login to Azure
+      - name: Login to Azure (AAD Principals)
+        uses: azure/login@v1
+        with:
+          cred: ${{secrets.AAD_AZURE_CREDENTIALS}}
+
+      - name: Create AAD Applications for web-app / web-api
+        run: ./Platform/setup-aad.sh
+
+      - name: Login to Azure (Azure resources)
         uses: azure/login@v1
         with:
           creds: ${{secrets.AZURE_CREDENTIALS}} 
