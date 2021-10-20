@@ -54,7 +54,7 @@ resource WebAppTest 'Microsoft.Web/sites@2021-01-15' = {
   }
 }
 
-resource TestKeyVaultAuth 'Microsoft.Authorization/roleAssignments@2021-04-01-preview' = {
+resource TestKeyVaultAuth 'Microsoft.Authorization/roleAssignments@2020-08-01-preview' = {
   name: guid('${testAppHostname}-read-${testAppKeyVaultName}')
   scope: TestAppKeyVault
   properties: {
@@ -64,7 +64,7 @@ resource TestKeyVaultAuth 'Microsoft.Authorization/roleAssignments@2021-04-01-pr
   }
 }
 
-resource ProductionAppKeyVault 'Microsoft.KeyVault/vaults@2021-04-01-preview' = {
+resource ProductionAppKeyVault 'Microsoft.KeyVault/vaults@2021-06-01-preview' = {
   name: productionAppKeyVaultName
   location: resourceGroup().location
   properties: {
@@ -107,7 +107,7 @@ resource WebApp 'Microsoft.Web/sites@2021-01-15' = {
   }
 }
 
-resource ProdKeyVaultAuth 'Microsoft.Authorization/roleAssignments@2021-04-01-preview' = {
+resource ProdKeyVaultAuth 'Microsoft.Authorization/roleAssignments@2020-08-01-preview' = {
   name: guid('${productionAppHostname}-read-${productionAppKeyVaultName}')
   scope: ProductionAppKeyVault
   properties: {
@@ -149,7 +149,7 @@ resource WebAppGreen 'Microsoft.Web/sites/slots@2021-01-15' = {
   }
 }
 
-resource ProdGreenKeyVaultAuth 'Microsoft.Authorization/roleAssignments@2021-04-01-preview' = {
+resource ProdGreenKeyVaultAuth 'Microsoft.Authorization/roleAssignments@2020-08-01-preview' = {
   name: guid('${productionAppHostname}.green-read-${productionAppKeyVaultName}')
   scope: ProductionAppKeyVault
   properties: {
