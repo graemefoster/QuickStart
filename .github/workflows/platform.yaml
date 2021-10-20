@@ -92,15 +92,17 @@ jobs:
             appResourceGroupName=${{ steps.appsDeploy.outputs.appResourceGroupName }}
             databaseServerName=${{ steps.platformDeploy.outputs.databaseServerName }}
             testDatabaseName=${{ steps.appsDeploy.outputs.testDatabaseName }}
-            productionDatabaseName=${{ steps.appsDeploy.outputs.productionDatabaseName }}
-            productionAppHostname=${{ steps.appsDeploy.outputs.productionApplicationHostname }}
-            productionApiHostname=${{ steps.appsDeploy.outputs.productionApiHostname }}
             testAppHostname=${{ steps.appsDeploy.outputs.testApplicationHostname }}
             testApiHostname=${{ steps.appsDeploy.outputs.testApiHostname }}
             testAppKeyVaultName=${{ steps.appsDeploy.outputs.testApplicationKeyVaultName }}
-            productionAppKeyVaultName=${{ steps.appsDeploy.outputs.productionApplicationKeyVaultName }}
             testAppClientId=${{ steps.setup-test-aad.outputs.applicationClientId }}
-            productionAppClientId=${{ steps.setup-prod-aad.outputs.applicationClientId }}
             testApiClientId=${{ steps.setup-test-aad.outputs.apiClientId }}
+            testAppClientSecret=${{ steps.setup-test-aad.outputs.applicationClientSecret }}
+            productionDatabaseName=${{ steps.appsDeploy.outputs.productionDatabaseName }}
+            productionAppHostname=${{ steps.appsDeploy.outputs.productionApplicationHostname }}
+            productionApiHostname=${{ steps.appsDeploy.outputs.productionApiHostname }}
+            productionAppKeyVaultName=${{ steps.appsDeploy.outputs.productionApplicationKeyVaultName }}
+            productionAppClientId=${{ steps.setup-prod-aad.outputs.applicationClientId }}
             productionApiClientId=${{ steps.setup-prod-aad.outputs.apiClientId }}
+            productionAppClientSecret=${{ steps.setup-prod-aad.outputs.applicationClientSecret }}
           failOnStdErr: true

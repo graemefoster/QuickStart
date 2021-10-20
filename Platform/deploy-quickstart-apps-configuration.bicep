@@ -23,6 +23,12 @@ param productionAppClientId string
 param testApiClientId string
 param productionApiClientId string
 
+@secure()
+param testAppClientSecret string
+
+@secure()
+param productionAppClientSecret string
+
 
 resource apiResourceGroup 'Microsoft.Resources/resourceGroups@2021-04-01' = {
   name: apiResourceGroupName
@@ -52,7 +58,7 @@ module PostConfigureApiDeployment './configure-api.bicep' = {
 
 module PostConfigureAppDeployment './configure-app.bicep' = {
   name: 'PostConfigureAppDeployment'
-  scope: apiResourceGroup
+  scope: appResourceGroup
   params: {
     productionAppHostname: productionAppHostname
     testAppHostname: testAppHostname
@@ -62,5 +68,7 @@ module PostConfigureAppDeployment './configure-app.bicep' = {
     testAppKeyVaultName: testAppKeyVaultName
     productionAppAadClientId: productionAppClientId
     testAppAadClientId: testAppClientId
+    testAppClientSecret: testAppClientSecret
+    productionAppClientSecret: productionAppClientSecret
   }
 }
