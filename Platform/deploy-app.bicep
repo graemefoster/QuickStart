@@ -104,7 +104,7 @@ resource WebApp 'Microsoft.Web/sites@2021-01-15' = {
   }
 }
 
-resource ProdKeyVaultAuth 'Microsoft.Authorization/roleAssignments@2020-10-01-preview' = {
+resource ProdKeyVaultAuth 'Microsoft.Authorization/roleAssignments@2020-08-01-preview' = {
   name: guid('${productionAppHostname}-read-${productionAppKeyVaultName}')
   scope: ProductionAppKeyVault
   properties: {
@@ -143,7 +143,7 @@ resource WebAppGreen 'Microsoft.Web/sites/slots@2021-01-15' = {
   }
 }
 
-resource ProdGreenKeyVaultAuth 'Microsoft.Authorization/roleAssignments@2020-10-01-preview' = {
+resource ProdGreenKeyVaultAuth 'Microsoft.Authorization/roleAssignments@2020-08-01-preview' = {
   name: guid('${productionAppHostname}.green-read-${productionAppKeyVaultName}')
   scope: ProductionAppKeyVault
   properties: {
