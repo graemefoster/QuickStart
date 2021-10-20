@@ -62,5 +62,4 @@ output apiHostname string = WebApiDeployment.outputs.apiHostname
 output applicationKeyVaultName string = WebAppDeployment.outputs.appKeyVaultName
 output databaseName string = DatabaseDeployment.outputs.apiDatabaseName
 output databaseConnectionString string = DatabaseDeployment.outputs.apiDatabaseConnectionString
-output managedIdentityPrincipalId string = WebApiDeployment.outputs.managedIdentityId
-output greenManagedIdentityPrincipalId string = WebApiDeployment.outputs.greenManagedIdentityId
+output managedIdentityAppId string = WebApiDeployment.outputs.managedIdentityAppId

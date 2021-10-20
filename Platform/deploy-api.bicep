@@ -3,12 +3,21 @@ param serverFarmId string
 param environmentName string
 
 var apiHostname = '${resourceSuffix}-${uniqueString(resourceGroup().name)}-${environmentName}-api'
+var apiMsiName = '${resourceSuffix}-${uniqueString(resourceGroup().name)}-${environmentName}-msi'
+
+resource ManagedIdentity 'Microsoft.ManagedIdentity/userAssignedIdentities@2018-11-30' = {
+  location:resourceGroup().location
+  name: apiMsiName
+}
 
 resource WebApi 'Microsoft.Web/sites@2021-01-15' = {
   name: apiHostname
   location: resourceGroup().location
   identity: {
-    type: 'SystemAssigned'
+    type: 'UserAssigned'
+    userAssignedIdentities: {
+      '${ManagedIdentity.id}' : {}
+    }
   }
   properties: {
     httpsOnly: true
@@ -38,5 +47,4 @@ resource WebApiGreen 'Microsoft.Web/sites/slots@2021-01-15' = {
 }
 
 output apiHostname string = apiHostname
-output managedIdentityId string = WebApi.identity.principalId
-output greenManagedIdentityId string = WebApiGreen.identity.principalId
+output managedIdentityAppId string = ManagedIdentity.properties.clientId
