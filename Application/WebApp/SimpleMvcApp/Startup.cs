@@ -55,9 +55,9 @@ namespace SimpleMvcApp
                     .RequireAuthenticatedUser()
                     .Build();
                 options.Filters.Add(new AuthorizeFilter(policy));
-                options.Filters.Add(new AuthorizeForScopesAttribute { Scopes = new[] { intermediateSettings.Scope }});
+                options.Filters.Add(new AuthorizeForScopesAttribute { Scopes = new[] { intermediateSettings.Scope } });
             });
-            
+
             services.AddRazorPages(); //.AddRazorRuntimeCompilation();
             services.Configure<RazorViewEngineOptions>(x =>
             {
@@ -74,12 +74,12 @@ namespace SimpleMvcApp
             {
                 c.BaseAddress = new Uri(intermediateSettings.Url);
             });
-            
+
             if (Environment.IsDevelopment())
             {
                 serviceClient.ConfigurePrimaryHttpMessageHandler(() => new HttpClientHandler()
                 {
-                    ServerCertificateCustomValidationCallback = (a,b,c,d) => true
+                    ServerCertificateCustomValidationCallback = (a, b, c, d) => true
                 });
             }
         }
@@ -87,11 +87,11 @@ namespace SimpleMvcApp
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
-            // if (env.IsDevelopment())
-            // {
-            //     app.UseDeveloperExceptionPage();
-            // }
-            // else
+            if (env.IsDevelopment())
+            {
+                app.UseDeveloperExceptionPage();
+            }
+            else
             {
                 app.UseExceptionHandler("/Home/Error");
                 // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
