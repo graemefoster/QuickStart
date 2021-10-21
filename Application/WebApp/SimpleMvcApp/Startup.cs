@@ -1,9 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Net.Http;
 using System.Text.Json.Serialization;
-using System.Threading.Tasks;
 using JetBrains.Annotations;
 using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 using Microsoft.AspNetCore.Authorization;
@@ -15,9 +13,9 @@ using Microsoft.AspNetCore.Mvc.Razor;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
 using Microsoft.Identity.Web;
 using SimpleMvcApp.Infrastructure;
+using SimpleMvcApp.Services;
 
 [assembly: AspMvcViewLocationFormat(@"~\Features\{1}\{0}.cshtml")]
 [assembly: AspMvcViewLocationFormat(@"~\Features\{0}.cshtml")]
@@ -60,12 +58,14 @@ namespace SimpleMvcApp
             {
                 x.ViewLocationExpanders.Add(new FeatureLocationExpander());
             });
-
+            
             services.AddAuthentication(OpenIdConnectDefaults.AuthenticationScheme)
                 .AddMicrosoftIdentityWebApp(Configuration.GetSection("AzureAd"))
-                .EnableTokenAcquisitionToCallDownstreamApi(new string[] { intermediateSettings.Scope })
+                .EnableTokenAcquisitionToCallDownstreamApi(new[] { intermediateSettings.Scope })
                 .AddInMemoryTokenCaches()
                 ;
+
+            services.AddHttpClient<PetsClient>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -96,23 +96,6 @@ namespace SimpleMvcApp
                     name: "default",
                     pattern: "{controller=NewPet}/{action=Index}/{id?}");
             });
-        }
-    }
-
-    public class PetsClient
-    {
-        private readonly HttpClient _client;
-        private readonly ILogger<PetsClient> _logger;
-
-        public PetsClient(HttpClient client, ILogger<PetsClient> logger)
-        {
-            _client = client;
-            _logger = logger;
-        }
-
-        public async Task<Pet[]> GetAll()
-        {
-            return await _client.GetAsync("pets").AsJsonAsync<Pet[]>();
         }
     }
 

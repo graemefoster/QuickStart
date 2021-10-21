@@ -1,6 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
@@ -23,6 +22,7 @@ namespace SimpleApiWithDatabase.Features.Pets
         }
         
         [HttpGet]
+        [Authorize(Roles = "Reader,Admin")]
         public Task<Pet[]> Get()
         {
             _logger.LogInformation("Fetching pets::");
