@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.Json.Serialization;
@@ -57,14 +58,14 @@ namespace SimpleMvcApp
             {
                 x.ViewLocationExpanders.Add(new FeatureLocationExpander());
             });
-            
+
             services.AddAuthentication(OpenIdConnectDefaults.AuthenticationScheme)
                 .AddMicrosoftIdentityWebApp(Configuration.GetSection("AzureAd"))
                 .EnableTokenAcquisitionToCallDownstreamApi(new[] { intermediateSettings.Scope })
                 .AddInMemoryTokenCaches()
                 ;
 
-            services.AddHttpClient<PetsClient>();
+            services.AddHttpClient<PetsClient>(c => { c.BaseAddress = new Uri(intermediateSettings.Url); });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
