@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Microsoft.Identity.Web;
+using SimpleMvcApp.Features.ListPets;
 using SimpleMvcApp.Infrastructure;
 
 namespace SimpleMvcApp.Services
@@ -29,13 +30,13 @@ namespace SimpleMvcApp.Services
             _settings = settings;
         }
 
-        public async Task<Pet[]> GetAll()
+        public async Task<ReferenceItem[]> GetAll()
         {
             _logger.LogDebug("Fetching all pets");
             var token = await _tokenAcquisition.GetAccessTokenForUserAsync(new[] { _settings.Value.Scope });
             var req = new HttpRequestMessage(HttpMethod.Get, "pets");
             req.Headers.Authorization = new AuthenticationHeaderValue("Bearer", token);
-            return await _client.GetAsync("pets").AsJsonAsync<Pet[]>();
+            return await _client.GetAsync("pets").AsJsonAsync<ReferenceItem[]>();
         }
     }
 }

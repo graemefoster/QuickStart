@@ -1,6 +1,8 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using System.Threading.Tasks;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using SimpleMvcApp.Features.NewPet;
+using SimpleMvcApp.Services;
 
 namespace SimpleMvcApp.Features.ListPets
 {
@@ -8,16 +10,18 @@ namespace SimpleMvcApp.Features.ListPets
     public class ListPetsController : Controller
     {
         private readonly ILogger<NewPetController> _logger;
+        private readonly PetsClient _client;
 
-        public ListPetsController(ILogger<NewPetController> logger)
+        public ListPetsController(ILogger<NewPetController> logger, PetsClient client)
         {
             _logger = logger;
+            _client = client;
         }
 
         [Route("")]
-        public IActionResult Index()
+        public async Task<IActionResult> Index()
         {
-            return View();
+            return View(new ListPetsViewModel {Pets = await _client.GetAll()});
         }
     }
 }

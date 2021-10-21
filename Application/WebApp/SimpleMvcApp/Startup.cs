@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.Json.Serialization;
@@ -97,9 +96,5 @@ namespace SimpleMvcApp
                     pattern: "{controller=NewPet}/{action=Index}/{id?}");
             });
         }
-    }
-
-    public class Pet
-    {
     }
 }

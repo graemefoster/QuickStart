@@ -1,12 +1,9 @@
-﻿@using SimpleMvcApp.Infrastructure
-@using Microsoft.Extensions.Options
-@inject IOptions<ApiSettings> _settings
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-    <title>@ViewData["Title"] - SimpleMvcApp</title>
+    <title>@ViewData["Title"] - Simple Pets</title>
     <link rel="stylesheet" href="~/css/site.css"/>
 </head>
 <body>
@@ -17,17 +14,6 @@
 </div>
 
 <script src="~/js/site.js" asp-append-version="true"></script>
-<script>
-(function setupApi() {
-    var baseUrl = "@_settings.Value.Url";
-    window.api = window.api || {
-    baseUrl: baseUrl,
-    get: function (uri) {
-        return fetch(baseUrl + '/' + uri);
-    }
-}
-})();
-</script>
 @await RenderSectionAsync("Scripts", required: false)
 </body>
 </html>

@@ -1,4 +1,4 @@
-﻿@model dynamic
+﻿@model SimpleMvcApp.Features.ListPets.ListPetsViewModel
 
 @{
     ViewBag.Title = "Pets";
@@ -7,25 +7,9 @@
 
 <h2>Pets</h2>
 <ul id="petsList">
-    <li>Loading...</li>
+    @foreach (var pet in Model.Pets)
+    {
+        <li>@pet</li>
+    }
 </ul>
 
-@section Scripts
-{
-    <script>
-    window.addEventListener("load", function () {
-        window.api.get('pets')
-            .then(response => response.json() )
-            .then(json => {
-                var list = document.getElementById('petsList');
-                list.textContent = '';
-                json.forEach(item => {
-                    var elem = document.createElement('li');
-                    elem.append(item.name);
-                    list.append(elem);
-                });
-            });
-    }
-);
-</script>
-}
