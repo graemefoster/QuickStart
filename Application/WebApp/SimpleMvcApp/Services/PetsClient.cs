@@ -1,10 +1,13 @@
 ﻿using System.Net.Http;
 using System.Net.Http.Headers;
+using System.Text;
+using System.Text.Json;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Microsoft.Identity.Web;
 using SimpleMvcApp.Features.ListPets;
+using SimpleMvcApp.Features.NewPet;
 using SimpleMvcApp.Infrastructure;
 
 namespace SimpleMvcApp.Services
@@ -37,6 +40,16 @@ namespace SimpleMvcApp.Services
             var req = new HttpRequestMessage(HttpMethod.Get, "pets");
             req.Headers.Authorization = new AuthenticationHeaderValue("Bearer", token);
             return await _client.SendAsync(req).AsJsonAsync<ReferenceItem[]>();
+        }
+
+        public async Task New(NewPetCommand newPetCommand)
+        {
+            _logger.LogDebug("Adding new pet");
+            var token = await _tokenAcquisition.GetAccessTokenForUserAsync(new[] { _settings.Value.Scope });
+            var req = new HttpRequestMessage(HttpMethod.Post, "pets");
+            req.Content = new StringContent(JsonSerializer.Serialize(newPetCommand), Encoding.UTF8, "application/json");
+            req.Headers.Authorization = new AuthenticationHeaderValue("Bearer", token);
+            await _client.SendAsync(req);
         }
     }
 }

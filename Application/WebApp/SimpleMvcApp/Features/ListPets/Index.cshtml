@@ -9,7 +9,9 @@
 <ul id="petsList">
     @foreach (var pet in Model.Pets)
     {
-        <li>@pet</li>
+        <li>@pet.Name</li>
     }
 </ul>
+
+<p>No pets, or can't see your pet? Add a @Html.ActionLink("here", "Index", "NewPet")</p>
 

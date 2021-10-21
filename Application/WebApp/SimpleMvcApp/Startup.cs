@@ -55,8 +55,9 @@ namespace SimpleMvcApp
                     .RequireAuthenticatedUser()
                     .Build();
                 options.Filters.Add(new AuthorizeFilter(policy));
+                options.Filters.Add(new AuthorizeForScopesAttribute { Scopes = new[] { intermediateSettings.Scope }});
             });
-
+            
             services.AddRazorPages(); //.AddRazorRuntimeCompilation();
             services.Configure<RazorViewEngineOptions>(x =>
             {

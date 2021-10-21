@@ -10,7 +10,10 @@ namespace SimpleMvcApp.Infrastructure
         {
             var response = await responseMessage;
             response.EnsureSuccessStatusCode();
-            return JsonSerializer.Deserialize<T>(await response.Content.ReadAsStringAsync());
+            return JsonSerializer.Deserialize<T>(await response.Content.ReadAsStringAsync(), new JsonSerializerOptions()
+            {
+                PropertyNamingPolicy = JsonNamingPolicy.CamelCase
+            });
         }
     }
 }

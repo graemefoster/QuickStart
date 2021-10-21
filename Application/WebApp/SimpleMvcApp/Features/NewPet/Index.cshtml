@@ -1,4 +1,4 @@
-﻿@model dynamic
+﻿@model SimpleMvcApp.Features.NewPet.NewPetCommand
 
 @{
     ViewBag.Title = "New Pet";
@@ -6,3 +6,12 @@
 }
 
 <h2>New Pet</h2>
+
+
+@using (Html.BeginForm("New", "NewPet", FormMethod.Post))
+{
+    @Html.LabelFor(x => x.Name)
+    @Html.TextBoxFor(x => x.Name)
+
+    <button type="submit">Submit</button>
+}

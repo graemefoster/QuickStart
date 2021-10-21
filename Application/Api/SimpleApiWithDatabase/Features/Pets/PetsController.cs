@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -20,13 +21,23 @@ namespace SimpleApiWithDatabase.Features.Pets
             _logger = logger;
             _petsContext = petsContext;
         }
-        
+
         [HttpGet]
         [Authorize(Roles = "reader,admin")]
         public Task<Pet[]> Get()
         {
             _logger.LogInformation("Fetching pets::");
             return _petsContext.Pets.ToArrayAsync();
+        }
+
+        [HttpPost]
+        [Authorize(Roles = "admin")]
+        public async Task<IActionResult> Post(NewPet pet)
+        {
+            _logger.LogInformation("Adding new pet");
+            await _petsContext.Pets.AddAsync(new Pet(Guid.NewGuid(), pet.Name));
+            await _petsContext.SaveChangesAsync();
+            return new OkResult();
         }
     }
 }
