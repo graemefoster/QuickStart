@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using SimpleMvcApp.Services;
@@ -27,6 +28,10 @@ namespace SimpleMvcApp.Features.NewPet
         [HttpPost]
         public async Task<IActionResult> New(NewPetCommand newPetCommand)
         {
+            if (!ModelState.IsValid)
+            {
+                throw new ArgumentException("Invalid request");
+            }
             await _client.New(newPetCommand);
             return RedirectToAction("Index", "ListPets");
         }

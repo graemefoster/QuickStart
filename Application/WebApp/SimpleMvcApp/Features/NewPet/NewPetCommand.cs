@@ -4,7 +4,8 @@ namespace SimpleMvcApp.Features.NewPet
 {
     public class NewPetCommand
     {
-        [MinLength(3)]
+        [Required]
+        [StringLength(100, MinimumLength = 3)]
         public string Name { get; set; }
     }
 }

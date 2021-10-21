@@ -1,18 +1,19 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Diagnostics;
+using Microsoft.AspNetCore.Mvc;
 
 namespace SimpleMvcApp.Features.Home
 {
     public class HomeController : Controller
     {
-        // GET
-        public IActionResult Home()
+        public IActionResult Index()
         {
             return RedirectToAction("Index", "ListPets");
         }
 
         public IActionResult Error()
         {
-            return View();
+            var exceptionHandlerPathFeature = HttpContext.Features.Get<IExceptionHandlerPathFeature>();
+            return View(exceptionHandlerPathFeature.Error);
         }
     }
 }
