@@ -146,5 +146,5 @@ jobs:
       - uses: azure/login@v1
         with:
           creds: ${{ secrets.AZURE_CREDENTIALS }}
-      - run: az webapp deployment slot swap --slot green --action swap --name ${{ secrets.AZURE_WEBAPI_NAME }} --resource-group ${{ secrets.AZURE_RG }} 
+      - run: az webapp deployment slot swap --slot green --action swap --name ${{ secrets.AZURE_WEBAPI_NAME }} --resource-group '${{ secrets.RESOURCE_PREFIX }}-api-rg' 
 

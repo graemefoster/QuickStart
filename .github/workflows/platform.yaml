@@ -132,8 +132,8 @@ jobs:
           region: 'australiaeast'
           template: ./Platform/deploy-quickstart-apps-configuration.bicep
           parameters: >
-            apiResourceGroupName=${{ steps.testAppsDeploy.outputs.apiResourceGroupName }}
-            appResourceGroupName=${{ steps.testAppsDeploy.outputs.appResourceGroupName }}
+            apiResourceGroupName=${{ steps.prodAppsDeploy.outputs.apiResourceGroupName }}
+            appResourceGroupName=${{ steps.prodAppsDeploy.outputs.appResourceGroupName }}
             databaseServerName=${{ steps.platformDeploy.outputs.databaseServerName }}
             databaseName=${{ steps.prodAppsDeploy.outputs.databaseName }}
             appHostname=${{ steps.prodAppsDeploy.outputs.applicationHostname }}

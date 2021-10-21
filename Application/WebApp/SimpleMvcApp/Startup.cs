@@ -1,6 +1,8 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.Http;
+using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 using JetBrains.Annotations;
 using Microsoft.AspNetCore.Authentication.OpenIdConnect;
@@ -13,6 +15,7 @@ using Microsoft.AspNetCore.Mvc.Razor;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
 using Microsoft.Identity.Web;
 using SimpleMvcApp.Infrastructure;
 
@@ -94,5 +97,26 @@ namespace SimpleMvcApp
                     pattern: "{controller=NewPet}/{action=Index}/{id?}");
             });
         }
+    }
+
+    public class PetsClient
+    {
+        private readonly HttpClient _client;
+        private readonly ILogger<PetsClient> _logger;
+
+        public PetsClient(HttpClient client, ILogger<PetsClient> logger)
+        {
+            _client = client;
+            _logger = logger;
+        }
+
+        public async Task<Pet[]> GetAll()
+        {
+            return await _client.GetAsync("pets").AsJsonAsync<Pet[]>();
+        }
+    }
+
+    public class Pet
+    {
     }
 }
