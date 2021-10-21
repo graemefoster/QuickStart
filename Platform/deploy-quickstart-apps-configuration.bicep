@@ -48,5 +48,6 @@ module PostConfigureAppDeployment './configure-app.bicep' = {
     appClientSecret:appClientSecret
     appHostname:appHostname
     appKeyVaultName:appKeyVaultName
+    apiAadClientId:apiClientId
   }
 }

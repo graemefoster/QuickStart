@@ -35,7 +35,7 @@ I didn't want to write too much code to get around this so decided to keep all t
 ## Azure Active Directory
 
 ### Roles inside JWT tokens
-The sample defines two roles, Admin and User for authorisation. Both roles were declared Pascal case but when I retrieve a token I noticed the roles came back in lower-case.
+The sample defines two roles, Admin and User for authorisation. Both roles were declared Pascal case but when I retrieve a token I noticed the roles came back in lower-case. The Asp.Net Core libraries manage this OK.
 
 ### Audience in token
 Microsoft.Identity.Web can handle an audience in a token following the naming convention ``` api://<client-id> ``` . If you have a different audience remember to tell the library what to expect.

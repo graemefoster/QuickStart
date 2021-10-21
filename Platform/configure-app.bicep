@@ -2,6 +2,7 @@ param appKeyVaultName string
 param appAadClientId string
 param appHostname string
 param apiHostname string
+param apiAadClientId string
 
 @secure()
 param appClientSecret string
@@ -20,6 +21,7 @@ resource WebAppConfiguration 'Microsoft.Web/sites/config@2021-02-01' = {
     'WEBSITE_RUN_FROM_PACKAGE' : 1
     'ASPNETCORE_ENVIRONMENT': 'Test'
     'ApiSettings__URL': 'https://${apiHostname}.azurewebsites.net'
+    'ApiSettings__Scope' : 'api://${apiAadClientId}/Pets.Manage'
     'AzureAD__ClientId': appAadClientId
     'AzureAD__ClientSecret': '@Microsoft.KeyVault(VaultName=${appKeyVaultName};SecretName=ApplicationClientSecret)'
     }
@@ -31,6 +33,7 @@ resource SlotWebAppConfiguration 'Microsoft.Web/sites/slots/config@2021-02-01' =
     'WEBSITE_RUN_FROM_PACKAGE' : 1
     'ASPNETCORE_ENVIRONMENT': 'Test'
     'ApiSettings__URL': 'https://${apiHostname}.azurewebsites.net'
+    'ApiSettings__Scope' : 'api://${apiAadClientId}/Pets.Manage'
     'AzureAD__ClientId': appAadClientId
     'AzureAD__ClientSecret': '@Microsoft.KeyVault(VaultName=${appKeyVaultName};SecretName=ApplicationClientSecret)'
     }
