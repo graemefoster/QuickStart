@@ -34,7 +34,8 @@ read -r -d '' API_ROLES << EOM
 ]
 EOM
 
-AAD_API_APPLICATION_ID=$(az ad app create --display-name "$WEB_API_HOST_NAME" --app-roles "$API_ROLES" --identifier-uris "api://$WEB_API_HOST_NAME" --query "appId" -o tsv | tr -d '\r')
+AAD_API_APPLICATION_ID=$(az ad app create --display-name "$WEB_API_HOST_NAME" --app-roles "$API_ROLES" --query "appId" -o tsv | tr -d '\r')
+_=$(az ad app update --id $AAD_API_APPLICATION_ID --identifier-uris "api://${AAD_API_APPLICATION_ID}")
 echo "Created / retrieved API Application Id ${AAD_API_APPLICATION_ID}"
 
 # https://anmock.blog/2020/01/10/azure-cli-create-an-azure-ad-application-for-an-api-that-exposes-oauth2-permissions/
@@ -93,6 +94,7 @@ read -r -d '' REQUIRED_WEBSITE_RESOURCE_ACCESS << EOM
 EOM
 
 AAD_WEBSITE_APPLICATION_ID=$(az ad app create --display-name $WEBSITE_HOST_NAME --reply-urls "https://${WEBSITE_HOST_NAME}.azurewebsites.net/signin-oidc" "https://${WEBSITE_HOST_NAME}-green.azurewebsites.net/signin-oidc" --required-resource-access "$REQUIRED_WEBSITE_RESOURCE_ACCESS" --query "appId" -o tsv | tr -d '\r')
+_=$(az ad app update --id $AAD_WEBSITE_APPLICATION_ID --identifier-uris "api://${AAD_WEBSITE_APPLICATION_ID}")
 echo "Created / retrieved Web Application Id ${AAD_WEBSITE_APPLICATION_ID}"
 
 _=$(az ad sp create --id $AAD_WEBSITE_APPLICATION_ID)

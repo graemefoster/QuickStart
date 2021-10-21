@@ -8,6 +8,7 @@ using SimpleMvcApp.Services;
 namespace SimpleMvcApp.Features.ListPets
 {
     [Route("/pets/list")]
+    [AuthorizeForScopes(Scopes = new[]  { "api://grfqs2-api-eslspgfu2icoq-test/Pets.Manage"})]
     public class ListPetsController : Controller
     {
         private readonly ILogger<NewPetController> _logger;
@@ -22,7 +23,7 @@ namespace SimpleMvcApp.Features.ListPets
         [Route("")]
         public async Task<IActionResult> Index()
         {
-            return View(new ListPetsViewModel {Pets = await _client.GetAll()});
+            return View(new ListPetsViewModel { Pets = await _client.GetAll() });
         }
     }
 }

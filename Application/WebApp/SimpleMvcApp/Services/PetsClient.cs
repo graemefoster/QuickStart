@@ -36,7 +36,7 @@ namespace SimpleMvcApp.Services
             var token = await _tokenAcquisition.GetAccessTokenForUserAsync(new[] { _settings.Value.Scope });
             var req = new HttpRequestMessage(HttpMethod.Get, "pets");
             req.Headers.Authorization = new AuthenticationHeaderValue("Bearer", token);
-            return await _client.GetAsync("pets").AsJsonAsync<ReferenceItem[]>();
+            return await _client.SendAsync(req).AsJsonAsync<ReferenceItem[]>();
         }
     }
 }
