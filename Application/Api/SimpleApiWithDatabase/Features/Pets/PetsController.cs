@@ -22,7 +22,7 @@ namespace SimpleApiWithDatabase.Features.Pets
         }
         
         [HttpGet]
-        [Authorize(Roles = "Reader,Admin")]
+        [Authorize(Roles = "reader,admin")]
         public Task<Pet[]> Get()
         {
             _logger.LogInformation("Fetching pets::");

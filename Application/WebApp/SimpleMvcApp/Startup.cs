@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.Http;
 using System.Text.Json.Serialization;
 using JetBrains.Annotations;
 using Microsoft.AspNetCore.Authentication.OpenIdConnect;
@@ -30,12 +31,14 @@ namespace SimpleMvcApp
 {
     public class Startup
     {
-        public Startup(IConfiguration configuration)
+        public Startup(IConfiguration configuration, IHostEnvironment environment)
         {
             Configuration = configuration;
+            Environment = environment;
         }
 
         public IConfiguration Configuration { get; }
+        public IHostEnvironment Environment { get; }
 
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
@@ -65,7 +68,18 @@ namespace SimpleMvcApp
                 .AddInMemoryTokenCaches()
                 ;
 
-            services.AddHttpClient<PetsClient>(c => { c.BaseAddress = new Uri(intermediateSettings.Url); });
+            var serviceClient = services.AddHttpClient<PetsClient>(c =>
+            {
+                c.BaseAddress = new Uri(intermediateSettings.Url);
+            });
+            
+            if (Environment.IsDevelopment())
+            {
+                serviceClient.ConfigurePrimaryHttpMessageHandler(() => new HttpClientHandler()
+                {
+                    ServerCertificateCustomValidationCallback = (a,b,c,d) => true
+                });
+            }
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

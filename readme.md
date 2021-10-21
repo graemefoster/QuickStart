@@ -1,6 +1,4 @@
 # QuickStart
-
-## Purpose
 It can be tricky for new teams to get going in a cloud environment. Here's a braindump of what you need to thing about
 
 - Setting up infrastructure
@@ -13,21 +11,18 @@ Most starter templates focus on the infrastructure. But few stitch everything to
 
 QuickStart tries to do that for a simple scenario: A sample Azure Web-Application with an Api / Database, using OIDC / OAUTH, and scopes and roles. The aim is to not create the resources, but wire them up securely, and provide sample blue / greeen deployment pipelines against a variety of CI / CD systems.
 
-## But it doesn't deploy 'XYZ'
-If this proves popular I'll add other samples to it.
-
-## Supported CI / CD platforms
+# Supported CI / CD platforms
 | CI / CD | Status|
 |---|---| 
 | Github Actions | Done|
 | Azure Devops | Not Done |
 | Octopus 'as code' | Not Done | 
 
-## Known issues
+# Known issues
 
-### Github Action Pipelines
+## Github Action Pipelines
 
-#### Github Action Secret Detection
+### Github Action Secret Detection
 
 My original intent was to deploy the platform as a set of Github Action jobs, each with a few steps. I hit some issues with Github's 'secret' detection logic which stopped me in my tracks.
 
@@ -37,10 +32,15 @@ I had an output which contained something that Github had seen in a secret.... T
 
 I didn't want to write too much code to get around this so decided to keep all the steps in a single 'deploy-platform' job.
 
+## Azure Active Directory
 
-### Azure SQL AAD Authorisation
+### Roles inside JWT tokens
+The sample defines two roles, Admin and User for authorisation. Both roles were declared Pascal case but when I retrieve a token I noticed the roles came back in lower-case.
 
-#### Adding External Users required Directory.Read permission
+
+## Azure SQL AAD Authorisation
+
+### Adding External Users required Directory.Read permission
 The standard approach for adding an AAD principal as a SQL User into a SQL database is 
 
 ``` CREATE USER [<Name>] FROM EXTERNAL PROVIDER ``` 
