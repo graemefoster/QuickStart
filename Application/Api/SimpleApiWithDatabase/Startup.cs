@@ -100,6 +100,7 @@ namespace SimpleApiWithDatabase
 
             app.UseCors(AllowSpecificOrigins);
 
+            app.UseAuthentication();
             app.UseAuthorization();
 
             app.UseEndpoints(endpoints => { endpoints.MapControllers(); });
