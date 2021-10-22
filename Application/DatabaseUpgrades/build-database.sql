@@ -31,3 +31,22 @@ GO
 COMMIT;
 GO
 
+BEGIN TRANSACTION;
+GO
+
+IF NOT EXISTS(SELECT * FROM [__EFMigrationsHistory] WHERE [MigrationId] = N'20211022033528_Add PetType')
+BEGIN
+    ALTER TABLE [Pets] ADD [PetType] int NOT NULL DEFAULT 0;
+END;
+GO
+
+IF NOT EXISTS(SELECT * FROM [__EFMigrationsHistory] WHERE [MigrationId] = N'20211022033528_Add PetType')
+BEGIN
+    INSERT INTO [__EFMigrationsHistory] ([MigrationId], [ProductVersion])
+    VALUES (N'20211022033528_Add PetType', N'5.0.11');
+END;
+GO
+
+COMMIT;
+GO
+

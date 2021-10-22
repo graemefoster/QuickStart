@@ -35,7 +35,7 @@ namespace SimpleApiWithDatabase.Features.Pets
         public async Task<IActionResult> Post(NewPet pet)
         {
             _logger.LogInformation("Adding new pet");
-            await _petsContext.Pets.AddAsync(new Pet(Guid.NewGuid(), pet.Name));
+            await _petsContext.Pets.AddAsync(new Pet(Guid.NewGuid(), pet.Name, pet.Type ?? PetType.Unknown));
             await _petsContext.SaveChangesAsync();
             return new OkResult();
         }

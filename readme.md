@@ -22,6 +22,8 @@ QuickStart tries to do that for a simple scenario: A sample Azure Web-Applicatio
 
 ## Github Action Pipelines
 
+[Github Actions Setup](./docs/actions-setup.md)
+
 ### Github Action Secret Detection
 
 My original intent was to deploy the platform as a set of Github Action jobs, each with a few steps. I hit some issues with Github's 'secret' detection logic which stopped me in my tracks.

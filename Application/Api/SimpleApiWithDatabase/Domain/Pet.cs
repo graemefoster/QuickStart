@@ -10,10 +10,13 @@ namespace SimpleApiWithDatabase.Domain
         [MaxLength(100), Required]
         public string Name { get; set; }
 
-        internal Pet(Guid id, string name)
+        public PetType PetType { get; private set; }
+
+        internal Pet(Guid id, string name, PetType petType)
         {
             Id = id;
             Name = name;
+            PetType = petType;
         }
     }
 }
