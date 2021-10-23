@@ -21,10 +21,15 @@ resource appResourceGroup 'Microsoft.Resources/resourceGroups@2021-04-01' = {
   location: deployment().location
 }
 
+resource staticWebsiteResourceGroup 'Microsoft.Resources/resourceGroups@2021-04-01' = {
+  name: '${resourceSuffix}-staticwebsite-rg'
+  location: deployment().location
+}
+
 // Databases need to live in the same resource group as the server. We could push the server into the API RG
 // but its quite common to use a sql server pool, and have many databases for different apis / apps contained in it.
 // For this Quickstart the approach taken is to keep the server in the platform, and put the databases with it.
-module DatabaseDeployment './deploy-api-database.bicep' = {
+module DatabaseDeployment './api/deploy-api-database.bicep' = {
   name: 'DeployDatabase'
   scope: platformResourceGroup
   params: {
@@ -34,7 +39,7 @@ module DatabaseDeployment './deploy-api-database.bicep' = {
   }
 }
 
-module WebApiDeployment './deploy-api.bicep' = {
+module WebApiDeployment './api/deploy-api.bicep' = {
   name: 'DeployApi'
   scope: apiResourceGroup
   params: {
@@ -44,7 +49,7 @@ module WebApiDeployment './deploy-api.bicep' = {
   }
 }
 
-module WebAppDeployment './deploy-app.bicep' = {
+module WebAppDeployment './app/deploy-app.bicep' = {
   name: 'DeployApp'
   scope: appResourceGroup
   params: {
@@ -54,9 +59,19 @@ module WebAppDeployment './deploy-app.bicep' = {
   }
 }
 
+module StaticWebsiteDeployment './StaticWebsite/deploy-static-website.bicep' = {
+  name: 'DeployStaticWebsite'
+  scope: staticWebsiteResourceGroup
+  params: {
+    resourceSuffix: resourceSuffix
+    environmentName: environmentName
+  }
+}
+
 
 output apiResourceGroupName string = apiResourceGroup.name
 output appResourceGroupName string = appResourceGroup.name
+output staticWebsiteResourceGroupName string = staticWebsiteResourceGroup.name
 output applicationHostname string = WebAppDeployment.outputs.appHostname
 output apiHostname string = WebApiDeployment.outputs.apiHostname
 output applicationKeyVaultName string = WebAppDeployment.outputs.appKeyVaultName

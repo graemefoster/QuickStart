@@ -11,7 +11,7 @@ resource platformResourceGroup 'Microsoft.Resources/resourceGroups@2021-04-01' =
   location: deployment().location
 }
 
-module PlatformDeployment './deploy-platform.bicep' = {
+module PlatformDeployment './core/deploy-platform.bicep' = {
   name: 'DeployPlatform'
   scope: platformResourceGroup
   params: {
