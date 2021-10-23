@@ -17,6 +17,7 @@ namespace SimpleApiWithDatabase
     public class Startup
     {
         readonly string AllowSpecificOrigins = "_myAllowSpecificOrigins";
+        readonly string AllowAuthorisation = "_allowAuthorisation";
 
         public Startup(IConfiguration configuration, IWebHostEnvironment env)
         {
@@ -44,8 +45,10 @@ namespace SimpleApiWithDatabase
                     {
                         foreach (var origin in interimSettings.Cors)
                         {
-                            builder.WithOrigins(origin);
+                            builder = builder.WithOrigins(origin);
                         }
+
+                        builder.WithHeaders("authorization");
                     });
             });
 

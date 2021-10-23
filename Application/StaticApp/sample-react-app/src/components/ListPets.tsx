@@ -1,27 +1,56 @@
 import { useMsal } from "@azure/msal-react";
-import { msalConfig, loginRequest } from "../authConfig";
-import React, { useState, useEffect } from "react";
+import { loginRequest, apiEndpoint } from "../authConfig";
+import { useState, useEffect } from "react";
+import { Container, Table } from "react-bootstrap";
 
-interface Pet {
-    name: string
-}
+type Pet = {
+  id: string;
+  name: string;
+};
 
 export const ListPets = () => {
   const { instance, accounts } = useMsal();
-
-  const [ petList, setPetList] = useState<Pet[]>([]);
+  const [fetchPets, setFetchPets] = useState<Boolean>(true);
+  const [petList, setPetList] = useState<Pet[]>([]);
 
   useEffect(() => {
-    instance
-      .acquireTokenSilent({
-        ...loginRequest,
-        account: accounts[0],
-      })
-      .then((response) => {
-          console.log(response);
-          setPetList([{name:'fluffy'}, {name: 'tiddles'}]);
-      });
+    if (fetchPets) {
+      setFetchPets(false);
+      instance
+        .acquireTokenSilent({
+          ...loginRequest,
+          account: accounts[0],
+        })
+        .then((response) => {
+          return fetch(`${apiEndpoint.petsApiEndpoint}pets`, {
+            headers: {
+              Authorization: `Bearer ${response.accessToken}`,
+            },
+          });
+        })
+        .then((r) => {
+          r.json().then((o) => setPetList(o));
+        });
+    }
   });
 
-  return <div>Listy Pets { petList.length }</div>;
+  return (
+    <Container>
+      <h2>Pets</h2>
+      <Table striped bordered>
+        <thead>
+          <tr>
+            <th>Pet</th>
+          </tr>
+        </thead>
+        <tbody>
+          {petList.map((pet) => (
+            <tr>
+              <td key={pet.id}>{pet.name}</td>
+            </tr>
+          ))}
+        </tbody>
+      </Table>
+    </Container>
+  );
 };
