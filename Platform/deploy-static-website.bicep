@@ -5,7 +5,7 @@ var staticWebsiteName = '${resourceSuffix}-${uniqueString(resourceGroup().name)}
 
 resource symbolicname 'Microsoft.Web/staticSites@2021-02-01' = {
   name: staticWebsiteName
-  location: resourceGroup().location
+  location: 'westus2' //not available in most regions as of October 2021
   sku: {
     name: 'free'
     tier: 'free'

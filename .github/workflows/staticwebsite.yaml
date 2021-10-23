@@ -1,13 +1,10 @@
-name: Application
-
-env:
-  AZURE_WEBAPP_PACKAGE_PATH: './packages'      # set this to the path to your web app project, defaults to the repository root
+name: StaticWebsite
 
 on:
   push:
     branches: [ main ]
     paths:
-      - 'Application/WebApp/**'
+      - 'StaticApp/**'
   workflow_dispatch:
     
 jobs:
@@ -17,16 +14,10 @@ jobs:
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
     - uses: actions/checkout@v2
-    - uses: actions/setup-dotnet@v1
-      with:
-        dotnet-version: '5.0.x'
-    - run: dotnet restore
-    - run: dotnet build ./Application/WebApp/\SimpleMvcApp/\SimpleMvcApp.csproj --configuration Release --no-restore
-    - run: dotnet publish ./Application/WebApp/\SimpleMvcApp/\SimpleMvcApp.csproj -c Release -o '${{ env.AZURE_WEBAPP_PACKAGE_PATH }}/published-app'
-    - uses: actions/upload-artifact@v2
-      with:
-        name: app
-        path: '${{ env.AZURE_WEBAPP_PACKAGE_PATH }}/published-app/**'
+    # - uses: actions/upload-artifact@v2
+    #   with:
+    #     name: app
+    #     path: '${{ env.AZURE_WEBAPP_PACKAGE_PATH }}/published-app/**'
 
   deploy-to-test:
     needs: build-and-test-app
@@ -36,52 +27,4 @@ jobs:
       - uses: azure/login@v1
         with:
           creds: ${{ secrets.AZURE_CREDENTIALS }}
-      - name: 'Run Azure webapp deploy action using publish profile credentials'
-        uses: actions/download-artifact@v2
-        with:
-          name: app
-          path: app
-
-      - uses: azure/webapps-deploy@v2
-        with: 
-          app-name: ${{ secrets.AZURE_WEBAPP_NAME }}
-          package: './app/'
-      - name: logout
-        run: |
-          az logout
-
-  deploy-to-production-green:
-    needs: 
-      - deploy-to-test
-    runs-on: ubuntu-latest
-    environment: Production-Green
-    steps:
-      - uses: azure/login@v1
-        with:
-          creds: ${{ secrets.AZURE_CREDENTIALS }}
-      - name: 'Run Azure webapp deploy action using publish profile credentials'
-        uses: actions/download-artifact@v2
-        with:
-          name: app
-          path: app
-
-      - uses: azure/webapps-deploy@v2
-        with: 
-          app-name: ${{ secrets.AZURE_WEBAPP_NAME }}
-          package: './app/'
-          slot-name: 'green'
-      - name: logout
-        run: |
-          az logout
-
-  deploy-to-production:
-    needs:
-      - deploy-to-production-green
-    runs-on: ubuntu-latest
-    environment: Production-Green
-    steps:
-      - uses: azure/login@v1
-        with:
-          creds: ${{ secrets.AZURE_CREDENTIALS }}
-      - run: az webapp deployment slot swap --slot green --action swap --name ${{ secrets.AZURE_WEBAPP_NAME }} --resource-group '${{ secrets.RESOURCE_PREFIX }}-app-rg'
 
