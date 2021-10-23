@@ -29,7 +29,7 @@ resource staticWebsiteResourceGroup 'Microsoft.Resources/resourceGroups@2021-04-
 // Databases need to live in the same resource group as the server. We could push the server into the API RG
 // but its quite common to use a sql server pool, and have many databases for different apis / apps contained in it.
 // For this Quickstart the approach taken is to keep the server in the platform, and put the databases with it.
-module DatabaseDeployment './api/deploy-api-database.bicep' = {
+module DatabaseDeployment './deploy-api-database.bicep' = {
   name: 'DeployDatabase'
   scope: platformResourceGroup
   params: {
@@ -39,7 +39,7 @@ module DatabaseDeployment './api/deploy-api-database.bicep' = {
   }
 }
 
-module WebApiDeployment './api/deploy-api.bicep' = {
+module WebApiDeployment './deploy-api.bicep' = {
   name: 'DeployApi'
   scope: apiResourceGroup
   params: {
@@ -49,7 +49,7 @@ module WebApiDeployment './api/deploy-api.bicep' = {
   }
 }
 
-module WebAppDeployment './app/deploy-app.bicep' = {
+module WebAppDeployment './deploy-app.bicep' = {
   name: 'DeployApp'
   scope: appResourceGroup
   params: {
@@ -59,7 +59,7 @@ module WebAppDeployment './app/deploy-app.bicep' = {
   }
 }
 
-module StaticWebsiteDeployment './StaticWebsite/deploy-static-website.bicep' = {
+module StaticWebsiteDeployment './deploy-static-website.bicep' = {
   name: 'DeployStaticWebsite'
   scope: staticWebsiteResourceGroup
   params: {

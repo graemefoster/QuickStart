@@ -26,7 +26,7 @@ resource appResourceGroup 'Microsoft.Resources/resourceGroups@2021-04-01' = {
   location: deployment().location
 }
 
-module PostConfigureApiDeployment './api/configure-api.bicep' = {
+module PostConfigureApiDeployment './configure-api.bicep' = {
   name: 'PostConfigureApiDeployment'
   scope: apiResourceGroup
   params: {
@@ -39,7 +39,7 @@ module PostConfigureApiDeployment './api/configure-api.bicep' = {
   }
 }
 
-module PostConfigureAppDeployment './app/configure-app.bicep' = {
+module PostConfigureAppDeployment './configure-app.bicep' = {
   name: 'PostConfigureAppDeployment'
   scope: appResourceGroup
   params: {
