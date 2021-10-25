@@ -17,7 +17,6 @@ namespace SimpleApiWithDatabase
     public class Startup
     {
         readonly string AllowSpecificOrigins = "_myAllowSpecificOrigins";
-        readonly string AllowAuthorisation = "_allowAuthorisation";
 
         public Startup(IConfiguration configuration, IWebHostEnvironment env)
         {
