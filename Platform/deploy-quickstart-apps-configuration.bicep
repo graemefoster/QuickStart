@@ -10,6 +10,7 @@ param appKeyVaultName string
 param appClientId string
 param apiClientId string
 param apiUserAssignedClientId string
+param environmentName string
 
 @secure()
 param appClientSecret string
@@ -42,5 +43,6 @@ module PostConfigureAppDeployment './configure-app.bicep' = {
     appHostname:appHostname
     appKeyVaultName:appKeyVaultName
     apiAadClientId:apiClientId
+    environmentName: environmentName
   }
 }
