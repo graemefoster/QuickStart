@@ -48,7 +48,7 @@ module WebAppDeployment './deploy-app.bicep' = {
   params: {
     resourceSuffix: resourceSuffix
     serverFarmId: serverFarmId
-    environmentName: environmentName,
+    environmentName: environmentName
     deploySlot: hasSlot
   }
 }
