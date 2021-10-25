@@ -18,7 +18,7 @@ QuickStart tries to do that for a simple scenario: A sample Azure Web-Applicatio
 | Azure Devops | Not Done |
 | Octopus 'as code' | Not Done | 
 
-# Getting Started
+# Getting Started (Common steps)
 
 To get started you'll need 
 
@@ -28,11 +28,11 @@ To get started you'll need
 
 Start by creating service principals in the subscriptions to let the CI/CD pipeline deploy resources and setup AAD applications.
 
-## Service Principal in the subscription where you deploy resources
+## Create a Service Principal in the subscription where you deploy resources
 
 ``` az ad sp create-for-rbac --name "<ServicePrincipalName>" --role contributor --sdk-auth ```
 
-## Service Principal in the subscription where you can grant AAD permissions
+## Create a Service Principal in the subscription where you can grant AAD permissions
 
 ```  az ad sp create-for-rbac --name "<ServicePrincipalName>" --skip-assignment --sdk-auth  ```. 
 
