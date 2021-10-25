@@ -15,6 +15,7 @@ resource platformResourceGroup 'Microsoft.Resources/resourceGroups@2021-04-01' =
 
 resource resourceGroup 'Microsoft.Resources/resourceGroups@2021-04-01' = {
   name: '${resourceSuffix}-${environmentName}-rg'
+  location: deployment().location
 }
 
 resource prodResourceGroup 'Microsoft.Resources/resourceGroups@2021-04-01' = {
@@ -27,7 +28,7 @@ resource prodResourceGroup 'Microsoft.Resources/resourceGroups@2021-04-01' = {
 // For this Quickstart the approach taken is to keep the server in the platform, and put the databases with it.
 module DatabaseDeployment './deploy-api-database.bicep' = {
   name: 'DeployDatabase'
-  scope: platformResourceGroupName
+  scope: platformResourceGroup
   params: {
     resourceSuffix: resourceSuffix
     databaseServerName: databaseServerName
