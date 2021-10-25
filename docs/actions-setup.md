@@ -1,5 +1,72 @@
 # QuickStart Github Actions setup
 
+You'll need access to a Github account to use Github Actions.
+
+## Step 1 - Clone the repo locally
+
+``` git clone https://github.com/graemefoster/QuickStart/```
+
+## Step 2 - Create a new repository in your Github account
+
+## Step 3 - Add a remote to your local repository and push
+
+```bash
+cd QuickStart
+git remote remove origin
+git remote add origin <new-repository-url>
+git push origin 
+```
+
+## Step 4 Configure the following secrets inside your Github repository (Settings -> Secrets -> New Repository Secret)
+
+| Secret | Purpose | Other information | 
+| --- | --- | --- |
+| RESOURCE_PREFIX | A small string that prefixes the resources. |  It's just used to prevent against resource name clashes. Some services like keyvault and web-apps require globally unique names |
+| AZURE_CREDENTIALS | Service Principal that has Contributor permissions on your subscription. | This is the output from the ``` az ad create-for-rbac ``` command |
+| DEPLOYMENTPRINCIPAL_ID | Application Id of the above service principal | Used to setup the AAD Admin account for Sql Server |
+| DEPLOYMENTPRINCIPAL_NAME | Application Id of the above service principal | Used to setup the AAD Admin account for Sql Server |
+| AAD_AZURE_CREDENTIALS | Used to create AAD Application entries to represent the App and the Api. This service principal needs to be a member of the Directory Writers role. Note this can be the same as AZURE_CREDENTIALS above. | This is the output of the ``` az ad create-for-rbac --skip-assignment ``` command |
+
+## Step 5 - Run the platform Pipeline
+
+- Goto the 'Actions' tab in your repository. 
+- Select the 'Platform' workflow. 
+- Click 'Run Workflow' followed by 'Run workflow'
+
+This will kick off deployment of the core resources and will take a few minutes to run.
+
+## Step 6 - Create 'Test' Environment secrets
+
+- Start by creating a new environment called 'Test' in the 'Settings' tab of your Git repository
+
+- You'll now need to create 3 secrets against the environment.
+
+| Secret | Purpose | Other information | 
+| --- | --- | --- |
+| AZURE_WEBAPP_NAME | The name of the test web-app deployed in Step 4 |
+| AZURE_WEBAPP_NAME | The name of the test web-api deployed in Step 4 |
+| AZURE_SQL_CONNECTION_STRING | Sql connection string to the database deployed in Step 4 | This is used by the CI/CD pipeline to deploy the database. Format: ``` Server=tcp:<database-server-name>.database.windows.net,1433;Initial Catalog=<test-database-name>;Persist Security Info=False;;MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30; ```   |
+
+The server-name / database-name can be found in the ``` <prefix>-platform-rg ``` resource group deployed in step 4.
+
+## Step 7 - Create 'Production-Green' Environment secrets (TODO change to Production)
+
+Follow Step 6, but name the environment ``` Production-Green ``` and use secrets from the Production versions of the resources.
+
+- Start by creating a new environment called 'Test' in the 'Settings' tab of your Git repository
+
+- You'll now need to create 3 secrets against the environment.
+
+| Secret | Purpose | Other information | 
+| --- | --- | --- |
+| AZURE_WEBAPP_NAME | The name of the test web-app deployed in Step 4 |
+| AZURE_WEBAPP_NAME | The name of the test web-api deployed in Step 4 |
+| AZURE_SQL_CONNECTION_STRING | Sql connection string to the database deployed in Step 4 | This is used by the CI/CD pipeline to deploy the database. Format: ``` Server=tcp:<database-server-name>.database.windows.net,1433;Initial Catalog=<test-database-name>;Persist Security Info=False;;MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30; ```   |
+
+The server-name / database-name can be found in the ``` <prefix>-platform-rg ``` resource group deployed in step 4.
+
+## Pipelines
+
 QuickStart contains 3 github action pipelines
 
 | Pipeline | Purpose |
@@ -8,17 +75,4 @@ QuickStart contains 3 github action pipelines
 | api.yaml | Pipeline to build and deploy the API, and run a database migration |
 | app.yaml | Pipeline to build and deploy the APP  |
 
-## platform.yaml
-
-| Secret | Purpose | Other information | 
-| --- | --- | --- |
-| RESOURCE_PREFIX | A small string that prefixes the resources. |  It's just used to prevent against resource name clashes. Some services like keyvault and web-apps require globally unique names |
-| AZURE_CREDENTIALS | Service Principal that has Contributor permissions on your subscription. | |
-| DEPLOYMENTPRINCIPAL_ID | Application Id of the above service principal | Used to setup the AAD Admin account for Sql Server |
-| DEPLOYMENTPRINCIPAL_NAME | Application Id of the above service principal | Used to setup the AAD Admin account for Sql Server |
-| AAD_AZURE_CREDENTIALS | Used to create AAD Application entries to represent the App and the Api. This service principal needs to be a member of the Directory Writers role. Note this can be the same as AZURE_CREDENTIALS above. 
-
-## api.yaml
-
-## app.yaml
 

@@ -18,11 +18,35 @@ QuickStart tries to do that for a simple scenario: A sample Azure Web-Applicatio
 | Azure Devops | Not Done |
 | Octopus 'as code' | Not Done | 
 
+# Getting Started
+
+To get started you'll need 
+
+- An Azure Subscription to deploy the Azure resources to
+- An Azure Subscription to deploy AAD objects to (this can be the same as above if you have privileges to create Service Principals that can manipulate the AAD directory assigned to the subscription)
+- The az cli installed locally, or access to an Azure Cloud Shell.
+
+Start by creating service principals in the subscriptions to let the CI/CD pipeline deploy resources and setup AAD applications.
+
+## Service Principal in the subscription where you deploy resources
+
+``` az ad sp create-for-rbac --name "<ServicePrincipalName>" --role contributor --sdk-auth ```
+
+## Service Principal in the subscription where you can grant AAD permissions
+
+```  az ad sp create-for-rbac --name "<ServicePrincipalName>" --skip-assignment --sdk-auth  ```. 
+
+When you've created the Service Principal, head to the [Azure Portal AAD page](https://ms.portal.azure.com/#blade/Microsoft_AAD_IAM/ActiveDirectoryMenuBlade/RolesAndAdministrators), find the 'Directory writers' role. Select that and add your Service Principal to it. 
+
+Next, let's move on to configuring the pipelines.
+
+## Github Actions
+
+Follow the instructions here [Github Actions Setup](./docs/actions-setup.md) to get started in Actions.
+
 # Known issues
 
 ## Github Action Pipelines
-
-[Github Actions Setup](./docs/actions-setup.md)
 
 ### Github Action Secret Detection
 
