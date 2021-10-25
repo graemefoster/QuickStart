@@ -8,7 +8,7 @@ param environmentName string
 @secure()
 param appClientSecret string
 
-var hasSlot = not(equals(environmentName, 'test')))
+var hasSlot = !equals(environmentName, 'test'))
 
 resource AppClientSecret 'Microsoft.KeyVault/vaults/secrets@2021-06-01-preview' = if (!empty(appClientSecret)) {
   name: '${appKeyVaultName}/ApplicationClientSecret'
