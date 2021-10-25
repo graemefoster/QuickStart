@@ -100,7 +100,7 @@ jobs:
     needs:
       - deploy-to-test
     runs-on: ubuntu-latest
-    environment: Production-Green
+    environment: Production
     steps:
     - uses: actions/setup-dotnet@v1
       with:
@@ -141,7 +141,7 @@ jobs:
     needs:
       - deploy-to-production-green
     runs-on: ubuntu-latest
-    environment: Production-Green
+    environment: Production
     steps:
       - uses: azure/login@v1
         with:

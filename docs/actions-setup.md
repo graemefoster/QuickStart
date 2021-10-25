@@ -49,9 +49,14 @@ This will kick off deployment of the core resources and will take a few minutes 
 
 The server-name / database-name can be found in the ``` <prefix>-platform-rg ``` resource group deployed in step 4.
 
-## Step 7 - Create 'Production-Green' Environment secrets (TODO change to Production)
+## Step 7 - Create 'Production' Environment secrets
 
-Follow Step 6, but name the environment ``` Production-Green ``` and use secrets from the Production versions of the resources.
+Follow Step 6, but name the environment ``` Production ``` and use secrets from the Production versions of the resources.
+
+At this point optionally put protection over the branch. Things to consider would be:
+
+- Limit deployments to this environment to the 'main' branch
+- Add reviewers to deployments before they are allowed to run against this environment
 
 ## Pipelines
 
