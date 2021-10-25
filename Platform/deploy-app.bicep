@@ -1,7 +1,7 @@
 param resourceSuffix string
 param serverFarmId string
 param environmentName string
-param deploySlot boolean
+param deploySlot bool
 
 var appHostname = '${resourceSuffix}-${uniqueString(resourceGroup().name)}-${environmentName}-webapp'
 var appKeyVaultName = '${resourceSuffix}-app-${environmentName}-kv'

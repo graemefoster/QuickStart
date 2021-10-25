@@ -1,7 +1,7 @@
 param resourceSuffix string
 param serverFarmId string
 param environmentName string
-param deploySlot boolean
+param deploySlot bool
 
 var apiHostname = '${resourceSuffix}-${uniqueString(resourceGroup().name)}-${environmentName}-api'
 var apiMsiName = '${resourceSuffix}-${uniqueString(resourceGroup().name)}-${environmentName}-msi'
