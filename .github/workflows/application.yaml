@@ -55,6 +55,7 @@ jobs:
       - deploy-to-test
     runs-on: ubuntu-latest
     environment: Production
+    if: github.ref == 'refs/heads/master'
     steps:
       - uses: azure/login@v1
         with:
