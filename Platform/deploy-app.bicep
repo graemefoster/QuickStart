@@ -69,7 +69,7 @@ resource GreenKeyVaultAuth 'Microsoft.Authorization/roleAssignments@2020-08-01-p
   scope: AppKeyVault
   properties: {
     roleDefinitionId: secretsUserRoleId
-    principalId: WebAppGreen.identity.principalId
+    principalId: (deploySlot == true) ? WebAppGreen.identity.principalId : 'Not deploying'
     principalType: 'ServicePrincipal'
   }
 } 
