@@ -9,7 +9,7 @@ It can be tricky for new teams to get going in a cloud environment. Here's a bra
 
 Most starter templates focus on the infrastructure. But few stitch everything together and put a bow around it.
 
-QuickStart tries to do that for a simple scenario: A sample Azure Web-Application with an Api / Database, using OIDC / OAUTH, and scopes and roles. The aim is to not create the resources, but wire them up securely, and provide sample blue / greeen deployment pipelines against a variety of CI / CD systems.
+QuickStart tries to do that for a simple scenario: A sample Azure Web-Application with an Api / Database, using OIDC / OAUTH, and scopes and roles. The aim is to not just create the resources, but wire them up securely, and provide sample blue / greeen deployment pipelines against a variety of CI / CD systems.
 
 # Supported CI / CD platforms
 | CI / CD | Status|
