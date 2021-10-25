@@ -3,7 +3,6 @@ targetScope = 'subscription'
 param databaseServerName string
 
 param resourceGroupName string
-
 param databaseName string
 param appHostname string
 param apiHostname string
@@ -15,12 +14,7 @@ param apiUserAssignedClientId string
 @secure()
 param appClientSecret string
 
-resource apiResourceGroup 'Microsoft.Resources/resourceGroups@2021-04-01' = {
-  name: resourceGroupName
-  location: deployment().location
-}
-
-resource appResourceGroup 'Microsoft.Resources/resourceGroups@2021-04-01' = {
+resource resourceGroup 'Microsoft.Resources/resourceGroups@2021-04-01' = {
   name: resourceGroupName
   location: deployment().location
 }

@@ -18,11 +18,6 @@ resource resourceGroup 'Microsoft.Resources/resourceGroups@2021-04-01' = {
   location: deployment().location
 }
 
-resource prodResourceGroup 'Microsoft.Resources/resourceGroups@2021-04-01' = {
-  name: '${resourceSuffix}-prod-rg'
-  location: deployment().location
-}
-
 // Databases need to live in the same resource group as the server. We could push the server into the API RG
 // but its quite common to use a sql server pool, and have many databases for different apis / apps contained in it.
 // For this Quickstart the approach taken is to keep the server in the platform, and put the databases with it.
@@ -58,8 +53,7 @@ module WebAppDeployment './deploy-app.bicep' = {
   }
 }
 
-output apiResourceGroupName string = apiResourceGroup.name
-output appResourceGroupName string = appResourceGroup.name
+output resourceGroupName string = resourceGroup.name
 output applicationHostname string = WebAppDeployment.outputs.appHostname
 output apiHostname string = WebApiDeployment.outputs.apiHostname
 output applicationKeyVaultName string = WebAppDeployment.outputs.appKeyVaultName
