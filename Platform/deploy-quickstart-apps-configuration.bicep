@@ -2,8 +2,7 @@ targetScope = 'subscription'
 
 param databaseServerName string
 
-param apiResourceGroupName string
-param appResourceGroupName string
+param resourceGroupName string
 
 param databaseName string
 param appHostname string
@@ -17,18 +16,18 @@ param apiUserAssignedClientId string
 param appClientSecret string
 
 resource apiResourceGroup 'Microsoft.Resources/resourceGroups@2021-04-01' = {
-  name: apiResourceGroupName
+  name: resourceGroupName
   location: deployment().location
 }
 
 resource appResourceGroup 'Microsoft.Resources/resourceGroups@2021-04-01' = {
-  name: appResourceGroupName
+  name: resourceGroupName
   location: deployment().location
 }
 
 module PostConfigureApiDeployment './configure-api.bicep' = {
   name: 'PostConfigureApiDeployment'
-  scope: apiResourceGroup
+  scope: resourceGroup
   params: {
     databaseServerName: databaseServerName
     databaseName: databaseName
@@ -41,7 +40,7 @@ module PostConfigureApiDeployment './configure-api.bicep' = {
 
 module PostConfigureAppDeployment './configure-app.bicep' = {
   name: 'PostConfigureAppDeployment'
-  scope: appResourceGroup
+  scope: resourceGroup
   params: {
     apiHostname: apiHostname
     appAadClientId:appClientId

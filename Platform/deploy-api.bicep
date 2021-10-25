@@ -1,6 +1,7 @@
 param resourceSuffix string
 param serverFarmId string
 param environmentName string
+param deploySlot boolean
 
 var apiHostname = '${resourceSuffix}-${uniqueString(resourceGroup().name)}-${environmentName}-api'
 var apiMsiName = '${resourceSuffix}-${uniqueString(resourceGroup().name)}-${environmentName}-msi'
@@ -29,7 +30,7 @@ resource WebApi 'Microsoft.Web/sites@2021-01-15' = {
   }
 }
 
-resource WebApiGreen 'Microsoft.Web/sites/slots@2021-01-15' = {
+resource WebApiGreen 'Microsoft.Web/sites/slots@2021-01-15' = if(deploySlot) {
   parent: WebApi
   name: 'green'
   location: resourceGroup().location

@@ -6,18 +6,19 @@ param serverFarmId string
 param databaseServerName string
 param environmentName string
 
+var hasSlot = not(equals(environmentName, 'test')))
+
 resource platformResourceGroup 'Microsoft.Resources/resourceGroups@2021-04-01' = {
   name: platformResourceGroupName
   location: deployment().location
 }
 
-resource apiResourceGroup 'Microsoft.Resources/resourceGroups@2021-04-01' = {
-  name: '${resourceSuffix}-api-rg'
-  location: deployment().location
+resource resourceGroup 'Microsoft.Resources/resourceGroups@2021-04-01' = {
+  name: '${resourceSuffix}-${environmentName}-rg'
 }
 
-resource appResourceGroup 'Microsoft.Resources/resourceGroups@2021-04-01' = {
-  name: '${resourceSuffix}-app-rg'
+resource prodResourceGroup 'Microsoft.Resources/resourceGroups@2021-04-01' = {
+  name: '${resourceSuffix}-prod-rg'
   location: deployment().location
 }
 
@@ -26,7 +27,7 @@ resource appResourceGroup 'Microsoft.Resources/resourceGroups@2021-04-01' = {
 // For this Quickstart the approach taken is to keep the server in the platform, and put the databases with it.
 module DatabaseDeployment './deploy-api-database.bicep' = {
   name: 'DeployDatabase'
-  scope: platformResourceGroup
+  scope: platformResourceGroupName
   params: {
     resourceSuffix: resourceSuffix
     databaseServerName: databaseServerName
@@ -36,21 +37,23 @@ module DatabaseDeployment './deploy-api-database.bicep' = {
 
 module WebApiDeployment './deploy-api.bicep' = {
   name: 'DeployApi'
-  scope: apiResourceGroup
+  scope: resourceGroup
   params: {
     resourceSuffix: resourceSuffix
     serverFarmId: serverFarmId
     environmentName : environmentName
+    deploySlot: hasSlot
   }
 }
 
 module WebAppDeployment './deploy-app.bicep' = {
   name: 'DeployApp'
-  scope: appResourceGroup
+  scope: resourceGroup
   params: {
     resourceSuffix: resourceSuffix
     serverFarmId: serverFarmId
-    environmentName: environmentName
+    environmentName: environmentName,
+    deploySlot: hasSlot
   }
 }
 

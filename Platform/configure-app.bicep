@@ -3,9 +3,12 @@ param appAadClientId string
 param appHostname string
 param apiHostname string
 param apiAadClientId string
+param environmentName string
 
 @secure()
 param appClientSecret string
+
+var hasSlot = not(equals(environmentName, 'test')))
 
 resource AppClientSecret 'Microsoft.KeyVault/vaults/secrets@2021-06-01-preview' = if (!empty(appClientSecret)) {
   name: '${appKeyVaultName}/ApplicationClientSecret'
@@ -27,7 +30,7 @@ resource WebAppConfiguration 'Microsoft.Web/sites/config@2021-02-01' = {
     }
 }
 
-resource SlotWebAppConfiguration 'Microsoft.Web/sites/slots/config@2021-02-01' = {
+resource SlotWebAppConfiguration 'Microsoft.Web/sites/slots/config@2021-02-01' = if(hasSlot) {
   name: '${appHostname}/green/appsettings'
   properties: {
     'WEBSITE_RUN_FROM_PACKAGE' : 1

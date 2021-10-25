@@ -1,6 +1,7 @@
 param resourceSuffix string
 param serverFarmId string
 param environmentName string
+param deploySlot boolean
 
 var appHostname = '${resourceSuffix}-${uniqueString(resourceGroup().name)}-${environmentName}-webapp'
 var appKeyVaultName = '${resourceSuffix}-app-${environmentName}-kv'
@@ -46,7 +47,7 @@ resource KeyVaultAuth 'Microsoft.Authorization/roleAssignments@2020-08-01-previe
 }
 
 
-resource WebAppGreen 'Microsoft.Web/sites/slots@2021-01-15' = {
+resource WebAppGreen 'Microsoft.Web/sites/slots@2021-01-15' = if(deploySlot) {
   parent: WebApp
   name: 'green'
   location: resourceGroup().location
@@ -63,7 +64,7 @@ resource WebAppGreen 'Microsoft.Web/sites/slots@2021-01-15' = {
   }
 }
 
-resource GreenKeyVaultAuth 'Microsoft.Authorization/roleAssignments@2020-08-01-preview' = {
+resource GreenKeyVaultAuth 'Microsoft.Authorization/roleAssignments@2020-08-01-preview' = if(deploySlot) {
   name: guid('${appHostname}.green-read-${appKeyVaultName}')
   scope: AppKeyVault
   properties: {
