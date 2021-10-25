@@ -5,6 +5,9 @@ param appHostname string
 param apiAadClientId string
 param apiHostname string
 param userAssignedClientId string
+param environmentName string
+
+var hasSlot = environmentName != 'test'
 
 resource WebApiConfiguration 'Microsoft.Web/sites/config@2021-02-01' = {
   name: '${apiHostname}/appSettings'
@@ -19,7 +22,7 @@ resource WebApiConfiguration 'Microsoft.Web/sites/config@2021-02-01' = {
     }
 }
 
-resource ProductionSlotWebApiConfiguration 'Microsoft.Web/sites/slots/config@2021-02-01' = {
+resource ProductionSlotWebApiConfiguration 'Microsoft.Web/sites/slots/config@2021-02-01' = if(hasSlot) {
   name: '${apiHostname}/green/appsettings'
   properties: {
     'WEBSITE_RUN_FROM_PACKAGE' : 1

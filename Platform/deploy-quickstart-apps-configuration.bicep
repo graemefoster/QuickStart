@@ -30,6 +30,7 @@ module PostConfigureApiDeployment './configure-api.bicep' = {
     apiHostname: apiHostname
     apiAadClientId: apiClientId
     userAssignedClientId: apiUserAssignedClientId
+    environmentName: environmentName
   }
 }
 
