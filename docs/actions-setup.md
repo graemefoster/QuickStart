@@ -53,18 +53,6 @@ The server-name / database-name can be found in the ``` <prefix>-platform-rg ```
 
 Follow Step 6, but name the environment ``` Production-Green ``` and use secrets from the Production versions of the resources.
 
-- Start by creating a new environment called 'Test' in the 'Settings' tab of your Git repository
-
-- You'll now need to create 3 secrets against the environment.
-
-| Secret | Purpose | Other information | 
-| --- | --- | --- |
-| AZURE_WEBAPP_NAME | The name of the test web-app deployed in Step 4 |
-| AZURE_WEBAPP_NAME | The name of the test web-api deployed in Step 4 |
-| AZURE_SQL_CONNECTION_STRING | Sql connection string to the database deployed in Step 4 | This is used by the CI/CD pipeline to deploy the database. Format: ``` Server=tcp:<database-server-name>.database.windows.net,1433;Initial Catalog=<test-database-name>;Persist Security Info=False;;MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30; ```   |
-
-The server-name / database-name can be found in the ``` <prefix>-platform-rg ``` resource group deployed in step 4.
-
 ## Pipelines
 
 QuickStart contains 3 github action pipelines
