@@ -6,7 +6,7 @@ param serverFarmId string
 param databaseServerName string
 param environmentName string
 
-var hasSlot = !equals(environmentName, 'test')
+var hasSlot = environmentName != 'test'
 
 resource platformResourceGroup 'Microsoft.Resources/resourceGroups@2021-04-01' = {
   name: platformResourceGroupName
