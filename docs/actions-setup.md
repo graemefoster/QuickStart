@@ -24,7 +24,7 @@ git push origin
 | RESOURCE_PREFIX | A small string that prefixes the resources. |  It's just used to prevent against resource name clashes. Some services like keyvault and web-apps require globally unique names |
 | AZURE_CREDENTIALS | Service Principal that has Contributor permissions on your subscription. | This is the output from the ``` az ad create-for-rbac ``` command |
 | DEPLOYMENTPRINCIPAL_ID | Application Id of the above service principal | Used to setup the AAD Admin account for Sql Server |
-| DEPLOYMENTPRINCIPAL_NAME | Application Id of the above service principal | Used to setup the AAD Admin account for Sql Server |
+| DEPLOYMENTPRINCIPAL_NAME | Application name of the above service principal | Used to setup the AAD Admin account for Sql Server. This must match the name of the AAD service principal |
 | AAD_AZURE_CREDENTIALS | Used to create AAD Application entries to represent the App and the Api. This service principal needs to be a member of the Directory Writers role. Note this can be the same as AZURE_CREDENTIALS above. | This is the output of the ``` az ad create-for-rbac --skip-assignment ``` command |
 
 ## Step 5 - Run the platform Pipeline
