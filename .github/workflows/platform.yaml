@@ -27,7 +27,6 @@ jobs:
         uses: azure/arm-deploy@v1
         id: 'platformDeploy'
         with:
-          subscriptionId: ${{ secrets.AZURE_SUBSCRIPTION }}
           scope: 'subscription'
           region: 'australiaeast'
           template: ./Platform/deploy-quickstart-platform.bicep
@@ -41,7 +40,6 @@ jobs:
         uses: azure/arm-deploy@v1
         id: 'testAppsDeploy'
         with:
-          subscriptionId: ${{ secrets.AZURE_SUBSCRIPTION }}
           scope: 'subscription'
           region: 'australiaeast'
           template: ./Platform/deploy-quickstart-apps.bicep
@@ -57,7 +55,6 @@ jobs:
         uses: azure/arm-deploy@v1
         id: 'prodAppsDeploy'
         with:
-          subscriptionId: ${{ secrets.AZURE_SUBSCRIPTION }}
           scope: 'subscription'
           region: 'australiaeast'
           template: ./Platform/deploy-quickstart-apps.bicep
@@ -105,7 +102,6 @@ jobs:
         uses: azure/arm-deploy@v1
         id: 'testConfigurationDeploy'
         with:
-          subscriptionId: ${{ secrets.AZURE_SUBSCRIPTION }}
           scope: 'subscription'
           region: 'australiaeast'
           template: ./Platform/deploy-quickstart-apps-configuration.bicep
@@ -127,7 +123,6 @@ jobs:
         uses: azure/arm-deploy@v1
         id: 'productionConfigurationDeploy'
         with:
-          subscriptionId: ${{ secrets.AZURE_SUBSCRIPTION }}
           scope: 'subscription'
           region: 'australiaeast'
           template: ./Platform/deploy-quickstart-apps-configuration.bicep
