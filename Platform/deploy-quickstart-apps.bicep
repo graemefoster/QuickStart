@@ -78,3 +78,5 @@ output databaseName string = DatabaseDeployment.outputs.apiDatabaseName
 output databaseConnectionString string = DatabaseDeployment.outputs.apiDatabaseConnectionString
 output managedIdentityAppId string = WebApiDeployment.outputs.managedIdentityAppId
 output managedIdentityName string = WebApiDeployment.outputs.managedIdentityName
+output apiAppInsightsKey string = WebApiDeployment.outputs.appInsightsKey
+output appAppInsightsKey string = WebAppDeployment.outputs.appInsightsKey

@@ -28,25 +28,6 @@ resource DatabaseDiagnostics 'Microsoft.Insights/diagnosticSettings@2021-05-01-p
     ]
     logs: [
       {
-        category: 'Errors'
-        categoryGroup: 'log'
-        enabled: true
-        retentionPolicy: {
-          days: 3
-          enabled: true
-        }
-      }
-      {
-        category: 'Deadlocks'
-        categoryGroup: 'log'
-        enabled: true
-        retentionPolicy: {
-          days: 3
-          enabled: true
-        }
-      }
-      {
-        category: 'Blocks'
         categoryGroup: 'log'
         enabled: true
         retentionPolicy: {

@@ -126,6 +126,8 @@ jobs:
             apiClientId=${{ steps.setup-test-aad.outputs.apiClientId }}
             apiUserAssignedClientId=${{ steps.testAppsDeploy.outputs.managedIdentityAppId }}
             appClientSecret=${{ steps.setup-test-aad.outputs.applicationClientSecret }}
+            apiAppInsightsKey=${{ steps.testAppsDeploy.outputs.apiAppInsightsKey }}
+            appAppInsightsKey=${{ steps.testAppsDeploy.outputs.appAppInsightsKey }}
             environmentName=test
           failOnStdErr: true
 
@@ -147,6 +149,8 @@ jobs:
             apiClientId=${{ steps.setup-prod-aad.outputs.apiClientId }}
             apiUserAssignedClientId=${{ steps.prodAppsDeploy.outputs.managedIdentityAppId }}
             appClientSecret=${{ steps.setup-prod-aad.outputs.applicationClientSecret }}
+            apiAppInsightsKey=${{ steps.prodAppsDeploy.outputs.apiAppInsightsKey }}
+            appAppInsightsKey=${{ steps.prodAppsDeploy.outputs.appAppInsightsKey }}
             environmentName=prod
           failOnStdErr: true
 

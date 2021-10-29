@@ -27,6 +27,12 @@ param apiClientId string
 @description('The Managed Identity App Id assigned to the API (used to connect to SQL database)')
 param apiUserAssignedClientId string
 
+@description('The App Insights Key for the Application')
+param apiAppInsightsKey string
+
+@description('The App Insights Key for the API')
+param appAppInsightsKey string
+
 @description('The environment being configured')
 param environmentName string
 
@@ -49,6 +55,7 @@ module PostConfigureApiDeployment './configure-api.bicep' = {
     apiHostname: apiHostname
     apiAadClientId: apiClientId
     userAssignedClientId: apiUserAssignedClientId
+    apiAppInsightsKey : apiAppInsightsKey
     environmentName: environmentName
   }
 }
@@ -63,6 +70,7 @@ module PostConfigureAppDeployment './configure-app.bicep' = {
     appHostname:appHostname
     appKeyVaultName:appKeyVaultName
     apiAadClientId:apiClientId
+    appAppInsightsKey : appAppInsightsKey
     environmentName: environmentName
   }
 }

@@ -5,6 +5,7 @@ param appHostname string
 param apiAadClientId string
 param apiHostname string
 param userAssignedClientId string
+param apiAppInsightsKey string
 param environmentName string
 
 var hasSlot = environmentName != 'test'
@@ -14,6 +15,7 @@ resource WebApiConfiguration 'Microsoft.Web/sites/config@2021-02-01' = {
   properties: {
     'WEBSITE_RUN_FROM_PACKAGE' : 1
     'ASPNETCORE_ENVIRONMENT': 'Production'
+    'APPINSIGHTS_INSTRUMENTATIONKEY' : apiAppInsightsKey
     'ApiSettings__Cors__0': 'https://${appHostname}.azurewebsites.net'
     'ApiSettings__Cors__1': 'https://${appHostname}-green.azurewebsites.net'
     'ApiSettings__UserAssignedClientId': userAssignedClientId
@@ -27,6 +29,7 @@ resource ProductionSlotWebApiConfiguration 'Microsoft.Web/sites/slots/config@202
   properties: {
     'WEBSITE_RUN_FROM_PACKAGE' : 1
     'ASPNETCORE_ENVIRONMENT': 'Production'
+    'APPINSIGHTS_INSTRUMENTATIONKEY' : apiAppInsightsKey
     'ApiSettings__Cors__0': 'https://${appHostname}.azurewebsites.net'
     'ApiSettings__Cors__1': 'https://${appHostname}-green.azurewebsites.net'
     'ApiSettings__UserAssignedClientId': userAssignedClientId
