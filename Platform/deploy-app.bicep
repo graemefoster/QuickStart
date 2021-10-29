@@ -36,6 +36,16 @@ resource KeyVaultDiagnostics 'Microsoft.Insights/diagnosticSettings@2021-05-01-p
         }
       }
     ]
+    logs: [
+      {
+        categoryGroup: 'allLogs'
+        enabled: true
+        retentionPolicy: {
+          days: 3
+          enabled: true
+        }
+      }
+    ]
   }
 }
 
