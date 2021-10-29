@@ -5,7 +5,7 @@ param databaseAdministratorObjectId string
 var databaseServerName = '${resourcePrefix}-sqlserver'
 
 resource LogAnalyticsWorkspace 'Microsoft.OperationalInsights/workspaces@2021-06-01' = {
-  name: '${resourcePrefix}-{loga}'
+  name: '${resourcePrefix}-loga'
   location: resourceGroup().location
   properties: {
     sku: {
