@@ -36,7 +36,7 @@ This will output a JSON string with the Service Principal login information. Hol
 
 ## Assign the above Service Principal the Directory.Writers role
 
-When you've created the Service Principal, head to the [Azure Portal AAD page](https://ms.portal.azure.com/#blade/Microsoft_AAD_IAM/ActiveDirectoryMenuBlade/RolesAndAdministrators), find the 'Directory writers' role. Select that and add your Service Principal to it. 
+Quickstart will create two Azure Active Directory Applications for OIDC auth against the Web-App and API. To do this the above service principal needs to the Directory.Writers role against your AAD. Head to the [Azure Portal AAD page](https://ms.portal.azure.com/#blade/Microsoft_AAD_IAM/ActiveDirectoryMenuBlade/RolesAndAdministrators), find the 'Directory writers' role and add your Service Principal to it. 
 
 > The Directory Writers role is used to create AAD Application objects to represent your API and Web Application. It's a high privilege role and requires AAD Admin consent. If you are unable to consent in the subscription you are deloying your resources into, you can still use QuickStart. Create a Service Principal in a directory that you control using ```  az ad sp create-for-rbac --name "<ServicePrincipalName>" --skip-assignment --sdk-auth  ``` and add it to the Directory.Writers role.
 
