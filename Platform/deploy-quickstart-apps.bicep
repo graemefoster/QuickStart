@@ -11,6 +11,9 @@ param platformResourceGroupName string
 @description('Resource Id of the App Service Plan hosting the apis / apps')
 param serverFarmId string
 
+@description('Resource Id of the Platform Log Analytics Workspace')
+param logAnalyticsWorkspaceId string
+
 @description('Resource name of the platform Sql Server')
 param databaseServerName string
 
@@ -39,6 +42,7 @@ module DatabaseDeployment './deploy-api-database.bicep' = {
     resourcePrefix: resourcePrefix
     databaseServerName: databaseServerName
     environmentName: environmentName
+    logAnalyticsWorkspaceId: logAnalyticsWorkspaceId
   }
 }
 

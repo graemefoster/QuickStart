@@ -1,12 +1,61 @@
 param resourcePrefix string
 param databaseServerName string
 param environmentName string
+param logAnalyticsWorkspaceId string
 
 var databaseName = '${resourcePrefix}-${environmentName}-sqldb'
 
 resource SqlDatabaseTest 'Microsoft.Sql/servers/databases@2021-02-01-preview' = {
   name: '${databaseServerName}/${databaseName}'
   location: resourceGroup().location
+}
+
+
+resource DatabaseDiagnostics 'Microsoft.Insights/diagnosticSettings@2021-05-01-preview' = {
+  name: 'databaseDiagnostics'
+  scope: SqlDatabaseTest
+  properties: {
+    workspaceId: logAnalyticsWorkspaceId
+    metrics: [
+      {
+        category: 'Basic'
+        enabled: true
+        retentionPolicy: {
+          days: 3
+          enabled: true
+        }
+      }
+    ]
+    logs: [
+      {
+        category: 'Errors'
+        categoryGroup: 'log'
+        enabled: true
+        retentionPolicy: {
+          days: 3
+          enabled: true
+        }
+      }
+      {
+        category: 'Deadlocks'
+        categoryGroup: 'log'
+        enabled: true
+        retentionPolicy: {
+          days: 3
+          enabled: true
+        }
+      }
+      {
+        category: 'Blocks'
+        categoryGroup: 'log'
+        enabled: true
+        retentionPolicy: {
+          days: 3
+          enabled: true
+        }
+      }
+    ]
+  }
 }
 
 output apiDatabaseName string = databaseName

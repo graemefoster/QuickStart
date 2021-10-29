@@ -25,8 +25,8 @@ resource QuickStartServerFarm 'Microsoft.Web/serverfarms@2021-01-15' = {
   }
 }
 
-resource AppKeyVaultDiagnostics 'Microsoft.Insights/diagnosticSettings@2021-05-01-preview' = {
-  name: '${resourcePrefix}-asp-logs'
+resource AppServicePlanDiagnostics 'Microsoft.Insights/diagnosticSettings@2021-05-01-preview' = {
+  name: 'aspDiagnostics'
   scope: QuickStartServerFarm
   properties: {
     workspaceId: LogAnalyticsWorkspace.id
