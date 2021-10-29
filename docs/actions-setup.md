@@ -25,7 +25,9 @@ git push origin
 | AZURE_CREDENTIALS | Service Principal that has Contributor permissions on your subscription. | This is the output from the ``` az ad create-for-rbac ``` command |
 | DEPLOYMENTPRINCIPAL_ID | Application Id of the above service principal | Used to setup the AAD Admin account for Sql Server |
 | DEPLOYMENTPRINCIPAL_NAME | Application name of the above service principal | Used to setup the AAD Admin account for Sql Server. This must match the name of the AAD service principal |
-| AAD_AZURE_CREDENTIALS | Used to create AAD Application entries to represent the App and the Api. This service principal needs to be a member of the Directory Writers role. Note this can be the same as AZURE_CREDENTIALS above. | This is the output of the ``` az ad create-for-rbac --skip-assignment ``` command |
+
+> If you are unable to grant a Service Principal the Directory.Write role then you can configure your Web Application / API to use a different Azure Active Directory to the one backing your Azure Subscription. To do this, add a secret called ``` AAD_AZURE_CREDENTIALS ``` representing a Service Principal from the other directory.
+ 
 
 ## Step 5 - Run the platform Pipeline
 

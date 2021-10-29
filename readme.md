@@ -32,11 +32,13 @@ Start by creating service principals in the subscriptions to let the CI/CD pipel
 
 ``` az ad sp create-for-rbac --name "<ServicePrincipalName>" --role contributor --sdk-auth ```
 
-## Create a Service Principal in the subscription where you can grant AAD permissions
+This will output a JSON string with the Service Principal login information. Hold onto this as we'll use it when setting up our CI / CD Pipelines.
 
-```  az ad sp create-for-rbac --name "<ServicePrincipalName>" --skip-assignment --sdk-auth  ```. 
+## Assign the above Service Principal the Directory.Writers role
 
 When you've created the Service Principal, head to the [Azure Portal AAD page](https://ms.portal.azure.com/#blade/Microsoft_AAD_IAM/ActiveDirectoryMenuBlade/RolesAndAdministrators), find the 'Directory writers' role. Select that and add your Service Principal to it. 
+
+> The Directory Writers role is used to create AAD Application objects to represent your API and Web Application. It's a high privilege role and requires AAD Admin consent. If you are unable to consent in the subscription you are deloying your resources into, you can still use QuickStart. Create a Service Principal in a directory that you control using ```  az ad sp create-for-rbac --name "<ServicePrincipalName>" --skip-assignment --sdk-auth  ``` and add it to the Directory.Writers role.
 
 Next, let's move on to configuring the pipelines.
 

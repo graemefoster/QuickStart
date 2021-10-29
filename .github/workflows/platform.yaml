@@ -7,6 +7,10 @@ on:
       - 'Platform/**'
   workflow_dispatch:
 
+env:
+  SEPARATE_AAD_LOGIN: ${{ secrets.AAD_AZURE_CREDENTIALS != null && secrets.AAD_AZURE_CREDENTIALS != '' }}
+
+
 jobs:
 
   deploy-platform:
@@ -67,10 +71,12 @@ jobs:
           failOnStdErr: true
 
       - name: Logout of Azure
+        if: ${ env.SEPARATE_AAD_LOGIN }}
         run: |
           az logout
 
       - name: Login to Azure (AAD Principals)
+        if: ${ env.SEPARATE_AAD_LOGIN }}
         uses: azure/login@v1
         with:
           creds: ${{secrets.AAD_AZURE_CREDENTIALS}}
@@ -90,10 +96,12 @@ jobs:
           ${{ steps.prodAppsDeploy.outputs.apiHostname }}
 
       - name: Logout of Azure
+        if: ${ env.SEPARATE_AAD_LOGIN }}
         run: |
           az logout
 
       - name: Login to Azure (Azure resources)
+        if: ${ env.SEPARATE_AAD_LOGIN }}
         uses: azure/login@v1
         with:
           creds: ${{secrets.AZURE_CREDENTIALS}} 
