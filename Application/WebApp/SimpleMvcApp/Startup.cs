@@ -44,6 +44,8 @@ namespace SimpleMvcApp
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddApplicationInsightsTelemetry();
+
             var intermediateSettings = new ApiSettings();
             var configurationSection = Configuration.GetSection("ApiSettings");
             configurationSection.Bind(intermediateSettings);
