@@ -8,6 +8,11 @@ on:
     branches: [ main ]
     paths:
       - 'Application/Api/**'
+  pull_request:
+    paths:
+      - 'Application/Api/**'
+    branches:
+      - main
   workflow_dispatch:
     
 jobs:
@@ -101,6 +106,7 @@ jobs:
       - deploy-to-test
     runs-on: ubuntu-latest
     environment: Production
+    if: github.ref == 'refs/heads/main'
     steps:
     - uses: actions/setup-dotnet@v1
       with:

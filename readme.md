@@ -86,3 +86,4 @@ For more detail see here
 
 - https://github.com/MicrosoftDocs/sql-docs/issues/2323 for more information.
 - https://docs.microsoft.com/en-us/azure/azure-sql/database/authentication-aad-service-principal-tutorial
+
