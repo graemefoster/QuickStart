@@ -4,11 +4,42 @@ param databaseAdministratorObjectId string
 
 var databaseServerName = '${resourcePrefix}-sqlserver'
 
+resource LogAnalyticsWorkspace 'Microsoft.OperationalInsights/workspaces@2021-06-01' = {
+  name: '${resourcePrefix}-{loga}'
+  location: resourceGroup().location
+  properties: {
+    sku: {
+      name: 'PerGB2018'
+    }
+    workspaceCapping: {
+      dailyQuotaGb: 1
+    }
+  }
+}
+
 resource QuickStartServerFarm 'Microsoft.Web/serverfarms@2021-01-15' = {
   name: '${resourcePrefix}-asp'
   location: resourceGroup().location
   sku: {
     name: 'S1'
+  }
+}
+
+resource AppKeyVaultDiagnostics 'Microsoft.Insights/diagnosticSettings@2021-05-01-preview' = {
+  name: '${resourcePrefix}-asp-logs'
+  scope: QuickStartServerFarm
+  properties: {
+    workspaceId: QuickStartServerFarm.id
+    metrics: [
+      {
+        category: 'AllMetrics'
+        enabled: true
+        retentionPolicy: {
+          days: 3
+          enabled: true
+        }
+      }
+    ]
   }
 }
 
