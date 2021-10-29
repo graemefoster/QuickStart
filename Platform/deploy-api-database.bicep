@@ -28,7 +28,7 @@ resource DatabaseDiagnostics 'Microsoft.Insights/diagnosticSettings@2021-05-01-p
     ]
     logs: [
       {
-        categoryGroup: 'log'
+        categoryGroup: 'allLogs'
         enabled: true
         retentionPolicy: {
           days: 3
