@@ -53,6 +53,7 @@ module WebApiDeployment './deploy-api.bicep' = {
     resourcePrefix: resourcePrefix
     serverFarmId: serverFarmId
     environmentName : environmentName
+    logAnalyticsWorkspaceId: logAnalyticsWorkspaceId
     deploySlot: hasSlot
   }
 }
@@ -64,6 +65,7 @@ module WebAppDeployment './deploy-app.bicep' = {
     resourcePrefix: resourcePrefix
     serverFarmId: serverFarmId
     environmentName: environmentName
+    logAnalyticsWorkspaceId: logAnalyticsWorkspaceId
     deploySlot: hasSlot
   }
 }

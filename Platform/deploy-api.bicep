@@ -1,6 +1,7 @@
 param resourcePrefix string
 param serverFarmId string
 param environmentName string
+param logAnalyticsWorkspaceId string
 param deploySlot bool
 
 var apiHostname = '${resourcePrefix}-${uniqueString(resourceGroup().name)}-${environmentName}-api'
@@ -30,6 +31,17 @@ resource WebApi 'Microsoft.Web/sites@2021-01-15' = {
   }
 }
 
+resource WebAppAppInsights 'Microsoft.Insights/components@2020-02-02' = {
+  name: '${apiHostname}-appi'
+  location: resourceGroup().location
+  kind: 'Web'
+  properties: {
+    Application_Type: 'web'
+    SamplingPercentage: 5
+    WorkspaceResourceId: logAnalyticsWorkspaceId
+  }
+}
+
 resource WebApiGreen 'Microsoft.Web/sites/slots@2021-01-15' = if(deploySlot) {
   parent: WebApi
   name: 'green'
@@ -50,3 +62,4 @@ resource WebApiGreen 'Microsoft.Web/sites/slots@2021-01-15' = if(deploySlot) {
 output apiHostname string = apiHostname
 output managedIdentityName string = ManagedIdentity.name
 output managedIdentityAppId string = ManagedIdentity.properties.clientId
+output appInsightsKey string = reference(WebAppAppInsights.id).InstrumentationKey

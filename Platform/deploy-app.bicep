@@ -1,6 +1,7 @@
 param resourcePrefix string
 param serverFarmId string
 param environmentName string
+param logAnalyticsWorkspaceId string
 param deploySlot bool
 
 var appHostname = '${resourcePrefix}-${uniqueString(resourceGroup().name)}-${environmentName}-webapp'
@@ -20,6 +21,24 @@ resource AppKeyVault 'Microsoft.KeyVault/vaults@2021-06-01-preview' = {
   }
 }
 
+resource KeyVaultDiagnostics 'Microsoft.Insights/diagnosticSettings@2021-05-01-preview' = {
+  name: 'aspDiagnostics'
+  scope: AppKeyVault
+  properties: {
+    workspaceId: logAnalyticsWorkspaceId
+    metrics: [
+      {
+        category: 'AllMetrics'
+        enabled: true
+        retentionPolicy: {
+          days: 3
+          enabled: true
+        }
+      }
+    ]
+  }
+}
+
 resource WebApp 'Microsoft.Web/sites@2021-01-15' = {
   name: appHostname
   location: resourceGroup().location
@@ -33,6 +52,17 @@ resource WebApp 'Microsoft.Web/sites@2021-01-15' = {
       minTlsVersion: '1.2'
       netFrameworkVersion: 'v5.0'
     }
+  }
+}
+
+resource WebAppAppInsights 'Microsoft.Insights/components@2020-02-02' = {
+  name: '${appHostname}-appi'
+  location: resourceGroup().location
+  kind: 'Web'
+  properties: {
+    Application_Type: 'web'
+    SamplingPercentage: 5
+    WorkspaceResourceId: logAnalyticsWorkspaceId
   }
 }
 
@@ -76,3 +106,4 @@ resource GreenKeyVaultAuth 'Microsoft.Authorization/roleAssignments@2020-08-01-p
 
 output appHostname string = appHostname
 output appKeyVaultName string = appKeyVaultName
+output appInsightsKey string = reference(WebAppAppInsights.id).InstrumentationKey

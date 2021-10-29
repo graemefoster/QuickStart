@@ -52,6 +52,7 @@ jobs:
             platformResourceGroupName=${{ steps.platformDeploy.outputs.platformResourceGroupName }} 
             serverFarmId=${{ steps.platformDeploy.outputs.serverFarmId }} 
             databaseServerName=${{ steps.platformDeploy.outputs.databaseServerName }}
+            logAnalyticsWorkspaceId=${{ steps.platformDeploy.outputs.logAnalyticsWorkspaceId }}
             environmentName=test
           failOnStdErr: true
 
@@ -67,6 +68,7 @@ jobs:
             platformResourceGroupName=${{ steps.platformDeploy.outputs.platformResourceGroupName }} 
             serverFarmId=${{ steps.platformDeploy.outputs.serverFarmId }} 
             databaseServerName=${{ steps.platformDeploy.outputs.databaseServerName }}
+            logAnalyticsWorkspaceId=${{ steps.platformDeploy.outputs.logAnalyticsWorkspaceId }}
             environmentName=prod
           failOnStdErr: true
 

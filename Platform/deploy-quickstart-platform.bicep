@@ -30,4 +30,4 @@ module PlatformDeployment './deploy-platform.bicep' = {
 output platformResourceGroupName string = platformRgName
 output serverFarmId string = PlatformDeployment.outputs.serverFarmId
 output databaseServerName string = PlatformDeployment.outputs.databaseServerName
-
+output logAnalyticsWorkspaceId string = PlatformDeployment.outputs.logAnalyticsWorkspaceId
