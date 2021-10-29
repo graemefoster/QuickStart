@@ -106,6 +106,7 @@ jobs:
       - deploy-to-test
     runs-on: ubuntu-latest
     environment: Production
+    if: github.ref == 'refs/heads/main'
     steps:
     - uses: actions/setup-dotnet@v1
       with:
