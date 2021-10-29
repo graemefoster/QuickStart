@@ -8,6 +8,11 @@ on:
     branches: [ main ]
     paths:
       - 'Application/WebApp/**'
+  pull_request:
+    paths:
+      - 'Application/WebApp/**'
+    branches:
+      - main
   workflow_dispatch:
     
 jobs:
