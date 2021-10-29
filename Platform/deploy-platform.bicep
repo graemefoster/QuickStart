@@ -29,7 +29,7 @@ resource AppKeyVaultDiagnostics 'Microsoft.Insights/diagnosticSettings@2021-05-0
   name: '${resourcePrefix}-asp-logs'
   scope: QuickStartServerFarm
   properties: {
-    workspaceId: QuickStartServerFarm.id
+    workspaceId: LogAnalyticsWorkspace.id
     metrics: [
       {
         category: 'AllMetrics'
