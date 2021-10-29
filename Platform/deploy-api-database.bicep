@@ -1,8 +1,8 @@
-param resourceSuffix string
+param resourcePrefix string
 param databaseServerName string
 param environmentName string
 
-var databaseName = '${resourceSuffix}-${environmentName}-sqldb'
+var databaseName = '${resourcePrefix}-${environmentName}-sqldb'
 
 resource SqlDatabaseTest 'Microsoft.Sql/servers/databases@2021-02-01-preview' = {
   name: '${databaseServerName}/${databaseName}'

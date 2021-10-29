@@ -1,9 +1,20 @@
 targetScope = 'subscription'
 
-param resourceSuffix string
+@description('A prefix to add to all resources to keep them unique')
+@minLength(3)
+@maxLength(6)
+param resourcePrefix string
+
+@description('The resource group that platform components were deployed to. Template assume s Sql Server is in here, and databases must be deployed to the same resource group.')
 param platformResourceGroupName string
+
+@description('Resource Id of the App Service Plan hosting the apis / apps')
 param serverFarmId string
+
+@description('Resource name of the platform Sql Server')
 param databaseServerName string
+
+@description('Used to construct app / api / keyvault names. Suggestions include test, prod, nonprod')
 param environmentName string
 
 var hasSlot = environmentName != 'test'
@@ -14,7 +25,7 @@ resource platformResourceGroup 'Microsoft.Resources/resourceGroups@2021-04-01' =
 }
 
 resource resourceGroup 'Microsoft.Resources/resourceGroups@2021-04-01' = {
-  name: '${resourceSuffix}-${environmentName}-rg'
+  name: '${resourcePrefix}-${environmentName}-rg'
   location: deployment().location
 }
 
@@ -25,7 +36,7 @@ module DatabaseDeployment './deploy-api-database.bicep' = {
   name: 'DeployDatabase'
   scope: platformResourceGroup
   params: {
-    resourceSuffix: resourceSuffix
+    resourcePrefix: resourcePrefix
     databaseServerName: databaseServerName
     environmentName: environmentName
   }
@@ -35,7 +46,7 @@ module WebApiDeployment './deploy-api.bicep' = {
   name: 'DeployApi'
   scope: resourceGroup
   params: {
-    resourceSuffix: resourceSuffix
+    resourcePrefix: resourcePrefix
     serverFarmId: serverFarmId
     environmentName : environmentName
     deploySlot: hasSlot
@@ -46,7 +57,7 @@ module WebAppDeployment './deploy-app.bicep' = {
   name: 'DeployApp'
   scope: resourceGroup
   params: {
-    resourceSuffix: resourceSuffix
+    resourcePrefix: resourcePrefix
     serverFarmId: serverFarmId
     environmentName: environmentName
     deploySlot: hasSlot

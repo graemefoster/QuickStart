@@ -1,11 +1,11 @@
-param resourceSuffix string
+param resourcePrefix string
 param databaseAdministratorName string
 param databaseAdministratorObjectId string
 
-var databaseServerName = '${resourceSuffix}-sqlserver'
+var databaseServerName = '${resourcePrefix}-sqlserver'
 
 resource QuickStartServerFarm 'Microsoft.Web/serverfarms@2021-01-15' = {
-  name: '${resourceSuffix}-asp'
+  name: '${resourcePrefix}-asp'
   location: resourceGroup().location
   sku: {
     name: 'S1'

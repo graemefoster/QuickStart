@@ -31,7 +31,7 @@ jobs:
           region: 'australiaeast'
           template: ./Platform/deploy-quickstart-platform.bicep
           parameters: >
-            resourceSuffix=${{ secrets.RESOURCE_PREFIX }} 
+            resourcePrefix=${{ secrets.RESOURCE_PREFIX }} 
             databaseAdministratorObjectId=${{ secrets.DEPLOYMENTPRINCIPAL_ID }} 
             databaseAdministratorName=${{ secrets.DEPLOYMENTPRINCIPAL_NAME }}
           failOnStdErr: true
@@ -44,7 +44,7 @@ jobs:
           region: 'australiaeast'
           template: ./Platform/deploy-quickstart-apps.bicep
           parameters: >
-            resourceSuffix=${{ secrets.RESOURCE_PREFIX }} 
+            resourcePrefix=${{ secrets.RESOURCE_PREFIX }} 
             platformResourceGroupName=${{ steps.platformDeploy.outputs.platformResourceGroupName }} 
             serverFarmId=${{ steps.platformDeploy.outputs.serverFarmId }} 
             databaseServerName=${{ steps.platformDeploy.outputs.databaseServerName }}
@@ -59,7 +59,7 @@ jobs:
           region: 'australiaeast'
           template: ./Platform/deploy-quickstart-apps.bicep
           parameters: >
-            resourceSuffix=${{ secrets.RESOURCE_PREFIX }} 
+            resourcePrefix=${{ secrets.RESOURCE_PREFIX }} 
             platformResourceGroupName=${{ steps.platformDeploy.outputs.platformResourceGroupName }} 
             serverFarmId=${{ steps.platformDeploy.outputs.serverFarmId }} 
             databaseServerName=${{ steps.platformDeploy.outputs.databaseServerName }}

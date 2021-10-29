@@ -1,10 +1,10 @@
-param resourceSuffix string
+param resourcePrefix string
 param serverFarmId string
 param environmentName string
 param deploySlot bool
 
-var appHostname = '${resourceSuffix}-${uniqueString(resourceGroup().name)}-${environmentName}-webapp'
-var appKeyVaultName = '${resourceSuffix}-app-${environmentName}-kv'
+var appHostname = '${resourcePrefix}-${uniqueString(resourceGroup().name)}-${environmentName}-webapp'
+var appKeyVaultName = '${resourcePrefix}-app-${environmentName}-kv'
 var secretsUserRoleId = '/subscriptions/${subscription().subscriptionId}/providers/Microsoft.Authorization/roleDefinitions/4633458b-17de-408a-b874-0445c86b69e6'
 
 resource AppKeyVault 'Microsoft.KeyVault/vaults@2021-06-01-preview' = {
