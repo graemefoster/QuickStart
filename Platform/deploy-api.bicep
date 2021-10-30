@@ -43,11 +43,11 @@ resource WebAppAppInsights 'Microsoft.Insights/components@2020-02-02' = {
 
 resource WebAppInsightsHealthCheck 'Microsoft.Insights/webtests@2020-10-05-preview' = {
   location: resourceGroup().location
+  name: 'webapp-ping-test'
   kind: 'ping'
   properties: {
     Kind: 'ping'
     Frequency: 300
-    Locations: [ {Id: 'emea-au-syd-edge'}, {Id: 'apac-sg-sin-azr'} ]
     Name: 'webapp-ping-test'
     Timeout: 10
     Description: 'Ping test on webapp'
@@ -58,6 +58,14 @@ resource WebAppInsightsHealthCheck 'Microsoft.Insights/webtests@2020-10-05-previ
       HttpVerb: 'GET'
       RequestUrl: 'https://${apiHostname}.azurewebsites.net/health'
     }
+    Locations: [
+      {
+        Id: 'emea-au-syd-edge'
+      }
+      {
+        Id: 'apac-sg-sin-azr'
+      }
+    ]
   }
 }
 
