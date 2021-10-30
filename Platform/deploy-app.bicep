@@ -93,12 +93,22 @@ resource WebAppAppInsightsHealthCheck 'Microsoft.Insights/webtests@2018-05-01-pr
     Configuration: {
       WebTest: '<WebTest Name="webapp-ping-test" Id="678ddf91-1ab8-44c8-9274-123456789abc" Enabled="True" CssProjectStructure="" CssIteration="" Timeout="300" WorkItemIds="" xmlns="http://microsoft.com/schemas/VisualStudio/TeamTest/2010" Description="" CredentialUserName="" CredentialPassword="" PreAuthenticate="True" Proxy="default" StopOnError="False" RecordedResultFile="" ResultsLocale="" ><Items><Request Method="GET" Guid="b4162485-9114-fcfc-e086-123456789abc" Version="1.1" Url="https://${appHostname}.azurewebsites.net/health" ThinkTime="0" Timeout="120" ParseDependentRequests="False" FollowRedirects="False" RecordResult="True" Cache="False" ResponseTimeGoal="0" Encoding="utf-8" ExpectedHttpStatusCode="200" ExpectedResponseUrl="" ReportingName="" IgnoreHttpStatusCode="False" /></Items></WebTest>'
     }
+    //Locations here: https://docs.microsoft.com/en-us/azure/azure-monitor/app/monitor-web-app-availability
     Locations: [
       {
-        Id: 'emea-au-syd-edge'
+        Id: 'emea-au-syd-edge' //australia east
       }
       {
-        Id: 'apac-sg-sin-azr'
+        Id: 'apac-sg-sin-azr' //south-east asia
+      }
+      {
+        Id: 'emea-nl-ams-azr' //west-europe
+      }
+      {
+        Id: 'us-va-ash-azr' //east-us
+      }
+      {
+        Id: 'us-ca-sjc-azr' //west-us
       }
     ]
   }
