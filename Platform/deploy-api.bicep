@@ -41,6 +41,26 @@ resource WebAppAppInsights 'Microsoft.Insights/components@2020-02-02' = {
   }
 }
 
+resource WebAppInsightsHealthCheck 'Microsoft.Insights/webtests@2020-10-05-preview' = {
+  location: resourceGroup().location
+  kind: 'ping'
+  properties: {
+    Kind: 'ping'
+    Frequency: 300
+    Locations: [ {Id: 'emea-au-syd-edge'}, {Id: 'apac-sg-sin-azr'} ]
+    Name: 'webapp-ping-test'
+    Timeout: 10
+    Description: 'Ping test on webapp'
+    Enabled: true
+    SyntheticMonitorId: 'webapp-ping-test'
+    Request: {
+      FollowRedirects:false
+      HttpVerb: 'GET'
+      RequestUrl: 'https://${apiHostname}.azurewebsites.net/health'
+    }
+  }
+}
+
 resource WebApiGreen 'Microsoft.Web/sites/slots@2021-01-15' = if(deploySlot) {
   parent: WebApi
   name: 'green'
