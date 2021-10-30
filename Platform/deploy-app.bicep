@@ -75,6 +75,36 @@ resource WebAppAppInsights 'Microsoft.Insights/components@2020-02-02' = {
   }
 }
 
+resource WebAppAppInsightsHealthCheck 'Microsoft.Insights/webtests@2020-10-05-preview' = {
+  location: resourceGroup().location
+  name: 'webapp-ping-test'
+  kind: 'ping'
+  properties: {
+    Kind: 'ping'
+    Frequency: 300
+    Name: 'webapp-ping-test'
+    Timeout: 10
+    Description: 'Ping test on webapp'
+    Enabled: true
+    SyntheticMonitorId: 'webapp-ping-test'
+    Request: {
+      FollowRedirects:false
+      HttpVerb: 'GET'
+      RequestUrl: 'https://${appHostname}.azurewebsites.net/health'
+    }
+    Locations: [
+      {
+        Id: 'emea-au-syd-edge'
+      }
+      {
+        Id: 'apac-sg-sin-azr'
+      }
+    ]
+  }
+}
+
+
+
 resource KeyVaultAuth 'Microsoft.Authorization/roleAssignments@2020-08-01-preview' = {
   name: guid('${appHostname}-read-${appKeyVaultName}')
   scope: AppKeyVault
