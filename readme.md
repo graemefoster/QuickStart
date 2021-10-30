@@ -30,7 +30,7 @@ Start by creating service principals in the subscriptions to let the CI/CD pipel
 
 ## Create a Service Principal in the subscription where you deploy resources
 
-``` az ad sp create-for-rbac --name "<ServicePrincipalName>" --role contributor --sdk-auth ```
+``` az ad sp create-for-rbac --name "<ServicePrincipalName>" --role owner --sdk-auth ```
 
 This will output a JSON string with the Service Principal login information. Hold onto this as we'll use it when setting up our CI / CD Pipelines.
 
