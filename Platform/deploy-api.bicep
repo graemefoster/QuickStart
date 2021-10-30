@@ -41,7 +41,7 @@ resource WebAppAppInsights 'Microsoft.Insights/components@2020-02-02' = {
   }
 }
 
-resource WebAppInsightsHealthCheck 'Microsoft.Insights/webtests@2020-10-05-preview' = {
+resource WebAppInsightsHealthCheck 'Microsoft.Insights/webtests@2018-05-01-preview' = {
   location: resourceGroup().location
   name: 'webapp-ping-test'
   kind: 'ping'
