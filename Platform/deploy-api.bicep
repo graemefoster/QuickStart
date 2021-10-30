@@ -53,14 +53,9 @@ resource WebAppInsightsHealthCheck 'Microsoft.Insights/webtests@2018-05-01-previ
     Kind: 'ping'
     Frequency: 300
     Name: 'webapp-ping-test'
-    Timeout: 10
-    Description: 'Ping test on webapp'
-    Enabled: true
     SyntheticMonitorId: 'webapp-ping-test'
-    Request: {
-      FollowRedirects:false
-      HttpVerb: 'GET'
-      RequestUrl: 'https://${apiHostname}.azurewebsites.net/health'
+    Configuration: {
+      WebTest: '<WebTest Name="webapp-ping-test" Id="678ddf91-1ab8-44c8-9274-123456789abc" Enabled="True" CssProjectStructure="" CssIteration="" Timeout="300" WorkItemIds="" xmlns="http://microsoft.com/schemas/VisualStudio/TeamTest/2010" Description="" CredentialUserName="" CredentialPassword="" PreAuthenticate="True" Proxy="default" StopOnError="False" RecordedResultFile="" ResultsLocale="" ><Items><Request Method="GET" Guid="b4162485-9114-fcfc-e086-123456789abc" Version="1.1" Url="https://${apiHostname}.azurewebsites.net/health" ThinkTime="0" Timeout="120" ParseDependentRequests="True" FollowRedirects="False" RecordResult="True" Cache="False" ResponseTimeGoal="0" Encoding="utf-8" ExpectedHttpStatusCode="200" ExpectedResponseUrl="" ReportingName="" IgnoreHttpStatusCode="False" /></Items></WebTest>'
     }
     Locations: [
       {
