@@ -5,6 +5,11 @@ on:
     branches: [ main ]
     paths:
       - 'Platform/**'
+  pull_request:
+    paths:
+      - 'Platform/**'
+    branches:
+      - main
   workflow_dispatch:
 
 env:
