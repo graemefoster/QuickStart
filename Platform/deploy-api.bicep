@@ -45,6 +45,10 @@ resource WebAppInsightsHealthCheck 'Microsoft.Insights/webtests@2018-05-01-previ
   location: resourceGroup().location
   name: 'webapp-ping-test'
   kind: 'ping'
+  //Must have tag pointing to App Insights
+  tags: {
+    'hidden-link:${WebAppAppInsights.id}' : 'Resource'
+  }
   properties: {
     Kind: 'ping'
     Frequency: 300
