@@ -34,6 +34,8 @@ Start by creating service principals in the subscriptions to let the CI/CD pipel
 
 This will output a JSON string with the Service Principal login information. Hold onto this as we'll use it when setting up our CI / CD Pipelines.
 
+> Owner is a high privilege role. This service principal needs at least contributor access on the subscription, as-well as the ability to assign roles to service principals. Owner provides both of these.
+
 ## Assign the above Service Principal the Directory.Writers role
 
 Quickstart will create two Azure Active Directory Applications for OIDC auth against the Web-App and API. To do this the above service principal needs to the Directory.Writers role against your AAD. Head to the [Azure Portal AAD page](https://ms.portal.azure.com/#blade/Microsoft_AAD_IAM/ActiveDirectoryMenuBlade/RolesAndAdministrators), find the 'Directory writers' role and add your Service Principal to it. 
