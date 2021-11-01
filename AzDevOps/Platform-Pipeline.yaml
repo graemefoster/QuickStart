@@ -42,11 +42,12 @@ stages:
 
       - job: "DeployAppsAndDatabaseTemplate"
         displayName: "Deploy Apps and Databases"
+        dependsOn: platformDeploy
         variables:
-          platformResourceGroupName: $(platformOutputs.platformResourceGroupName.value)
-          serverFarmId: $(platformOutputs.serverFarmId.value)
-          databaseServerName: $(platformOutputs.databaseServerName.value)
-          logAnalyticsWorkspaceId: $(platformOutputs.logAnalyticsWorkspaceId.value)
+          platformResourceGroupName: $[ dependencies.DeployPlatformTemplate.outputs['platformDeploy.platformOutputs.platformResourceGroupName.value']]
+          serverFarmId: $[ dependencies.DeployPlatformTemplate.outputs['platformDeploy.platformOutputs.serverFarmId.value']]
+          databaseServerName: $[ dependencies.DeployPlatformTemplate.outputs['platformDeploy.platformOutputs.databaseServerName.value']]
+          logAnalyticsWorkspaceId: $[ dependencies.DeployPlatformTemplate.outputs['platformDeploy.platformOutputs.logAnalyticsWorkspaceId.value']]
 
         steps:
           - bash: az bicep build --file Platform/deploy-quickstart-apps.bicep
