@@ -187,13 +187,6 @@ jobs:
         with:
           creds: ${{secrets.AAD_AZURE_CREDENTIALS}}
 
-      - name: Create AAD Applications for test web-app / web-api
-        id: setup-test-aad
-        run: >
-          ./Platform/setup-aad.sh
-          ${{ steps.appsDeploy.outputs.applicationHostname }} 
-          ${{ steps.appsDeploy.outputs.apiHostname }}
-
       - name: Create AAD Applications for production web-app / web-api
         id: setup-prod-aad
         run: >
