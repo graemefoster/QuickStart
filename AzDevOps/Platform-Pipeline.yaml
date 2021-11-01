@@ -42,10 +42,10 @@ stages:
   - DeployPlatform
   displayName: 'Deploying apps and databases'
   variables:
-      platformResourceGroupName: $[ stageDependencies.DeployPlatform.DeployPlatformTemplate.outputs['platformResourceGroupName.value'] ]
-      serverFarmId: $[ stageDependencies.DeployPlatform.DeployPlatformTemplate.outputs['serverFarmId.value'] ]
-      databaseServerName: $[ stageDependencies.DeployPlatform.DeployPlatformTemplate.outputs['databaseServerName.value'] ]
-      logAnalyticsWorkspaceId: $[ stageDependencies.DeployPlatform.DeployPlatformTemplate.outputs['logAnalyticsWorkspaceId.value'] ]
+      platformResourceGroupName: $[ stageDependencies.DeployPlatform.DeployPlatformTemplate.outputs['platformDeploy.platformResourceGroupName.value'] ]
+      serverFarmId: $[ stageDependencies.DeployPlatform.DeployPlatformTemplate.outputs['platformDeploy.serverFarmId.value'] ]
+      databaseServerName: $[ stageDependencies.DeployPlatform.DeployPlatformTemplate.outputs['platformDeploy.databaseServerName.value'] ]
+      logAnalyticsWorkspaceId: $[ stageDependencies.DeployPlatform.DeployPlatformTemplate.outputs['platformDeploy.logAnalyticsWorkspaceId.value'] ]
 
   jobs:
   - job: "DeployAppsAndDatabaseTemplate"
