@@ -45,6 +45,7 @@ namespace SimpleMvcApp
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddApplicationInsightsTelemetry();
+            services.AddHealthChecks();
 
             var intermediateSettings = new ApiSettings();
             var configurationSection = Configuration.GetSection("ApiSettings");
@@ -110,6 +111,7 @@ namespace SimpleMvcApp
 
             app.UseEndpoints(endpoints =>
             {
+                endpoints.MapHealthChecks("/health");
                 endpoints.MapControllerRoute(
                     name: "default",
                     pattern: "{controller=home}/{action=index}/{id?}");

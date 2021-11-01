@@ -31,6 +31,7 @@ namespace SimpleApiWithDatabase
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddApplicationInsightsTelemetry();
+            services.AddHealthChecks();
 
             var settingsSection = Configuration.GetSection("ApiSettings");
             var interimSettings = new ApiSettings();
@@ -107,7 +108,11 @@ namespace SimpleApiWithDatabase
             app.UseAuthentication();
             app.UseAuthorization();
 
-            app.UseEndpoints(endpoints => { endpoints.MapControllers(); });
+            app.UseEndpoints(endpoints =>
+            {
+                endpoints.MapHealthChecks("/health");
+                endpoints.MapControllers();
+            });
         }
     }
 }

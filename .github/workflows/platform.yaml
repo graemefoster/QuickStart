@@ -5,6 +5,11 @@ on:
     branches: [ main ]
     paths:
       - 'Platform/**'
+  pull_request:
+    paths:
+      - 'Platform/**'
+    branches:
+      - main
   workflow_dispatch:
 
 env:
@@ -59,6 +64,7 @@ jobs:
       - name: Deploy Production Applications and Databases
         uses: azure/arm-deploy@v1
         id: 'prodAppsDeploy'
+        if: github.ref == 'refs/heads/main'
         with:
           scope: 'subscription'
           region: 'australiaeast'
@@ -92,6 +98,7 @@ jobs:
 
       - name: Create AAD Applications for production web-app / web-api
         id: setup-prod-aad
+        if: github.ref == 'refs/heads/main'
         run: >
           ./Platform/setup-aad.sh 
           ${{ steps.prodAppsDeploy.outputs.applicationHostname }}
@@ -134,6 +141,7 @@ jobs:
       - name: Configure Production Applications
         uses: azure/arm-deploy@v1
         id: 'productionConfigurationDeploy'
+        if: github.ref == 'refs/heads/main'
         with:
           scope: 'subscription'
           region: 'australiaeast'
@@ -167,6 +175,7 @@ jobs:
         run: dotnet run --project ./SqlAadMigrationDeployer/SqlAadMigrationDeployer.csproj add-managed-identity "${{ steps.testAppsDeploy.outputs.databaseConnectionString }}" "${{ steps.testAppsDeploy.outputs.managedIdentityName }}" "${{ steps.testAppsDeploy.outputs.managedIdentityAppId }}" "db_owner"
 
       - name: Grant access to database to Production Api
+        if: github.ref == 'refs/heads/main'
         run: dotnet run --project ./SqlAadMigrationDeployer/SqlAadMigrationDeployer.csproj add-managed-identity "${{ steps.prodAppsDeploy.outputs.databaseConnectionString }}" "${{ steps.prodAppsDeploy.outputs.managedIdentityName }}" "${{ steps.prodAppsDeploy.outputs.managedIdentityAppId }}" "db_owner"
 
       - name: Logout of Azure
