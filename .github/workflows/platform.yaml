@@ -123,10 +123,6 @@ jobs:
       - name: Grant access to database to Test Api
         run: dotnet run --project ./SqlAadMigrationDeployer/SqlAadMigrationDeployer.csproj add-managed-identity "${{ steps.appsDeploy.outputs.databaseConnectionString }}" "${{ steps.appsDeploy.outputs.managedIdentityName }}" "${{ steps.appsDeploy.outputs.managedIdentityAppId }}" "db_owner"
 
-      - name: Grant access to database to Production Api
-        if: github.ref == 'refs/heads/main'
-        run: dotnet run --project ./SqlAadMigrationDeployer/SqlAadMigrationDeployer.csproj add-managed-identity "${{ steps.appsDeploy.outputs.databaseConnectionString }}" "${{ steps.appsDeploy.outputs.managedIdentityName }}" "${{ steps.appsDeploy.outputs.managedIdentityAppId }}" "db_owner"
-
       - name: Logout of Azure
         run: |
           az logout
@@ -247,9 +243,6 @@ jobs:
 
       - name: Build Database Migrator
         run: dotnet build ./SqlAadMigrationDeployer/SqlAadMigrationDeployer.csproj --configuration Release --no-restore
-
-      - name: Grant access to database to Test Api
-        run: dotnet run --project ./SqlAadMigrationDeployer/SqlAadMigrationDeployer.csproj add-managed-identity "${{ steps.appsDeploy.outputs.databaseConnectionString }}" "${{ steps.appsDeploy.outputs.managedIdentityName }}" "${{ steps.appsDeploy.outputs.managedIdentityAppId }}" "db_owner"
 
       - name: Grant access to database to Production Api
         run: dotnet run --project ./SqlAadMigrationDeployer/SqlAadMigrationDeployer.csproj add-managed-identity "${{ steps.appsDeploy.outputs.databaseConnectionString }}" "${{ steps.appsDeploy.outputs.managedIdentityName }}" "${{ steps.appsDeploy.outputs.managedIdentityAppId }}" "db_owner"
