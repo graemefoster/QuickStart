@@ -16,8 +16,8 @@ stages:
 - stage: 'DeployPlatform'
   displayName: 'Deploying platform'
   jobs:
-  - job: "DeployARMTemplate"
-    displayName: "Deploy ARM template"
+  - job: "DeployPlatformTemplate"
+    displayName: "Deploy Platform"
 
     steps:
     - bash: az bicep build --file Platform/deploy-quickstart-platform.bicep
@@ -39,8 +39,20 @@ stages:
         deploymentOutputs: platformOutputs
         overrideParameters: -resourcePrefix $(RESOURCE_PREFIX) -databaseAdministratorName $(DEPLOYMENTPRINCIPAL_NAME) -databaseAdministratorObjectId $(DEPLOYMENTPRINCIPAL_ID)
 
+  - job: "DeployAppsAndDatabaseTemplate"
+    dependsOn:
+      - DeployPlatform
+    displayName: "Deploy Apps and Databases"
+    variables:
+        platformResourceGroupName: $[ jobDependencies.DeployPlatform.outputs['platformResourceGroupName.value'] ]
+        serverFarmId: $[ jobDependencies.DeployPlatform.outputs['serverFarmId.value'] ]
+        databaseServerName: $[ jobDependencies.DeployPlatform.outputs['databaseServerName.value'] ]
+        logAnalyticsWorkspaceId: $[ jobDependencies.DeployPlatform.outputs['logAnalyticsWorkspaceId.value'] ]
+
+    steps:
     - task: AzureResourceManagerTemplateDeployment@3
       displayName: 'Deploy Test applications and databases'
+      variables:
       inputs:
         azureResourceManagerConnection: PlatformServiceConnection
         location: 'australiaeast'
@@ -52,10 +64,10 @@ stages:
         deploymentOutputs: platformOutputs
         overrideParameters: >
           -resourcePrefix $(RESOURCE_PREFIX) 
-          -platformResourceGroupName $[ platformDeploy.outputs.platformResourceGroupName ]
-          -serverFarmId $[ platformDeploy.outputs.serverFarmId ] 
-          -databaseServerName $[ platformDeploy.outputs.databaseServerName ]
-          -logAnalyticsWorkspaceId $[ steps.platformDeploy.outputs.logAnalyticsWorkspaceId ]
+          -platformResourceGroupName $(platformResourceGroupName)
+          -serverFarmId $(serverFarmId)
+          -databaseServerName $(databaseServerName)
+          -logAnalyticsWorkspaceId $(logAnalyticsWorkspaceId)
           -environmentName test
 
     - task: AzureResourceManagerTemplateDeployment@3
@@ -71,8 +83,8 @@ stages:
         deploymentOutputs: platformOutputs
         overrideParameters: >
           -resourcePrefix $(RESOURCE_PREFIX) 
-          -platformResourceGroupName $[ platformDeploy.outputs.platformResourceGroupName ]
-          -serverFarmId $[ platformDeploy.outputs.serverFarmId ] 
-          -databaseServerName $[ platformDeploy.outputs.databaseServerName ]
-          -logAnalyticsWorkspaceId $[ steps.platformDeploy.outputs.logAnalyticsWorkspaceId ]
+          -platformResourceGroupName $(platformResourceGroupName)
+          -serverFarmId $(serverFarmId)
+          -databaseServerName $(databaseServerName)
+          -logAnalyticsWorkspaceId $(logAnalyticsWorkspaceId)
           -environmentName prod
