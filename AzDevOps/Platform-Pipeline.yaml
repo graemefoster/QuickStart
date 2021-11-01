@@ -22,8 +22,6 @@ stages:
     steps:
     - bash: az bicep build --file Platform/deploy-quickstart-platform.bicep
       displayName: 'Compile Platform Bicep to ARM'
-    - bash: az bicep build --file Platform/deploy-quickstart-apps.bicep
-      displayName: 'Compile Apps Bicep to ARM'
 
     - task: AzureResourceManagerTemplateDeployment@3
       displayName: 'Deploy Platform'
@@ -54,6 +52,8 @@ stages:
     displayName: "Deploy Apps and Databases"
 
     steps:
+    - bash: az bicep build --file Platform/deploy-quickstart-apps.bicep
+      displayName: 'Compile Apps Bicep to ARM'
     - task: AzureResourceManagerTemplateDeployment@3
       displayName: 'Deploy Test applications and databases'
       inputs:
