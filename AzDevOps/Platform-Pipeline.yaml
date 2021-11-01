@@ -3,81 +3,81 @@ name: "Platform-Pipeline"
 trigger:
   branches:
     include:
-    - main
-    - feature/*
+      - main
+      - feature/*
   paths:
     include:
-    - Platform
+      - Platform
 
 variables:
-- group: Platform
+  - group: Platform
 
 stages:
-- stage: 'DeployPlatform'
-  displayName: 'Deploying platform'
-  jobs:
-  - job: "DeployPlatformTemplate"
-    displayName: "Deploy Platform"
+  - stage: "DeployPlatform"
+    displayName: "Deploying platform"
+    jobs:
+      - job: "DeployPlatformTemplate"
+        displayName: "Deploy Platform"
 
-    steps:
-    - bash: az bicep build --file Platform/deploy-quickstart-platform.bicep
-      displayName: 'Compile Platform Bicep to ARM'
+        steps:
+          - bash: az bicep build --file Platform/deploy-quickstart-platform.bicep
+            displayName: "Compile Platform Bicep to ARM"
 
-    - task: AzureResourceManagerTemplateDeployment@3
-      displayName: 'Deploy Platform'
-      name: 'platformDeploy'
-      inputs:
-        azureResourceManagerConnection: PlatformServiceConnection
-        location: 'australiaeast'
-        deploymentScope: Subscription
-        templateLocation: Linked artifact
-        csmFile: 'Platform/deploy-quickstart-platform.json'
-        scriptLocation: 'inlineScript'
-        deploymentMode: Incremental
-        deploymentOutputs: platformOutputs
-        overrideParameters: -resourcePrefix $(RESOURCE_PREFIX) -databaseAdministratorName $(DEPLOYMENTPRINCIPAL_NAME) -databaseAdministratorObjectId $(DEPLOYMENTPRINCIPAL_ID)
+          - task: AzureResourceManagerTemplateDeployment@3
+            displayName: "Deploy Platform"
+            name: "platformDeploy"
+            inputs:
+              azureResourceManagerConnection: PlatformServiceConnection
+              location: "australiaeast"
+              deploymentScope: Subscription
+              templateLocation: Linked artifact
+              csmFile: "Platform/deploy-quickstart-platform.json"
+              scriptLocation: "inlineScript"
+              deploymentMode: Incremental
+              deploymentOutputs: platformOutputs
+              overrideParameters: -resourcePrefix $(RESOURCE_PREFIX) -databaseAdministratorName $(DEPLOYMENTPRINCIPAL_NAME) -databaseAdministratorObjectId $(DEPLOYMENTPRINCIPAL_ID)
 
-- stage: 'DeployAppsAndDatabases'
-  dependsOn: 
-  - DeployPlatform
-  displayName: 'Deploying apps and databases'
-  variables:
-      platformResourceGroupName: $[ stageDependencies.DeployPlatform.DeployPlatformTemplate.outputs['platformDeploy.platformResourceGroupName.value'] ]
-      serverFarmId: $[ stageDependencies.DeployPlatform.DeployPlatformTemplate.outputs['platformDeploy.serverFarmId.value'] ]
-      databaseServerName: $[ stageDependencies.DeployPlatform.DeployPlatformTemplate.outputs['platformDeploy.databaseServerName.value'] ]
-      logAnalyticsWorkspaceId: $[ stageDependencies.DeployPlatform.DeployPlatformTemplate.outputs['platformDeploy.logAnalyticsWorkspaceId.value'] ]
+  - stage: "DeployAppsAndDatabases"
+    dependsOn:
+      - DeployPlatform
+    displayName: "Deploying apps and databases"
 
-  jobs:
-  - job: "DeployAppsAndDatabaseTemplate"
-    displayName: "Deploy Apps and Databases"
+    jobs:
+      - job: "DeployAppsAndDatabaseTemplate"
+        displayName: "Deploy Apps and Databases"
+        variables:
+          platformResourceGroupName: $[ stageDependencies.DeployPlatform.DeployPlatformTemplate.outputs['platformDeploy.platformResourceGroupName.value'] ]
+          serverFarmId: $[ stageDependencies.DeployPlatform.DeployPlatformTemplate.outputs['platformDeploy.serverFarmId.value'] ]
+          databaseServerName: $[ stageDependencies.DeployPlatform.DeployPlatformTemplate.outputs['platformDeploy.databaseServerName.value'] ]
+          logAnalyticsWorkspaceId: $[ stageDependencies.DeployPlatform.DeployPlatformTemplate.outputs['platformDeploy.logAnalyticsWorkspaceId.value'] ]
 
-    steps:
-    - bash: az bicep build --file Platform/deploy-quickstart-apps.bicep
-      displayName: 'Compile Apps Bicep to ARM'
-    - bash: echo "---- rgn  $(platformResourceGroupName) ---"
-      displayName: 'Compile Apps Bicep to ARM'
-    - task: AzureResourceManagerTemplateDeployment@3
-      displayName: 'Deploy Test applications and databases'
-      inputs:
-        azureResourceManagerConnection: PlatformServiceConnection
-        location: 'australiaeast'
-        deploymentScope: Subscription
-        templateLocation: Linked artifact
-        csmFile: 'Platform/deploy-quickstart-apps.json'
-        scriptLocation: 'inlineScript'
-        deploymentMode: Incremental
-        deploymentOutputs: platformOutputs
-        overrideParameters: -resourcePrefix $(RESOURCE_PREFIX) -platformResourceGroupName $(platformResourceGroupName) -serverFarmId $(serverFarmId) -databaseServerName $(databaseServerName) -logAnalyticsWorkspaceId $(logAnalyticsWorkspaceId) -environmentName test
+        steps:
+          - bash: az bicep build --file Platform/deploy-quickstart-apps.bicep
+            displayName: "Compile Apps Bicep to ARM"
+          - bash: echo "---- rgn  $(platformResourceGroupName) ---"
+            displayName: "Compile Apps Bicep to ARM"
+          - task: AzureResourceManagerTemplateDeployment@3
+            displayName: "Deploy Test applications and databases"
+            inputs:
+              azureResourceManagerConnection: PlatformServiceConnection
+              location: "australiaeast"
+              deploymentScope: Subscription
+              templateLocation: Linked artifact
+              csmFile: "Platform/deploy-quickstart-apps.json"
+              scriptLocation: "inlineScript"
+              deploymentMode: Incremental
+              deploymentOutputs: platformOutputs
+              overrideParameters: -resourcePrefix $(RESOURCE_PREFIX) -platformResourceGroupName $(platformResourceGroupName) -serverFarmId $(serverFarmId) -databaseServerName $(databaseServerName) -logAnalyticsWorkspaceId $(logAnalyticsWorkspaceId) -environmentName test
 
-    - task: AzureResourceManagerTemplateDeployment@3
-      displayName: 'Deploy Prod applications and databases'
-      inputs:
-        azureResourceManagerConnection: PlatformServiceConnection
-        location: 'australiaeast'
-        deploymentScope: Subscription
-        templateLocation: Linked artifact
-        csmFile: 'Platform/deploy-quickstart-apps.json'
-        scriptLocation: 'inlineScript'
-        deploymentMode: Incremental
-        deploymentOutputs: platformOutputs
-        overrideParameters: -resourcePrefix $(RESOURCE_PREFIX) -platformResourceGroupName $(platformResourceGroupName) -serverFarmId $(serverFarmId) -databaseServerName $(databaseServerName) -logAnalyticsWorkspaceId $(logAnalyticsWorkspaceId) -environmentName prod
+          - task: AzureResourceManagerTemplateDeployment@3
+            displayName: "Deploy Prod applications and databases"
+            inputs:
+              azureResourceManagerConnection: PlatformServiceConnection
+              location: "australiaeast"
+              deploymentScope: Subscription
+              templateLocation: Linked artifact
+              csmFile: "Platform/deploy-quickstart-apps.json"
+              scriptLocation: "inlineScript"
+              deploymentMode: Incremental
+              deploymentOutputs: platformOutputs
+              overrideParameters: -resourcePrefix $(RESOURCE_PREFIX) -platformResourceGroupName $(platformResourceGroupName) -serverFarmId $(serverFarmId) -databaseServerName $(databaseServerName) -logAnalyticsWorkspaceId $(logAnalyticsWorkspaceId) -environmentName prod
