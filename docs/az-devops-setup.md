@@ -44,7 +44,7 @@ Now add the following variables:
 | DEPLOYMENTPRINCIPAL_ID | Application Id of the service principal you created to perform the deployment | Used to setup the AAD Admin account for Sql Server |
 | DEPLOYMENTPRINCIPAL_NAME | Application name of the service principal you created to perform the deployment | Used to setup the AAD Admin account for Sql Server. This must match the name of the AAD service principal |
 
-## Step 6 - Create the pipeines
+## Step 6 - Create the Platform pipeline
 
 - Head to the Pipelines section of your Project.
 - Select ``` Create Pipeline ```
@@ -52,4 +52,8 @@ Now add the following variables:
 - Select the Quickstart Repository
 - Select ``` Existing Azure Pipelines YAML file ``` when asked to 'Configure your pipeline'
 - Locate the ``` AzDevOps/Platform-Pipeline.yaml ``` file and select 'Continue'
+- Press the dropdown on the ``` Run ``` button and click ``` Save ```
+- Select ` Run Pipeline ` to deploy
+
+
 

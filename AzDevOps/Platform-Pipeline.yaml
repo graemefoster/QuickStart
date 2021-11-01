@@ -13,22 +13,21 @@ variables:
 - group: Platform
 
 stages:
-
 - stage: 'DeployPlatform'
   displayName: 'Deploying platform'
   jobs:
-  - deployment: "DeployARMTemplate"
+  - job: "DeployARMTemplate"
     displayName: "Deploy ARM template"
     steps:
-  - task: AzureCLI@2
-    inputs:
-      azureSubscription: PlatformServiceConnection
-      scriptType: 'bash'
-      scriptLocation: 'inlineScript'
-      inlineScript: |
-        az deployment create \
-          --location AustraliaEast \
-          --name $(Build.BuildNumber) \
-          --template-file Platform/deploy-quickstart-platform.bicep \
-          --parameters resourcePrefix=$(RESOURCE_PREFIX) databaseAdministratorName=$(DEPLOYMENTPRINCIPAL_NAME) databaseAdministratorObjectId=$(DEPLOYMENTPRINCIPAL_ID)
+    - task: AzureCLI@2
+      inputs:
+        azureSubscription: PlatformServiceConnection
+        scriptType: 'bash'
+        scriptLocation: 'inlineScript'
+        inlineScript: |
+          az deployment create \
+            --location AustraliaEast \
+            --name $(Build.BuildNumber) \
+            --template-file Platform/deploy-quickstart-platform.bicep \
+            --parameters resourcePrefix=$(RESOURCE_PREFIX) databaseAdministratorName=$(DEPLOYMENTPRINCIPAL_NAME) databaseAdministratorObjectId=$(DEPLOYMENTPRINCIPAL_ID)
 
