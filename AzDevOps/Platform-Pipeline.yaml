@@ -51,8 +51,6 @@ stages:
 
   jobs:
   - job: "DeployAppsAndDatabaseTemplate"
-    dependsOn:
-      - DeployPlatform
     displayName: "Deploy Apps and Databases"
 
     steps:
