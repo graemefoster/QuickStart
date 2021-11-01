@@ -19,25 +19,15 @@ stages:
   - job: "DeployARMTemplate"
     displayName: "Deploy ARM template"
     steps:
-    - task: AzureCLI@2
+    - bash: az bicep build --file Platform/deploy-quickstart-platform.bicep
+      displayName: 'Compile Platform Bicep to ARM'
+    - task: AzureResourceManagerTemplateDeployment@3
       inputs:
         azureSubscription: PlatformServiceConnection
-        scriptType: 'bash'
+        location: 'australiaeast'
+        templateLocation: Linked artifact
+        csmFile: 'Platform/deploy-quickstart-platform.json'
         scriptLocation: 'inlineScript'
-        inlineScript: |
-          az deployment sub create \
-            --location AustraliaEast \
-            --name $(Build.BuildNumber) \
-            --template-file Platform/deploy-quickstart-platform.bicep \
-            --parameters resourcePrefix=$(RESOURCE_PREFIX) databaseAdministratorName=$(DEPLOYMENTPRINCIPAL_NAME) databaseAdministratorObjectId=$(DEPLOYMENTPRINCIPAL_ID)
-
-          echo 'convert outputs to variables'
-
-          #https://blog.johnnyreilly.com/2021/03/20/bicep-meet-azure-pipelines/
-          echo $deploymentoutputs | jq -c '. | to_entries[] | [.key, .value.value]' |
-            while IFS=$"\n" read -r c; do
-              outputname=$(echo "$c" | jq -r '.[0]')
-              outputvalue=$(echo "$c" | jq -r '.[1]')
-              echo "setting variable RGDO_$outputname=$outputvalue"
-              echo "##vso[task.setvariable variable=RGDO_$outputname]$outputvalue"
-            done
+        deploymentMode: Incremental
+        deploymentOutputs: platformOutputs
+        overrideParameters: -resourcePrefix '$(RESOURCE_PREFIX)' -databaseAdministratorName '$(DEPLOYMENTPRINCIPAL_NAME)' -databaseAdministratorObjectId '$(DEPLOYMENTPRINCIPAL_ID)'
