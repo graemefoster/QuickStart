@@ -134,7 +134,8 @@ jobs:
 
   deploy-platform-prod:
     runs-on: ubuntu-latest
-    environment: Prod
+    environment: Production
+    if: github.ref == 'refs/heads/main'
     needs:
       - deploy-platform-test
     env:
@@ -166,7 +167,6 @@ jobs:
       - name: Deploy Production Applications and Databases
         uses: azure/arm-deploy@v1
         id: 'appsDeploy'
-        if: github.ref == 'refs/heads/main'
         with:
           scope: 'subscription'
           region: 'australiaeast'
@@ -200,7 +200,6 @@ jobs:
 
       - name: Create AAD Applications for production web-app / web-api
         id: setup-prod-aad
-        if: github.ref == 'refs/heads/main'
         run: >
           ./Platform/setup-aad.sh 
           ${{ steps.appsDeploy.outputs.applicationHostname }}
@@ -220,7 +219,6 @@ jobs:
       - name: Configure Production Applications
         uses: azure/arm-deploy@v1
         id: 'productionConfigurationDeploy'
-        if: github.ref == 'refs/heads/main'
         with:
           scope: 'subscription'
           region: 'australiaeast'
@@ -254,7 +252,6 @@ jobs:
         run: dotnet run --project ./SqlAadMigrationDeployer/SqlAadMigrationDeployer.csproj add-managed-identity "${{ steps.appsDeploy.outputs.databaseConnectionString }}" "${{ steps.appsDeploy.outputs.managedIdentityName }}" "${{ steps.appsDeploy.outputs.managedIdentityAppId }}" "db_owner"
 
       - name: Grant access to database to Production Api
-        if: github.ref == 'refs/heads/main'
         run: dotnet run --project ./SqlAadMigrationDeployer/SqlAadMigrationDeployer.csproj add-managed-identity "${{ steps.appsDeploy.outputs.databaseConnectionString }}" "${{ steps.appsDeploy.outputs.managedIdentityName }}" "${{ steps.appsDeploy.outputs.managedIdentityAppId }}" "db_owner"
 
       - name: Logout of Azure

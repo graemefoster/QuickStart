@@ -8,6 +8,9 @@ var databaseName = '${resourcePrefix}-${environmentName}-sqldb'
 resource SqlDatabaseTest 'Microsoft.Sql/servers/databases@2021-02-01-preview' = {
   name: '${databaseServerName}/${databaseName}'
   location: resourceGroup().location
+  sku: {
+    tier: 'Basic'
+  }
 }
 
 
