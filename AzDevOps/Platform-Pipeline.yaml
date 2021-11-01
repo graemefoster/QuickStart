@@ -58,7 +58,6 @@ stages:
     steps:
     - task: AzureResourceManagerTemplateDeployment@3
       displayName: 'Deploy Test applications and databases'
-      variables:
       inputs:
         azureResourceManagerConnection: PlatformServiceConnection
         location: 'australiaeast'
