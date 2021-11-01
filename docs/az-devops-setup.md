@@ -17,7 +17,34 @@ git remote add origin <new-repository-url>
 git push origin 
 ```
 
-## Step 4 - Create the pipeines
+## Step 4 - Add a Service Connection
+
+- Head to the ``` Project Settings ``` pane from your Project.
+- Select ``` Service Connections ``` from the menu
+- Select ``` Create service connection ```
+- Select ``` Azure Resource Manager ``` and select ``` Next ```
+- Select ``` Service Principal (manual) ``` and select ``` Next ```
+
+Fill in the follow details: ``` Subscription Id, Subscription Name, Service principal key, Tenant ID ``` and select ``` Verify ```. Use the details from the Service Principal you created earlier.
+
+- Enter the name ``` PlatformServiceConnection ``` and click ``` Verify and save ```
+
+
+
+## Step 5 - Create a Variable Group to store the variables required to deploy the Platform
+
+- Head to the Pipelines - Library section of your Project.
+- Select ``` + Variable Group ```, and change the name to Platform
+
+Now add the following variables:
+
+| Secret | Purpose | Other information | 
+| --- | --- | --- |
+| RESOURCE_PREFIX | A small string that prefixes the resources. |  It's just used to prevent against resource name clashes. Some services like keyvault and web-apps require globally unique names |
+| DEPLOYMENTPRINCIPAL_ID | Application Id of the service principal you created to perform the deployment | Used to setup the AAD Admin account for Sql Server |
+| DEPLOYMENTPRINCIPAL_NAME | Application name of the service principal you created to perform the deployment | Used to setup the AAD Admin account for Sql Server. This must match the name of the AAD service principal |
+
+## Step 6 - Create the pipeines
 
 - Head to the Pipelines section of your Project.
 - Select ``` Create Pipeline ```
