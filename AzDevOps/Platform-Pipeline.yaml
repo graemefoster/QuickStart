@@ -25,6 +25,7 @@ stages:
       inputs:
         azureResourceManagerConnection: PlatformServiceConnection
         location: 'australiaeast'
+        scope: Subscription
         templateLocation: Linked artifact
         csmFile: 'Platform/deploy-quickstart-platform.json'
         scriptLocation: 'inlineScript'
