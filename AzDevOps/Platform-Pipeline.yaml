@@ -65,13 +65,7 @@ stages:
         scriptLocation: 'inlineScript'
         deploymentMode: Incremental
         deploymentOutputs: platformOutputs
-        overrideParameters: >
-          -resourcePrefix $(RESOURCE_PREFIX) 
-          -platformResourceGroupName $(platformResourceGroupName)
-          -serverFarmId $(serverFarmId)
-          -databaseServerName $(databaseServerName)
-          -logAnalyticsWorkspaceId $(logAnalyticsWorkspaceId)
-          -environmentName test
+        overrideParameters: -resourcePrefix $(RESOURCE_PREFIX) -platformResourceGroupName $(platformResourceGroupName) -serverFarmId $(serverFarmId) -databaseServerName $(databaseServerName) -logAnalyticsWorkspaceId $(logAnalyticsWorkspaceId) -environmentName test
 
     - task: AzureResourceManagerTemplateDeployment@3
       displayName: 'Deploy Prod applications and databases'
@@ -84,10 +78,4 @@ stages:
         scriptLocation: 'inlineScript'
         deploymentMode: Incremental
         deploymentOutputs: platformOutputs
-        overrideParameters: >
-          -resourcePrefix $(RESOURCE_PREFIX) 
-          -platformResourceGroupName $(platformResourceGroupName)
-          -serverFarmId $(serverFarmId)
-          -databaseServerName $(databaseServerName)
-          -logAnalyticsWorkspaceId $(logAnalyticsWorkspaceId)
-          -environmentName prod
+        overrideParameters: -resourcePrefix $(RESOURCE_PREFIX) -platformResourceGroupName $(platformResourceGroupName) -serverFarmId $(serverFarmId) -databaseServerName $(databaseServerName) -logAnalyticsWorkspaceId $(logAnalyticsWorkspaceId) -environmentName prod
