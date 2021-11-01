@@ -36,7 +36,9 @@ stages:
               deploymentMode: Incremental
               deploymentOutputs: platformOutputs
               overrideParameters: -resourcePrefix $(RESOURCE_PREFIX) -databaseAdministratorName $(DEPLOYMENTPRINCIPAL_NAME) -databaseAdministratorObjectId $(DEPLOYMENTPRINCIPAL_ID)
-
+          - bash: echo "---- rgn  $(platformOutputs.platformResourceGroupName.value) ---"
+            displayName: "Compile Apps Bicep to ARM"
+  
   - stage: "DeployAppsAndDatabases"
     dependsOn:
       - DeployPlatform
@@ -46,15 +48,15 @@ stages:
       - job: "DeployAppsAndDatabaseTemplate"
         displayName: "Deploy Apps and Databases"
         variables:
-          platformResourceGroupName: $[ stageDependencies.DeployPlatform.DeployPlatformTemplate.outputs['platformOutputs.platformResourceGroupName.value'] ]
-          serverFarmId: $[ stageDependencies.DeployPlatform.DeployPlatformTemplate.outputs['platformOutputs.serverFarmId.value'] ]
-          databaseServerName: $[ stageDependencies.DeployPlatform.DeployPlatformTemplate.outputs['platformOutputs.databaseServerName.value'] ]
-          logAnalyticsWorkspaceId: $[ stageDependencies.DeployPlatform.DeployPlatformTemplate.outputs['platformOutputs.logAnalyticsWorkspaceId.value'] ]
+          platformResourceGroupName: $(platformOutputs.platformResourceGroupName.value)
+          serverFarmId: $(platformOutputs.serverFarmId.value)
+          databaseServerName: $(platformOutputs.databaseServerName.value)
+          logAnalyticsWorkspaceId: $(platformOutputs.logAnalyticsWorkspaceId.value)
 
         steps:
           - bash: az bicep build --file Platform/deploy-quickstart-apps.bicep
             displayName: "Compile Apps Bicep to ARM"
-          - bash: echo "---- rgn  $(platformOutputs.platformResourceGroupName.value) ---"
+          - bash: echo "---- rgn  $(platformResourceGroupName) ---"
             displayName: "Compile Apps Bicep to ARM"
           - task: AzureResourceManagerTemplateDeployment@3
             displayName: "Deploy Test applications and databases"
