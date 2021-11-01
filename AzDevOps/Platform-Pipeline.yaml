@@ -39,52 +39,58 @@ stages:
         deploymentOutputs: platformOutputs
         overrideParameters: -resourcePrefix $(RESOURCE_PREFIX) -databaseAdministratorName $(DEPLOYMENTPRINCIPAL_NAME) -databaseAdministratorObjectId $(DEPLOYMENTPRINCIPAL_ID)
 
-  - job: "DeployAppsAndDatabaseTemplate"
-    dependsOn:
-      - DeployPlatform
-    displayName: "Deploy Apps and Databases"
+  - stage: 'DeployAppsAndDatabases'
+    dependsOn: 
+    - DeployPlatform
+    displayName: 'Deploying apps and databases'
     variables:
-        platformResourceGroupName: $[ jobDependencies.DeployPlatform.outputs['platformResourceGroupName.value'] ]
-        serverFarmId: $[ jobDependencies.DeployPlatform.outputs['serverFarmId.value'] ]
-        databaseServerName: $[ jobDependencies.DeployPlatform.outputs['databaseServerName.value'] ]
-        logAnalyticsWorkspaceId: $[ jobDependencies.DeployPlatform.outputs['logAnalyticsWorkspaceId.value'] ]
+        platformResourceGroupName: $[ stageDependencies.DeployPlatform.outputs['platformResourceGroupName.value'] ]
+        serverFarmId: $[ stageDependencies.DeployPlatform.outputs['serverFarmId.value'] ]
+        databaseServerName: $[ stageDependencies.DeployPlatform.outputs['databaseServerName.value'] ]
+        logAnalyticsWorkspaceId: $[ stageDependencies.DeployPlatform.outputs['logAnalyticsWorkspaceId.value'] ]
 
-    steps:
-    - task: AzureResourceManagerTemplateDeployment@3
-      displayName: 'Deploy Test applications and databases'
-      variables:
-      inputs:
-        azureResourceManagerConnection: PlatformServiceConnection
-        location: 'australiaeast'
-        deploymentScope: Subscription
-        templateLocation: Linked artifact
-        csmFile: 'Platform/deploy-quickstart-apps.json'
-        scriptLocation: 'inlineScript'
-        deploymentMode: Incremental
-        deploymentOutputs: platformOutputs
-        overrideParameters: >
-          -resourcePrefix $(RESOURCE_PREFIX) 
-          -platformResourceGroupName $(platformResourceGroupName)
-          -serverFarmId $(serverFarmId)
-          -databaseServerName $(databaseServerName)
-          -logAnalyticsWorkspaceId $(logAnalyticsWorkspaceId)
-          -environmentName test
+    jobs:
+    - job: "DeployAppsAndDatabaseTemplate"
+      dependsOn:
+        - DeployPlatform
+      displayName: "Deploy Apps and Databases"
 
-    - task: AzureResourceManagerTemplateDeployment@3
-      displayName: 'Deploy Prod applications and databases'
-      inputs:
-        azureResourceManagerConnection: PlatformServiceConnection
-        location: 'australiaeast'
-        deploymentScope: Subscription
-        templateLocation: Linked artifact
-        csmFile: 'Platform/deploy-quickstart-apps.json'
-        scriptLocation: 'inlineScript'
-        deploymentMode: Incremental
-        deploymentOutputs: platformOutputs
-        overrideParameters: >
-          -resourcePrefix $(RESOURCE_PREFIX) 
-          -platformResourceGroupName $(platformResourceGroupName)
-          -serverFarmId $(serverFarmId)
-          -databaseServerName $(databaseServerName)
-          -logAnalyticsWorkspaceId $(logAnalyticsWorkspaceId)
-          -environmentName prod
+      steps:
+      - task: AzureResourceManagerTemplateDeployment@3
+        displayName: 'Deploy Test applications and databases'
+        variables:
+        inputs:
+          azureResourceManagerConnection: PlatformServiceConnection
+          location: 'australiaeast'
+          deploymentScope: Subscription
+          templateLocation: Linked artifact
+          csmFile: 'Platform/deploy-quickstart-apps.json'
+          scriptLocation: 'inlineScript'
+          deploymentMode: Incremental
+          deploymentOutputs: platformOutputs
+          overrideParameters: >
+            -resourcePrefix $(RESOURCE_PREFIX) 
+            -platformResourceGroupName $(platformResourceGroupName)
+            -serverFarmId $(serverFarmId)
+            -databaseServerName $(databaseServerName)
+            -logAnalyticsWorkspaceId $(logAnalyticsWorkspaceId)
+            -environmentName test
+
+      - task: AzureResourceManagerTemplateDeployment@3
+        displayName: 'Deploy Prod applications and databases'
+        inputs:
+          azureResourceManagerConnection: PlatformServiceConnection
+          location: 'australiaeast'
+          deploymentScope: Subscription
+          templateLocation: Linked artifact
+          csmFile: 'Platform/deploy-quickstart-apps.json'
+          scriptLocation: 'inlineScript'
+          deploymentMode: Incremental
+          deploymentOutputs: platformOutputs
+          overrideParameters: >
+            -resourcePrefix $(RESOURCE_PREFIX) 
+            -platformResourceGroupName $(platformResourceGroupName)
+            -serverFarmId $(serverFarmId)
+            -databaseServerName $(databaseServerName)
+            -logAnalyticsWorkspaceId $(logAnalyticsWorkspaceId)
+            -environmentName prod
