@@ -10,7 +10,12 @@ param databaseAdministratorName string
 @description('AAD Object Id of the Service Principal used as the database administrator.')
 param databaseAdministratorObjectId string
 
-var platformRgName = '${resourcePrefix}-platform-rg'
+@description('Used to construct app / api / keyvault names. Suggestions include test, prod, nonprod')
+param environmentName string
+
+var hasSlot = environmentName != 'test'
+
+var platformRgName = '${resourcePrefix}-platform-${environmentName}-rg'
 
 resource platformResourceGroup 'Microsoft.Resources/resourceGroups@2021-04-01' = {
   name: platformRgName
@@ -24,6 +29,8 @@ module PlatformDeployment './deploy-platform.bicep' = {
     resourcePrefix: resourcePrefix
     databaseAdministratorName: databaseAdministratorName
     databaseAdministratorObjectId: databaseAdministratorObjectId
+    environmentName: environmentName
+    hasSlot: hasSlot
   }
 }
 
