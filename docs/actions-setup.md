@@ -17,7 +17,7 @@ git remote add origin <new-repository-url>
 git push origin 
 ```
 
-## Step 4 Configure the following secrets inside your Github repository (Settings -> Secrets -> New Repository Secret)
+## Step 4 - Create 'Test' Environment secrets
 
 | Secret | Purpose | Other information | 
 | --- | --- | --- |
@@ -53,7 +53,7 @@ The server-name / database-name can be found in the ``` <prefix>-platform-rg ```
 
 ## Step 7 - Create 'Production' Environment secrets
 
-Follow Step 6, but name the environment ``` Production ``` and use secrets from the Production versions of the resources.
+Follow Step 4 and 6, but name the environment ``` Production ``` and use secrets from the Production platform.
 
 At this point optionally put protection over the branch. Things to consider would be:
 
