@@ -54,6 +54,8 @@ stages:
     steps:
     - bash: az bicep build --file Platform/deploy-quickstart-apps.bicep
       displayName: 'Compile Apps Bicep to ARM'
+    - bash: echo "---- rgn  $(platformResourceGroupName) ---"
+      displayName: 'Compile Apps Bicep to ARM'
     - task: AzureResourceManagerTemplateDeployment@3
       displayName: 'Deploy Test applications and databases'
       inputs:
