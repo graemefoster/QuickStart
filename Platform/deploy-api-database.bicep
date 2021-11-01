@@ -10,6 +10,8 @@ resource SqlDatabaseTest 'Microsoft.Sql/servers/databases@2021-02-01-preview' = 
   location: resourceGroup().location
   sku: {
     tier: 'Basic'
+    name: 'Basic'
+    capacity: 2
   }
 }
 
