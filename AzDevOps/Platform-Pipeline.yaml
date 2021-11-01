@@ -23,7 +23,7 @@ stages:
       displayName: 'Compile Platform Bicep to ARM'
     - task: AzureResourceManagerTemplateDeployment@3
       inputs:
-        azureSubscription: PlatformServiceConnection
+        azureResourceManagerConnection: PlatformServiceConnection
         location: 'australiaeast'
         templateLocation: Linked artifact
         csmFile: 'Platform/deploy-quickstart-platform.json'
