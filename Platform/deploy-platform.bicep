@@ -1,11 +1,13 @@
 param resourcePrefix string
 param databaseAdministratorName string
 param databaseAdministratorObjectId string
+param environmentName string
+param hasSlot bool
 
-var databaseServerName = '${resourcePrefix}-sqlserver'
+var databaseServerName = '${resourcePrefix}-${environmentName}-sqlserver'
 
 resource LogAnalyticsWorkspace 'Microsoft.OperationalInsights/workspaces@2021-06-01' = {
-  name: '${resourcePrefix}-loga'
+  name: '${resourcePrefix}-${environmentName}-loga'
   location: resourceGroup().location
   properties: {
     sku: {
@@ -18,10 +20,10 @@ resource LogAnalyticsWorkspace 'Microsoft.OperationalInsights/workspaces@2021-06
 }
 
 resource QuickStartServerFarm 'Microsoft.Web/serverfarms@2021-01-15' = {
-  name: '${resourcePrefix}-asp'
+  name: '${resourcePrefix}-${environmentName}-asp'
   location: resourceGroup().location
   sku: {
-    name: 'S1'
+    name: hasSlot ? 'S1' : 'F1'
   }
 }
 
