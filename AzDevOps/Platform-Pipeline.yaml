@@ -31,4 +31,4 @@ stages:
         scriptLocation: 'inlineScript'
         deploymentMode: Incremental
         deploymentOutputs: platformOutputs
-        overrideParameters: -resourcePrefix '$(RESOURCE_PREFIX)' -databaseAdministratorName '$(DEPLOYMENTPRINCIPAL_NAME)' -databaseAdministratorObjectId '$(DEPLOYMENTPRINCIPAL_ID)'
+        overrideParameters: -resourcePrefix $(RESOURCE_PREFIX) -databaseAdministratorName $(DEPLOYMENTPRINCIPAL_NAME) -databaseAdministratorObjectId $(DEPLOYMENTPRINCIPAL_ID)
