@@ -11,7 +11,7 @@ resource SqlDatabaseTest 'Microsoft.Sql/servers/databases@2021-02-01-preview' = 
   sku: {
     tier: 'Basic'
     name: 'Basic'
-    capacity: 2
+    capacity: 5
   }
 }
 
