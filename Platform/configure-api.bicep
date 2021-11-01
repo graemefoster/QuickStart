@@ -34,6 +34,6 @@ resource ProductionSlotWebApiConfiguration 'Microsoft.Web/sites/slots/config@202
     'ApiSettings__Cors__1': 'https://${appHostname}-green.azurewebsites.net'
     'ApiSettings__UserAssignedClientId': userAssignedClientId
     'AzureAD__ClientId': apiAadClientId
-    'ApiSettings__ConnectionString': 'Data Source=${databaseServerName}.database.windows.net; Initial Catalog=${databaseName};MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;app=Green Slot Website'
+    'ApiSettings__ConnectionString': 'Data Source=${databaseServerName}.database.windows.net; Initial Catalog=${databaseName};MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;app=Website'
     }
 }
