@@ -37,19 +37,21 @@ stages:
               deploymentOutputs: platformOutputs
               overrideParameters: -resourcePrefix $(RESOURCE_PREFIX) -databaseAdministratorName $(DEPLOYMENTPRINCIPAL_NAME) -databaseAdministratorObjectId $(DEPLOYMENTPRINCIPAL_ID)
 
-          - bash: echo "##vso[task.setvariable variable=platformResourceGroupName;isOutput=true]$(platformOutputs.platformResourceGroupName.value)"
-          - bash: echo "##vso[task.setvariable variable=serverFarmId;isOutput=true]$(platformOutputs.serverFarmId.value)"
-          - bash: echo "##vso[task.setvariable variable=databaseServerName;isOutput=true]$(platformOutputs.databaseServerName.value)"
-          - bash: echo "##vso[task.setvariable variable=logAnalyticsWorkspaceId;isOutput=true]$(platformOutputs.logAnalyticsWorkspaceId.value)"
+          - bash: |
+              echo "##vso[task.setvariable variable=platformResourceGroupName;isOutput=true]$(platformOutputs.platformResourceGroupName.value)"
+              echo "##vso[task.setvariable variable=serverFarmId;isOutput=true]$(platformOutputs.serverFarmId.value)"
+              echo "##vso[task.setvariable variable=databaseServerName;isOutput=true]$(platformOutputs.databaseServerName.value)"
+              echo "##vso[task.setvariable variable=logAnalyticsWorkspaceId;isOutput=true]$(platformOutputs.logAnalyticsWorkspaceId.value)"
+            name: CapturePlatformOutputs
 
       - job: "DeployAppsAndDatabaseTemplate"
         displayName: "Deploy Apps and Databases"
         dependsOn: DeployPlatformTemplate
         variables:
-          platformResourceGroupName: $[ dependencies.DeployPlatformTemplate.outputs['platformDeploy.platformResourceGroupName']]
-          serverFarmId: $[ dependencies.DeployPlatformTemplate.outputs['platformDeploy.serverFarmId']]
-          databaseServerName: $[ dependencies.DeployPlatformTemplate.outputs['platformDeploy.databaseServerName']]
-          logAnalyticsWorkspaceId: $[ dependencies.DeployPlatformTemplate.outputs['platformDeploy.logAnalyticsWorkspaceId']]
+          platformResourceGroupName: $[ dependencies.DeployPlatformTemplate.outputs['CapturePlatformOutputs.platformResourceGroupName']]
+          serverFarmId: $[ dependencies.DeployPlatformTemplate.outputs['CapturePlatformOutputs.serverFarmId']]
+          databaseServerName: $[ dependencies.DeployPlatformTemplate.outputs['CapturePlatformOutputs.databaseServerName']]
+          logAnalyticsWorkspaceId: $[ dependencies.DeployPlatformTemplate.outputs['CapturePlatformOutputs.logAnalyticsWorkspaceId']]
 
         steps:
           - bash: az bicep build --file Platform/deploy-quickstart-apps.bicep
