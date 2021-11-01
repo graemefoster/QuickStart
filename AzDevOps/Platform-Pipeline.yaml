@@ -42,7 +42,7 @@ stages:
 
       - job: "DeployAppsAndDatabaseTemplate"
         displayName: "Deploy Apps and Databases"
-        dependsOn: platformDeploy
+        dependsOn: DeployPlatformTemplate
         variables:
           platformResourceGroupName: $[ dependencies.DeployPlatformTemplate.outputs['platformDeploy.platformOutputs.platformResourceGroupName.value']]
           serverFarmId: $[ dependencies.DeployPlatformTemplate.outputs['platformDeploy.platformOutputs.serverFarmId.value']]
