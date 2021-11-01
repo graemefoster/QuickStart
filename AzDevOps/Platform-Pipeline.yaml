@@ -18,10 +18,16 @@ stages:
   jobs:
   - job: "DeployARMTemplate"
     displayName: "Deploy ARM template"
+
     steps:
     - bash: az bicep build --file Platform/deploy-quickstart-platform.bicep
       displayName: 'Compile Platform Bicep to ARM'
+    - bash: az bicep build --file Platform/deploy-quickstart-apps.bicep
+      displayName: 'Compile Apps Bicep to ARM'
+
     - task: AzureResourceManagerTemplateDeployment@3
+      displayName: 'Deploy Platform'
+      name: 'platformDeploy'
       inputs:
         azureResourceManagerConnection: PlatformServiceConnection
         location: 'australiaeast'
@@ -32,3 +38,41 @@ stages:
         deploymentMode: Incremental
         deploymentOutputs: platformOutputs
         overrideParameters: -resourcePrefix $(RESOURCE_PREFIX) -databaseAdministratorName $(DEPLOYMENTPRINCIPAL_NAME) -databaseAdministratorObjectId $(DEPLOYMENTPRINCIPAL_ID)
+
+    - task: AzureResourceManagerTemplateDeployment@3
+      displayName: 'Deploy Test applications and databases'
+      inputs:
+        azureResourceManagerConnection: PlatformServiceConnection
+        location: 'australiaeast'
+        deploymentScope: Subscription
+        templateLocation: Linked artifact
+        csmFile: 'Platform/deploy-quickstart-apps.json'
+        scriptLocation: 'inlineScript'
+        deploymentMode: Incremental
+        deploymentOutputs: platformOutputs
+        overrideParameters: >
+          -resourcePrefix $(RESOURCE_PREFIX) 
+          -platformResourceGroupName $[ platformDeploy.outputs.platformResourceGroupName ]
+          -serverFarmId $[ platformDeploy.outputs.serverFarmId ] 
+          -databaseServerName $[ platformDeploy.outputs.databaseServerName ]
+          -logAnalyticsWorkspaceId $[ steps.platformDeploy.outputs.logAnalyticsWorkspaceId ]
+          -environmentName test
+
+    - task: AzureResourceManagerTemplateDeployment@3
+      displayName: 'Deploy Prod applications and databases'
+      inputs:
+        azureResourceManagerConnection: PlatformServiceConnection
+        location: 'australiaeast'
+        deploymentScope: Subscription
+        templateLocation: Linked artifact
+        csmFile: 'Platform/deploy-quickstart-apps.json'
+        scriptLocation: 'inlineScript'
+        deploymentMode: Incremental
+        deploymentOutputs: platformOutputs
+        overrideParameters: >
+          -resourcePrefix $(RESOURCE_PREFIX) 
+          -platformResourceGroupName $[ platformDeploy.outputs.platformResourceGroupName ]
+          -serverFarmId $[ platformDeploy.outputs.serverFarmId ] 
+          -databaseServerName $[ platformDeploy.outputs.databaseServerName ]
+          -logAnalyticsWorkspaceId $[ steps.platformDeploy.outputs.logAnalyticsWorkspaceId ]
+          -environmentName prod
