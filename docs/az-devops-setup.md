@@ -30,7 +30,6 @@ Fill in the follow details: ``` Subscription Id, Subscription Name, Service prin
 - Enter the name ``` PlatformServiceConnection ``` and click ``` Verify and save ```
 
 
-
 ## Step 5 - Create a Variable Group to store the variables required to deploy the Platform
 
 - Head to the Pipelines - Library section of your Project.
@@ -54,6 +53,12 @@ Now add the following variables:
 - Locate the ``` AzDevOps/Platform-Pipeline.yaml ``` file and select 'Continue'
 - Press the dropdown on the ``` Run ``` button and click ``` Save ```
 - Select ` Run Pipeline ` to deploy
+
+At this point the pipeline will wait for permission to use the Service Connection.  Select the pipeline run and look for the warning box saying:
+
+``` This pipeline needs permission to access 2 resources before this run can continue to Deploying platform ```
+
+- Click ``` View ``` and select ``` Permit ``` on the two required permissions.
 
 
 

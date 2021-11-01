@@ -25,7 +25,7 @@ stages:
         scriptType: 'bash'
         scriptLocation: 'inlineScript'
         inlineScript: |
-          az deployment create \
+          az deployment sub create \
             --location AustraliaEast \
             --name $(Build.BuildNumber) \
             --template-file Platform/deploy-quickstart-platform.bicep \
