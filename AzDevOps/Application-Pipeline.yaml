@@ -1,0 +1,62 @@
+name: "DeployApplication"
+
+trigger:
+  branches:
+    include:
+      - main
+      - feature/*
+  paths:
+    include:
+      - "Application/WebApp/**"
+
+variables:
+  - group: PlatformTest
+
+stages:
+  - stage: "BuildWebApplication"
+    displayName: "Build and publish web application"
+    jobs:
+      - job: "PublishWebApp"
+        steps:
+          - task: DotNetCoreCLI@2
+            displayName: "Restore project dependencies"
+            inputs:
+              command: "restore"
+              projects: "./Application/WebApp/SimpleMvcApp.csproj"
+
+          - task: DotNetCoreCLI@2
+            displayName: "Build the project - release"
+            inputs:
+              command: "build"
+              arguments: "--no-restore --configuration release"
+              projects: "./Application/WebApp/SimpleMvcApp.csproj"
+
+          - task: DotNetCoreCLI@2
+            displayName: Publish Web Application
+            inputs:
+              command: "publish"
+              arguments: "--no-build --no-restore --configuration release --output $(Build.ArtifactStagingDirectory)/release"
+              projects: "./Application/WebApp/SimpleMvcApp.csproj"
+              zipAfterPublish: true
+              publishWebProjects: false
+
+          - publish: $(Build.ArtifactStagingDirectory)/release/WebApplication.zip
+            artifact: WebApplication
+
+  - stage: "DeployWebApplication"
+    dependsOn: BuildWebApplication
+    displayName: "Deploy Web Application"
+    jobs:
+      - deployment: "DeployWebApplication"
+        environment: "Test"
+        displayName: "Deploy Web Application to app service plan"
+        strategy:
+          runOnce:
+            deploy:
+              steps:
+                - task: AzureWebApp@1
+                  inputs:
+                    azureSubscription: PlatformServiceConnectionTest
+                    appName: $(AZURE_WEBAPP_NAME)
+                    package: $(Pipeline.Workspace)/WebApplication/WebApplication.zip
+
