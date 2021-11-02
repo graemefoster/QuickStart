@@ -46,7 +46,7 @@ stages:
               zipAfterPublish: true
               publishWebProjects: false
 
-          - publish: $(Build.ArtifactStagingDirectory)/release/WebApi.zip
+          - publish: $(Build.ArtifactStagingDirectory)/release/SimpleApiWithDatabase.zip
             artifact: WebApi
 
       - job: "PublishDatabaseMigrator"
