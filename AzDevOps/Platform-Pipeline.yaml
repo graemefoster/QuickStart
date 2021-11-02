@@ -26,7 +26,7 @@ stages:
             displayName: "Deploy Platform"
             name: "platformDeploy"
             inputs:
-              azureResourceManagerConnection: $(PlatformServiceConnection)
+              azureResourceManagerConnection: PlatformServiceConnectionTest
               location: "australiaeast"
               deploymentScope: Subscription
               templateLocation: Linked artifact
@@ -60,7 +60,7 @@ stages:
           - task: AzureResourceManagerTemplateDeployment@3
             displayName: "Deploy Test applications and databases"
             inputs:
-              azureResourceManagerConnection: $(PlatformServiceConnection)
+              azureResourceManagerConnection: PlatformServiceConnectionTest
               location: "australiaeast"
               deploymentScope: Subscription
               templateLocation: Linked artifact
@@ -86,7 +86,7 @@ stages:
           - task: AzureCLI@2
             displayName: Execute AAD script'
             inputs:
-              azureSubscription: $(PlatformServiceAadConnection)
+              azureSubscription: PlatformAadServiceConnection
               scriptLocation: inline
               inlineScript: |
                 ./Platform/setup-aad.sh $(applicationHostname) $(apiHostname)
