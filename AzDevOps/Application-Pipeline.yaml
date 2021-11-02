@@ -46,7 +46,7 @@ stages:
               zipAfterPublish: true
               publishWebProjects: false
 
-          - publish: $(Build.ArtifactStagingDirectory)/release/WebApplication.zip
+          - publish: $(Build.ArtifactStagingDirectory)/release/SimpleMvcApp.zip
             artifact: WebApplication
 
   - stage: "DeployWebApplication"
@@ -64,5 +64,5 @@ stages:
                   inputs:
                     azureSubscription: PlatformServiceConnectionTest
                     appName: $(AZURE_WEBAPP_NAME)
-                    package: $(Pipeline.Workspace)/WebApplication/WebApplication.zip
+                    package: $(Pipeline.Workspace)/WebApplication/SimpleMvcApp.zip
 

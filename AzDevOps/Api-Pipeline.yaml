@@ -49,6 +49,44 @@ stages:
           - publish: $(Build.ArtifactStagingDirectory)/release/WebApi.zip
             artifact: WebApi
 
+      - job: "PublishDatabaseMigrator"
+        steps:
+
+          - task: UseDotNet@2
+            inputs:
+              packageType: 'sdk'
+              version: '5.0.x'          
+
+          - task: DotNetCoreCLI@2
+            displayName: "Restore project dependencies"
+            inputs:
+              command: "restore"
+              projects: "./SqlAadMigrationDeployer/SqlAadMigrationDeployer.csproj"
+
+          - task: DotNetCoreCLI@2
+            displayName: "Build the project - release"
+            inputs:
+              command: "build"
+              arguments: "--no-restore --configuration release"
+              projects: "./SqlAadMigrationDeployer/SqlAadMigrationDeployer.csproj"
+
+          - task: DotNetCoreCLI@2
+            displayName: Publish Web Application
+            inputs:
+              command: "publish"
+              arguments: "--no-build --no-restore --configuration release --output $(Build.ArtifactStagingDirectory)/release"
+              projects: "./SqlAadMigrationDeployer/SqlAadMigrationDeployer.csproj"
+              zipAfterPublish: true
+              publishWebProjects: false
+
+          - publish: $(Build.ArtifactStagingDirectory)/release/SqlAadMigrationDeployer.zip
+            artifact: SqlAadMigrationDeployer
+
+          - publish: './Application/DatabaseUpgrades/build-database.sql'
+            artifact: DatabaseScript
+
+
+
   - stage: "DeployWebApi"
     dependsOn: BuildWebApi
     displayName: "Deploy Web Api"
@@ -60,6 +98,13 @@ stages:
           runOnce:
             deploy:
               steps:
+                - task: UseDotNet@2
+                  inputs:
+                    packageType: 'runtime'
+                    version: '5.0.x'          
+
+                - bash: dotnet $(Pipeline.Workspace)/SqlAadMigrationDeployer/SqlAadMigrationDeployer.dll migrate "$( AZURE_SQL_CONNECTION_STRING )" "$(Pipeline.Workspace)/DatabaseScript/build-database.sql"
+
                 - task: AzureWebApp@1
                   inputs:
                     azureSubscription: PlatformServiceConnectionTest
