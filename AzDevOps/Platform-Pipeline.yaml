@@ -88,7 +88,7 @@ stages:
 
         steps:
           - task: AzureCLI@2
-            displayName: Execute AAD script'
+            displayName: Execute AAD script
             name: SetupAad
             inputs:
               azureSubscription: PlatformAadServiceConnection
@@ -110,9 +110,9 @@ stages:
           applicationHostname: $[ dependencies.DeployTestAppsAndDatabaseTemplate.outputs['CaptureAppOutputs.applicationHostname']]
           apiHostname: $[ dependencies.DeployTestAppsAndDatabaseTemplate.outputs['CaptureAppOutputs.apiHostname']]
           applicationKeyVaultName: $[ dependencies.DeployTestAppsAndDatabaseTemplate.outputs['CaptureAppOutputs.applicationKeyVaultName']]
-          appClientId: $[ dependencies.SetupTestAadObjects.outputs['SetupAad.appClientId']]
+          appClientId: $[ dependencies.SetupTestAadObjects.outputs['SetupAad.applicationClientId']]
           apiClientId: $[ dependencies.SetupTestAadObjects.outputs['SetupAad.apiClientId']]
-          appClientSecret: $[ dependencies.SetupTestAadObjects.outputs['SetupAad.appClientSecret']]
+          appClientSecret: $[ dependencies.SetupTestAadObjects.outputs['SetupAad.applicationClientSecret']]
           managedIdentityAppId: $[ dependencies.DeployTestAppsAndDatabaseTemplate.outputs['CaptureAppOutputs.managedIdentityAppId']]
           apiAppInsightsKey: $[ dependencies.DeployTestAppsAndDatabaseTemplate.outputs['CaptureAppOutputs.apiAppInsightsKey']]
           appAppInsightsKey: $[ dependencies.DeployTestAppsAndDatabaseTemplate.outputs['CaptureAppOutputs.appAppInsightsKey']]
