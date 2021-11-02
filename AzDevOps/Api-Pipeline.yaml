@@ -41,12 +41,12 @@ stages:
             displayName: Publish Web Api
             inputs:
               command: "publish"
-              arguments: "--no-build --no-restore --configuration release --output $(Build.ArtifactStagingDirectory)/release"
+              arguments: "--no-build --no-restore --configuration release --output $(Build.ArtifactStagingDirectory)/release/api"
               projects: "./Application/Api/SimpleApiWithDatabase/SimpleApiWithDatabase.csproj"
               zipAfterPublish: true
               publishWebProjects: false
 
-          - publish: $(Build.ArtifactStagingDirectory)/release/SimpleApiWithDatabase.zip
+          - publish: $(Build.ArtifactStagingDirectory)/release/api/SimpleApiWithDatabase.zip
             artifact: WebApi
 
       - job: "PublishDatabaseMigrator"
