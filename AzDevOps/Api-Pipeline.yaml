@@ -1,0 +1,68 @@
+name: "DeployApi"
+
+trigger:
+  branches:
+    include:
+      - main
+      - feature/*
+  paths:
+    include:
+      - "Application/Api/**"
+
+variables:
+  - group: PlatformTest
+
+stages:
+  - stage: "BuildWebApi"
+    displayName: "Build and publish web api"
+    jobs:
+      - job: "PublishWebApp"
+        steps:
+
+          - task: UseDotNet@2
+            inputs:
+              packageType: 'sdk'
+              version: '5.0.x'          
+
+          - task: DotNetCoreCLI@2
+            displayName: "Restore project dependencies"
+            inputs:
+              command: "restore"
+              projects: "./Application/Api/SimpleApiWithDatabase.csproj"
+
+          - task: DotNetCoreCLI@2
+            displayName: "Build the project - release"
+            inputs:
+              command: "build"
+              arguments: "--no-restore --configuration release"
+              projects: "./Application/Api/SimpleApiWithDatabase.csproj"
+
+          - task: DotNetCoreCLI@2
+            displayName: Publish Web Api
+            inputs:
+              command: "publish"
+              arguments: "--no-build --no-restore --configuration release --output $(Build.ArtifactStagingDirectory)/release"
+              projects: "./Application/Api/SimpleApiWithDatabase.csproj"
+              zipAfterPublish: true
+              publishWebProjects: false
+
+          - publish: $(Build.ArtifactStagingDirectory)/release/WebApi.zip
+            artifact: WebApi
+
+  - stage: "DeployWebApi"
+    dependsOn: BuildWebApi
+    displayName: "Deploy Web Api"
+    jobs:
+      - deployment: "DeployWebApi"
+        environment: "Test"
+        displayName: "Deploy Web Api to app service plan"
+        strategy:
+          runOnce:
+            deploy:
+              steps:
+                - task: AzureWebApp@1
+                  inputs:
+                    azureSubscription: PlatformServiceConnectionTest
+                    appName: $(AZURE_WEBAPI_NAME)
+                    package: $(Pipeline.Workspace)/WebApi/WebApi.zip
+
