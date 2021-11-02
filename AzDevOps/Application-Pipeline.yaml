@@ -28,21 +28,21 @@ stages:
             displayName: "Restore project dependencies"
             inputs:
               command: "restore"
-              projects: "./Application/WebApp/SimpleMvcApp.csproj"
+              projects: "./Application/WebApp/SimpleMvcApp/SimpleMvcApp.csproj"
 
           - task: DotNetCoreCLI@2
             displayName: "Build the project - release"
             inputs:
               command: "build"
               arguments: "--no-restore --configuration release"
-              projects: "./Application/WebApp/SimpleMvcApp.csproj"
+              projects: "./Application/WebApp/SimpleMvcApp/SimpleMvcApp.csproj"
 
           - task: DotNetCoreCLI@2
             displayName: Publish Web Application
             inputs:
               command: "publish"
               arguments: "--no-build --no-restore --configuration release --output $(Build.ArtifactStagingDirectory)/release"
-              projects: "./Application/WebApp/SimpleMvcApp.csproj"
+              projects: "./Application/WebApp/SimpleMvcApp/SimpleMvcApp.csproj"
               zipAfterPublish: true
               publishWebProjects: false
 
