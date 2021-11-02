@@ -100,7 +100,7 @@ stages:
       - job: "ConfigureTestAppsAndDatabaseTemplate"
         displayName: "Configure Test AAD objects"
         dependsOn:
-          - DeployPlatformTest
+          - DeployPlatformTemplate
           - DeployTestAppsAndDatabaseTemplate
           - SetupTestAadObjects
         variables:
