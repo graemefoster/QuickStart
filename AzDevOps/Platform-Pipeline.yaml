@@ -85,7 +85,8 @@ stages:
         steps:
           - task: AzureCLI@2
             displayName: Execute AAD script'
-            azureSubscription: $(PlatformServiceAadConnection)
-            scriptLocation: inline
-            inlineScript: |
-              ./Platform/setup-aad.sh $(applicationHostname) $(apiHostname)
+            inputs:
+              azureSubscription: $(PlatformServiceAadConnection)
+              scriptLocation: inline
+              inlineScript: |
+                ./Platform/setup-aad.sh $(applicationHostname) $(apiHostname)
