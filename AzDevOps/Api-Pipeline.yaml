@@ -111,7 +111,7 @@ stages:
                     scriptType: bash
                     scriptLocation: inlineScript
                     inlineScript: |
-                      dotnet $(Pipeline.Workspace)/SqlAadMigrationDeployer/SqlAadMigrationDeployer.dll migrate "$(AZURE_SQL_CONNECTION_STRING)" "$(Pipeline.Workspace)/DatabaseScript/build-database.sql"
+                      dotnet $(Pipeline.Workspace)/SqlAadMigrationDeployer/SqlAadMigrationDeployer/SqlAadMigrationDeployer.dll migrate "$(AZURE_SQL_CONNECTION_STRING)" "$(Pipeline.Workspace)/DatabaseScript/build-database.sql"
 
                 - task: AzureWebApp@1
                   inputs:

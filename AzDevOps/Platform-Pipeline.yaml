@@ -128,7 +128,7 @@ stages:
                     scriptType: bash
                     scriptLocation: inlineScript
                     inlineScript: |
-                      dotnet $(Pipeline.Workspace)/SqlAadMigrationDeployer/SqlAadMigrationDeployer.dll add-managed-identity "$(appOutputs.databaseConnectionString.value)" "$(appOutputs.managedIdentityName.value)" "$(appOutputs.managedIdentityAppId.value)" "db_owner"
+                      dotnet $(Pipeline.Workspace)/SqlAadMigrationDeployer/SqlAadMigrationDeployer/SqlAadMigrationDeployer.dll add-managed-identity "$(appOutputs.databaseConnectionString.value)" "$(appOutputs.managedIdentityName.value)" "$(appOutputs.managedIdentityAppId.value)" "db_owner"
 
 
   - stage: "DeployPlatformProduction"
