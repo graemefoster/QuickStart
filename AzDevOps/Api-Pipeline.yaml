@@ -103,7 +103,15 @@ stages:
                     packageType: 'runtime'
                     version: '5.0.x'          
 
-                - bash: dotnet $(Pipeline.Workspace)/SqlAadMigrationDeployer/SqlAadMigrationDeployer.dll migrate "$( AZURE_SQL_CONNECTION_STRING )" "$(Pipeline.Workspace)/DatabaseScript/build-database.sql"
+                - task: AzureCLI@2
+                  displayName: Execute Migration script
+                  name: SetupAad
+                  inputs:
+                    azureSubscription: PlatformServiceConnectionTest
+                    scriptType: bash
+                    scriptLocation: inlineScript
+                    inlineScript: |
+                      dotnet $(Pipeline.Workspace)/SqlAadMigrationDeployer/SqlAadMigrationDeployer.dll migrate "$( AZURE_SQL_CONNECTION_STRING )" "$(Pipeline.Workspace)/DatabaseScript/build-database.sql"
 
                 - task: AzureWebApp@1
                   inputs:
