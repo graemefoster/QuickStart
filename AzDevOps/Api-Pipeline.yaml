@@ -78,7 +78,7 @@ stages:
               projects: "./SqlAadMigrationDeployer/SqlAadMigrationDeployer.csproj"
               publishWebProjects: false
 
-          - publish: $(Build.ArtifactStagingDirectory)/release/SqlAadMigrationDeployer/**
+          - publish: $(Build.ArtifactStagingDirectory)/release/SqlAadMigrationDeployer/
             artifact: SqlAadMigrationDeployer
 
           - publish: './Application/DatabaseUpgrades/build-database.sql'
