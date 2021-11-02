@@ -34,15 +34,13 @@ stages:
               projects: "./SqlAadMigrationDeployer/SqlAadMigrationDeployer.csproj"
 
           - task: DotNetCoreCLI@2
-            displayName: Publish Web Application
+            displayName: Publish Sql Migration Tool
             inputs:
               command: "publish"
-              arguments: "--no-build --no-restore --configuration release --output $(Build.ArtifactStagingDirectory)/release"
+              arguments: "--no-build --no-restore --configuration release --output $(Build.ArtifactStagingDirectory)/release/SqlAadMigrationDeployer/"
               projects: "./SqlAadMigrationDeployer/SqlAadMigrationDeployer.csproj"
-              zipAfterPublish: true
-              publishWebProjects: false
 
-          - publish: $(Build.ArtifactStagingDirectory)/release/SqlAadMigrationDeployer.zip
+          - publish: $(Build.ArtifactStagingDirectory)/release/SqlAadMigrationDeployer/**
             artifact: SqlAadMigrationDeployer
 
   - stage: "DeployPlatformTest"
