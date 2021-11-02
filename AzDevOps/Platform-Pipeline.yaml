@@ -23,6 +23,9 @@ stages:
             deploy:
 
               steps:
+
+                - checkout: self
+
                 - bash: az bicep build --file Platform/deploy-quickstart-platform.bicep
                   displayName: "Compile Platform Bicep to ARM"
 
@@ -98,6 +101,9 @@ stages:
             deploy:
 
               steps:
+
+                - checkout: self
+
                 - bash: az bicep build --file Platform/deploy-quickstart-platform.bicep
                   displayName: "Compile Platform Bicep to ARM"
 
