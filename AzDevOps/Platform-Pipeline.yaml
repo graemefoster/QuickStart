@@ -10,6 +10,41 @@ trigger:
       - Platform
 
 stages:
+  - stage: "BuildWebApi"
+    displayName: "Build and publish web api"
+    jobs:
+      - job: "PublishDatabaseMigrator"
+        steps:
+          - task: UseDotNet@2
+            inputs:
+              packageType: "sdk"
+              version: "5.0.x"
+
+          - task: DotNetCoreCLI@2
+            displayName: "Restore project dependencies"
+            inputs:
+              command: "restore"
+              projects: "./SqlAadMigrationDeployer/SqlAadMigrationDeployer.csproj"
+
+          - task: DotNetCoreCLI@2
+            displayName: "Build the project - release"
+            inputs:
+              command: "build"
+              arguments: "--no-restore --configuration release"
+              projects: "./SqlAadMigrationDeployer/SqlAadMigrationDeployer.csproj"
+
+          - task: DotNetCoreCLI@2
+            displayName: Publish Web Application
+            inputs:
+              command: "publish"
+              arguments: "--no-build --no-restore --configuration release --output $(Build.ArtifactStagingDirectory)/release"
+              projects: "./SqlAadMigrationDeployer/SqlAadMigrationDeployer.csproj"
+              zipAfterPublish: true
+              publishWebProjects: false
+
+          - publish: $(Build.ArtifactStagingDirectory)/release/SqlAadMigrationDeployer.zip
+            artifact: SqlAadMigrationDeployer
+
   - stage: "DeployPlatformTest"
     displayName: "Deploying platform to test"
     variables:
@@ -22,6 +57,11 @@ stages:
           runOnce:
             deploy:
               steps:
+                - task: UseDotNet@2
+                  inputs:
+                    packageType: 'runtime'
+                    version: '5.0.x'          
+
                 - checkout: self
 
                 - bash: az bicep build --file Platform/deploy-quickstart-platform.bicep
@@ -92,6 +132,12 @@ stages:
           runOnce:
             deploy:
               steps:
+
+                - task: UseDotNet@2
+                  inputs:
+                    packageType: 'runtime'
+                    version: '5.0.x'          
+
                 - checkout: self
 
                 - bash: az bicep build --file Platform/deploy-quickstart-platform.bicep
