@@ -112,5 +112,5 @@ echo "::set-output name=apiClientId::${AAD_API_APPLICATION_ID}"
 
 #Az Devops
 echo "##vso[task.setvariable variable=applicationClientId;isOutput=true]${AAD_WEBSITE_APPLICATION_ID}"
-echo "##vso[task.setvariable variable=applicationClientSecret;isOutput=true]${WEBSITE_CLIENT_SECRET}"
+echo "##vso[task.setvariable variable=applicationClientSecret;isOutput=true;issecret=true]${WEBSITE_CLIENT_SECRET}"
 echo "##vso[task.setvariable variable=apiClientId;isOutput=true]${AAD_API_APPLICATION_ID}"
