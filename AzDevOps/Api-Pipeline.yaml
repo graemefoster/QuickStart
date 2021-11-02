@@ -117,5 +117,5 @@ stages:
                   inputs:
                     azureSubscription: PlatformServiceConnectionTest
                     appName: $(AZURE_WEBAPI_NAME)
-                    package: $(Pipeline.Workspace)/WebApi/WebApi.zip
+                    package: $(Pipeline.Workspace)/WebApi/SimpleApiWithDatabase.zip
 
