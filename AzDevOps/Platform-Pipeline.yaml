@@ -21,9 +21,7 @@ stages:
         strategy:
           runOnce:
             deploy:
-
               steps:
-
                 - checkout: self
 
                 - bash: az bicep build --file Platform/deploy-quickstart-platform.bicep
@@ -82,12 +80,6 @@ stages:
                     deploymentMode: Incremental
                     overrideParameters: -resourceGroupName $(appOutputs.resourceGroupName.value) -databaseServerName $(platformOutputs.databaseServerName.value) -databaseName $(appOutputs.databaseName.value) -appHostname $(appOutputs.applicationHostname.value) -apiHostname $(appOutputs.apiHostname.value) -appKeyVaultName $(appOutputs.applicationKeyVaultName.value) -appClientId $(SetupAad.applicationClientId) -apiClientId $(SetupAad.apiClientId) -apiUserAssignedClientId $(appOutputs.managedIdentityAppId.value) -appClientSecret $(SetupAad.applicationClientSecret) -apiAppInsightsKey $(appOutputs.apiAppInsightsKey.value) -appAppInsightsKey $(appOutputs.appAppInsightsKey.value) -environmentName test
 
-
-
-
-
-
-
   - stage: "DeployPlatformProduction"
     displayName: "Deploying platform to production"
     variables:
@@ -99,9 +91,7 @@ stages:
         strategy:
           runOnce:
             deploy:
-
               steps:
-
                 - checkout: self
 
                 - bash: az bicep build --file Platform/deploy-quickstart-platform.bicep
@@ -111,7 +101,7 @@ stages:
                   displayName: "Deploy Platform"
                   name: "platformDeploy"
                   inputs:
-                    azureResourceManagerConnection: PlatformServiceConnectionTest
+                    azureResourceManagerConnection: PlatformServiceConnectionProduction
                     location: "australiaeast"
                     deploymentScope: Subscription
                     templateLocation: Linked artifact
@@ -126,7 +116,7 @@ stages:
                 - task: AzureResourceManagerTemplateDeployment@3
                   displayName: "Deploy applications and databases"
                   inputs:
-                    azureResourceManagerConnection: PlatformServiceConnectionTest
+                    azureResourceManagerConnection: PlatformServiceConnectionProduction
                     location: "australiaeast"
                     deploymentScope: Subscription
                     templateLocation: Linked artifact
@@ -151,7 +141,7 @@ stages:
                 - task: AzureResourceManagerTemplateDeployment@3
                   displayName: "Configure applications and databases"
                   inputs:
-                    azureResourceManagerConnection: PlatformServiceConnectionTest
+                    azureResourceManagerConnection: PlatformServiceConnectionProduction
                     location: "australiaeast"
                     deploymentScope: Subscription
                     templateLocation: Linked artifact
