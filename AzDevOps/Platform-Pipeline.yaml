@@ -16,248 +16,140 @@ stages:
     variables:
       - group: PlatformTest
     jobs:
-      - job: "DeployPlatformTemplate"
+      - deployment: "DeployPlatformTemplate"
         displayName: "Deploy Platform"
+        strategy:
+          runOnce:
+            deploy:
 
-        steps:
-          - bash: az bicep build --file Platform/deploy-quickstart-platform.bicep
-            displayName: "Compile Platform Bicep to ARM"
+              steps:
+                - bash: az bicep build --file Platform/deploy-quickstart-platform.bicep
+                  displayName: "Compile Platform Bicep to ARM"
 
-          - task: AzureResourceManagerTemplateDeployment@3
-            displayName: "Deploy Platform"
-            name: "platformDeploy"
-            inputs:
-              azureResourceManagerConnection: PlatformServiceConnectionTest
-              location: "australiaeast"
-              deploymentScope: Subscription
-              templateLocation: Linked artifact
-              csmFile: "Platform/deploy-quickstart-platform.json"
-              scriptLocation: "inlineScript"
-              deploymentMode: Incremental
-              deploymentOutputs: platformOutputs
-              overrideParameters: -resourcePrefix $(RESOURCE_PREFIX) -databaseAdministratorName $(DEPLOYMENTPRINCIPAL_NAME) -databaseAdministratorObjectId $(DEPLOYMENTPRINCIPAL_ID) -environmentName test
+                - task: AzureResourceManagerTemplateDeployment@3
+                  displayName: "Deploy Platform"
+                  name: "platformDeploy"
+                  inputs:
+                    azureResourceManagerConnection: PlatformServiceConnectionTest
+                    location: "australiaeast"
+                    deploymentScope: Subscription
+                    templateLocation: Linked artifact
+                    csmFile: "Platform/deploy-quickstart-platform.json"
+                    scriptLocation: "inlineScript"
+                    deploymentMode: Incremental
+                    deploymentOutputs: platformOutputs
+                    overrideParameters: -resourcePrefix $(RESOURCE_PREFIX) -databaseAdministratorName $(DEPLOYMENTPRINCIPAL_NAME) -databaseAdministratorObjectId $(DEPLOYMENTPRINCIPAL_ID) -environmentName test
 
-          - bash: |
-              echo "##vso[task.setvariable variable=platformResourceGroupName;isOutput=true]$(platformOutputs.platformResourceGroupName.value)"
-              echo "##vso[task.setvariable variable=serverFarmId;isOutput=true]$(platformOutputs.serverFarmId.value)"
-              echo "##vso[task.setvariable variable=databaseServerName;isOutput=true]$(platformOutputs.databaseServerName.value)"
-              echo "##vso[task.setvariable variable=logAnalyticsWorkspaceId;isOutput=true]$(platformOutputs.logAnalyticsWorkspaceId.value)"
-            name: CapturePlatformOutputs
+                - bash: az bicep build --file Platform/deploy-quickstart-apps.bicep
+                  displayName: "Compile Apps Bicep to ARM"
+                - task: AzureResourceManagerTemplateDeployment@3
+                  displayName: "Deploy applications and databases"
+                  inputs:
+                    azureResourceManagerConnection: PlatformServiceConnectionTest
+                    location: "australiaeast"
+                    deploymentScope: Subscription
+                    templateLocation: Linked artifact
+                    csmFile: "Platform/deploy-quickstart-apps.json"
+                    scriptLocation: "inlineScript"
+                    deploymentMode: Incremental
+                    deploymentOutputs: appOutputs
+                    overrideParameters: -resourcePrefix $(RESOURCE_PREFIX) -platformResourceGroupName $(platformOutputs.platformResourceGroupName.value) -serverFarmId $(platformOutputs.serverFarmId.value) -databaseServerName $(platformOutputs.databaseServerName.value) -logAnalyticsWorkspaceId $(platformOutputs.logAnalyticsWorkspaceId.value) -environmentName test
 
-      - job: "DeployAppsAndDatabaseTemplate"
-        displayName: "Deploy Apps and Databases"
-        dependsOn: DeployPlatformTemplate
-        variables:
-          platformResourceGroupName: $[ dependencies.DeployPlatformTemplate.outputs['CapturePlatformOutputs.platformResourceGroupName']]
-          serverFarmId: $[ dependencies.DeployPlatformTemplate.outputs['CapturePlatformOutputs.serverFarmId']]
-          databaseServerName: $[ dependencies.DeployPlatformTemplate.outputs['CapturePlatformOutputs.databaseServerName']]
-          logAnalyticsWorkspaceId: $[ dependencies.DeployPlatformTemplate.outputs['CapturePlatformOutputs.logAnalyticsWorkspaceId']]
+                - task: AzureCLI@2
+                  displayName: Execute AAD script
+                  name: SetupAad
+                  inputs:
+                    azureSubscription: PlatformAadServiceConnection
+                    scriptType: bash
+                    scriptLocation: inlineScript
+                    inlineScript: |
+                      ./Platform/setup-aad.sh $(appOutputs.applicationHostname.value) $(appOutputs.apiHostname.value)
 
-        steps:
-          - bash: az bicep build --file Platform/deploy-quickstart-apps.bicep
-            displayName: "Compile Apps Bicep to ARM"
-          - task: AzureResourceManagerTemplateDeployment@3
-            displayName: "Deploy applications and databases"
-            inputs:
-              azureResourceManagerConnection: PlatformServiceConnectionTest
-              location: "australiaeast"
-              deploymentScope: Subscription
-              templateLocation: Linked artifact
-              csmFile: "Platform/deploy-quickstart-apps.json"
-              scriptLocation: "inlineScript"
-              deploymentMode: Incremental
-              deploymentOutputs: appOutputs
-              overrideParameters: -resourcePrefix $(RESOURCE_PREFIX) -platformResourceGroupName $(platformResourceGroupName) -serverFarmId $(serverFarmId) -databaseServerName $(databaseServerName) -logAnalyticsWorkspaceId $(logAnalyticsWorkspaceId) -environmentName test
+                - bash: az bicep build --file Platform/deploy-quickstart-apps-configuration.bicep
+                  displayName: "Compile Apps Configuration Bicep to ARM"
+                - task: AzureResourceManagerTemplateDeployment@3
+                  displayName: "Configure applications and databases"
+                  inputs:
+                    azureResourceManagerConnection: PlatformServiceConnectionTest
+                    location: "australiaeast"
+                    deploymentScope: Subscription
+                    templateLocation: Linked artifact
+                    csmFile: "Platform/deploy-quickstart-apps-configuration.json"
+                    scriptLocation: "inlineScript"
+                    deploymentMode: Incremental
+                    overrideParameters: -resourceGroupName $(appOutputs.resourceGroupName.value) -databaseServerName $(platformOutputs.databaseServerName.value) -databaseName $(appOutputs.databaseName.value) -appHostname $(appOutputs.applicationHostname.value) -apiHostname $(appOutputs.apiHostname.value) -appKeyVaultName $(appOutputs.applicationKeyVaultName.value) -appClientId $(SetupAad.applicationClientId) -apiClientId $(SetupAad.apiClientId) -apiUserAssignedClientId $(appOutputs.managedIdentityAppId.value) -appClientSecret $(SetupAad.applicationClientSecret) -apiAppInsightsKey $(appOutputs.apiAppInsightsKey.value) -appAppInsightsKey $(appOutputs.appAppInsightsKey.value) -environmentName test
 
-          - bash: |
-              echo "##vso[task.setvariable variable=resourceGroupName;isOutput=true]$(appOutputs.resourceGroupName.value)"
-              echo "##vso[task.setvariable variable=applicationHostname;isOutput=true]$(appOutputs.applicationHostname.value)"
-              echo "##vso[task.setvariable variable=databaseName;isOutput=true]$(appOutputs.databaseName.value)"
-              echo "##vso[task.setvariable variable=apiHostname;isOutput=true]$(appOutputs.apiHostname.value)"
-              echo "##vso[task.setvariable variable=applicationKeyVaultName;isOutput=true]$(appOutputs.applicationKeyVaultName.value)"
-              echo "##vso[task.setvariable variable=managedIdentityAppId;isOutput=true]$(appOutputs.managedIdentityAppId.value)"
-              echo "##vso[task.setvariable variable=apiAppInsightsKey;isOutput=true]$(appOutputs.apiAppInsightsKey.value)"
-              echo "##vso[task.setvariable variable=appAppInsightsKey;isOutput=true]$(appOutputs.appAppInsightsKey.value)"
-            name: CaptureAppOutputs
 
-      - job: "SetupAadObjects"
-        displayName: "Setup AAD objects"
-        dependsOn: DeployAppsAndDatabaseTemplate
-        variables:
-          applicationHostname: $[ dependencies.DeployAppsAndDatabaseTemplate.outputs['CaptureAppOutputs.applicationHostname']]
-          apiHostname: $[ dependencies.DeployAppsAndDatabaseTemplate.outputs['CaptureAppOutputs.apiHostname']]
 
-        steps:
-          - task: AzureCLI@2
-            displayName: Execute AAD script
-            name: SetupAad
-            inputs:
-              azureSubscription: PlatformAadServiceConnection
-              scriptType: bash
-              scriptLocation: inlineScript
-              inlineScript: |
-                ./Platform/setup-aad.sh $(applicationHostname) $(apiHostname)
 
-      - job: "ConfigureAppsAndDatabaseTemplate"
-        displayName: "Configure Apps and Databases"
-        dependsOn:
-          - DeployPlatformTemplate
-          - DeployAppsAndDatabaseTemplate
-          - SetupAadObjects
-        variables:
-          resourceGroupName: $[ dependencies.DeployAppsAndDatabaseTemplate.outputs['CaptureAppOutputs.resourceGroupName']]
-          databaseServerName: $[ dependencies.DeployPlatformTemplate.outputs['CapturePlatformOutputs.databaseServerName']]
-          databaseName: $[ dependencies.DeployAppsAndDatabaseTemplate.outputs['CaptureAppOutputs.databaseName']]
-          applicationHostname: $[ dependencies.DeployAppsAndDatabaseTemplate.outputs['CaptureAppOutputs.applicationHostname']]
-          apiHostname: $[ dependencies.DeployAppsAndDatabaseTemplate.outputs['CaptureAppOutputs.apiHostname']]
-          applicationKeyVaultName: $[ dependencies.DeployAppsAndDatabaseTemplate.outputs['CaptureAppOutputs.applicationKeyVaultName']]
-          appClientId: $[ dependencies.SetupAadObjects.outputs['SetupAad.applicationClientId']]
-          apiClientId: $[ dependencies.SetupAadObjects.outputs['SetupAad.apiClientId']]
-          appClientSecret: $[ dependencies.SetupAadObjects.outputs['SetupAad.applicationClientSecret']]
-          managedIdentityAppId: $[ dependencies.DeployAppsAndDatabaseTemplate.outputs['CaptureAppOutputs.managedIdentityAppId']]
-          apiAppInsightsKey: $[ dependencies.DeployAppsAndDatabaseTemplate.outputs['CaptureAppOutputs.apiAppInsightsKey']]
-          appAppInsightsKey: $[ dependencies.DeployAppsAndDatabaseTemplate.outputs['CaptureAppOutputs.appAppInsightsKey']]
 
-        steps:
-          - bash: az bicep build --file Platform/deploy-quickstart-apps-configuration.bicep
-            displayName: "Compile Apps Configuration Bicep to ARM"
-          - task: AzureResourceManagerTemplateDeployment@3
-            displayName: "Configure applications and databases"
-            inputs:
-              azureResourceManagerConnection: PlatformServiceConnectionTest
-              location: "australiaeast"
-              deploymentScope: Subscription
-              templateLocation: Linked artifact
-              csmFile: "Platform/deploy-quickstart-apps-configuration.json"
-              scriptLocation: "inlineScript"
-              deploymentMode: Incremental
-              overrideParameters: -resourceGroupName $(resourceGroupName) -databaseServerName $(databaseServerName) -databaseName $(databaseName) -appHostname $(applicationHostname) -apiHostname $(apiHostname) -appKeyVaultName $(applicationKeyVaultName) -appClientId $(appClientId) -apiClientId $(apiClientId) -apiUserAssignedClientId $(managedIdentityAppId) -appClientSecret $(appClientSecret) -apiAppInsightsKey $(apiAppInsightsKey) -appAppInsightsKey $(appAppInsightsKey) -environmentName test
 
 
   - stage: "DeployPlatformProduction"
-    dependsOn: DeployPlatformTest
     environment: Production
-    displayName: "Deploying platform to test"
+    displayName: "Deploying platform to production"
     variables:
       - group: PlatformProduction
     jobs:
-      - job: "DeployPlatformTemplate"
+      - deployment: "DeployPlatformTemplate"
         displayName: "Deploy Platform"
+        strategy:
+          runOnce:
+            deploy:
 
-        steps:
-          - bash: az bicep build --file Platform/deploy-quickstart-platform.bicep
-            displayName: "Compile Platform Bicep to ARM"
+              steps:
+                - bash: az bicep build --file Platform/deploy-quickstart-platform.bicep
+                  displayName: "Compile Platform Bicep to ARM"
 
-          - task: AzureResourceManagerTemplateDeployment@3
-            displayName: "Deploy Platform"
-            name: "platformDeploy"
-            inputs:
-              azureResourceManagerConnection: PlatformServiceConnectionProduction
-              location: "australiaeast"
-              deploymentScope: Subscription
-              templateLocation: Linked artifact
-              csmFile: "Platform/deploy-quickstart-platform.json"
-              scriptLocation: "inlineScript"
-              deploymentMode: Incremental
-              deploymentOutputs: platformOutputs
-              overrideParameters: -resourcePrefix $(RESOURCE_PREFIX) -databaseAdministratorName $(DEPLOYMENTPRINCIPAL_NAME) -databaseAdministratorObjectId $(DEPLOYMENTPRINCIPAL_ID) -environmentName prod
+                - task: AzureResourceManagerTemplateDeployment@3
+                  displayName: "Deploy Platform"
+                  name: "platformDeploy"
+                  inputs:
+                    azureResourceManagerConnection: PlatformServiceConnectionTest
+                    location: "australiaeast"
+                    deploymentScope: Subscription
+                    templateLocation: Linked artifact
+                    csmFile: "Platform/deploy-quickstart-platform.json"
+                    scriptLocation: "inlineScript"
+                    deploymentMode: Incremental
+                    deploymentOutputs: platformOutputs
+                    overrideParameters: -resourcePrefix $(RESOURCE_PREFIX) -databaseAdministratorName $(DEPLOYMENTPRINCIPAL_NAME) -databaseAdministratorObjectId $(DEPLOYMENTPRINCIPAL_ID) -environmentName prod
 
-          - bash: |
-              echo "##vso[task.setvariable variable=platformResourceGroupName;isOutput=true]$(platformOutputs.platformResourceGroupName.value)"
-              echo "##vso[task.setvariable variable=serverFarmId;isOutput=true]$(platformOutputs.serverFarmId.value)"
-              echo "##vso[task.setvariable variable=databaseServerName;isOutput=true]$(platformOutputs.databaseServerName.value)"
-              echo "##vso[task.setvariable variable=logAnalyticsWorkspaceId;isOutput=true]$(platformOutputs.logAnalyticsWorkspaceId.value)"
-            name: CapturePlatformOutputs
+                - bash: az bicep build --file Platform/deploy-quickstart-apps.bicep
+                  displayName: "Compile Apps Bicep to ARM"
+                - task: AzureResourceManagerTemplateDeployment@3
+                  displayName: "Deploy applications and databases"
+                  inputs:
+                    azureResourceManagerConnection: PlatformServiceConnectionTest
+                    location: "australiaeast"
+                    deploymentScope: Subscription
+                    templateLocation: Linked artifact
+                    csmFile: "Platform/deploy-quickstart-apps.json"
+                    scriptLocation: "inlineScript"
+                    deploymentMode: Incremental
+                    deploymentOutputs: appOutputs
+                    overrideParameters: -resourcePrefix $(RESOURCE_PREFIX) -platformResourceGroupName $(platformOutputs.platformResourceGroupName.value) -serverFarmId $(platformOutputs.serverFarmId.value) -databaseServerName $(platformOutputs.databaseServerName.value) -logAnalyticsWorkspaceId $(platformOutputs.logAnalyticsWorkspaceId.value) -environmentName prod
 
-      - job: "DeployAppsAndDatabaseTemplate"
-        displayName: "Deploy Apps and Databases"
-        dependsOn: DeployPlatformTemplate
-        variables:
-          platformResourceGroupName: $[ dependencies.DeployPlatformTemplate.outputs['CapturePlatformOutputs.platformResourceGroupName']]
-          serverFarmId: $[ dependencies.DeployPlatformTemplate.outputs['CapturePlatformOutputs.serverFarmId']]
-          databaseServerName: $[ dependencies.DeployPlatformTemplate.outputs['CapturePlatformOutputs.databaseServerName']]
-          logAnalyticsWorkspaceId: $[ dependencies.DeployPlatformTemplate.outputs['CapturePlatformOutputs.logAnalyticsWorkspaceId']]
+                - task: AzureCLI@2
+                  displayName: Execute AAD script
+                  name: SetupAad
+                  inputs:
+                    azureSubscription: PlatformAadServiceConnection
+                    scriptType: bash
+                    scriptLocation: inlineScript
+                    inlineScript: |
+                      ./Platform/setup-aad.sh $(appOutputs.applicationHostname.value) $(appOutputs.apiHostname.value)
 
-        steps:
-          - bash: az bicep build --file Platform/deploy-quickstart-apps.bicep
-            displayName: "Compile Apps Bicep to ARM"
-          - task: AzureResourceManagerTemplateDeployment@3
-            displayName: "Deploy applications and databases"
-            inputs:
-              azureResourceManagerConnection: PlatformServiceConnectionProduction
-              location: "australiaeast"
-              deploymentScope: Subscription
-              templateLocation: Linked artifact
-              csmFile: "Platform/deploy-quickstart-apps.json"
-              scriptLocation: "inlineScript"
-              deploymentMode: Incremental
-              deploymentOutputs: appOutputs
-              overrideParameters: -resourcePrefix $(RESOURCE_PREFIX) -platformResourceGroupName $(platformResourceGroupName) -serverFarmId $(serverFarmId) -databaseServerName $(databaseServerName) -logAnalyticsWorkspaceId $(logAnalyticsWorkspaceId) -environmentName prod
-
-          - bash: |
-              echo "##vso[task.setvariable variable=resourceGroupName;isOutput=true]$(appOutputs.resourceGroupName.value)"
-              echo "##vso[task.setvariable variable=applicationHostname;isOutput=true]$(appOutputs.applicationHostname.value)"
-              echo "##vso[task.setvariable variable=databaseName;isOutput=true]$(appOutputs.databaseName.value)"
-              echo "##vso[task.setvariable variable=apiHostname;isOutput=true]$(appOutputs.apiHostname.value)"
-              echo "##vso[task.setvariable variable=applicationKeyVaultName;isOutput=true]$(appOutputs.applicationKeyVaultName.value)"
-              echo "##vso[task.setvariable variable=managedIdentityAppId;isOutput=true]$(appOutputs.managedIdentityAppId.value)"
-              echo "##vso[task.setvariable variable=apiAppInsightsKey;isOutput=true]$(appOutputs.apiAppInsightsKey.value)"
-              echo "##vso[task.setvariable variable=appAppInsightsKey;isOutput=true]$(appOutputs.appAppInsightsKey.value)"
-            name: CaptureAppOutputs
-
-      - job: "SetupAadObjects"
-        displayName: "Setup AAD objects"
-        dependsOn: DeployAppsAndDatabaseTemplate
-        variables:
-          applicationHostname: $[ dependencies.DeployAppsAndDatabaseTemplate.outputs['CaptureAppOutputs.applicationHostname']]
-          apiHostname: $[ dependencies.DeployAppsAndDatabaseTemplate.outputs['CaptureAppOutputs.apiHostname']]
-
-        steps:
-          - task: AzureCLI@2
-            displayName: Execute AAD script
-            name: SetupAad
-            inputs:
-              azureSubscription: PlatformAadServiceConnection
-              scriptType: bash
-              scriptLocation: inlineScript
-              inlineScript: |
-                ./Platform/setup-aad.sh $(applicationHostname) $(apiHostname)
-
-      - job: "ConfigureAppsAndDatabaseTemplate"
-        displayName: "Configure Apps and Databases"
-        dependsOn:
-          - DeployPlatformTemplate
-          - DeployAppsAndDatabaseTemplate
-          - SetupAadObjects
-        variables:
-          resourceGroupName: $[ dependencies.DeployAppsAndDatabaseTemplate.outputs['CaptureAppOutputs.resourceGroupName']]
-          databaseServerName: $[ dependencies.DeployPlatformTemplate.outputs['CapturePlatformOutputs.databaseServerName']]
-          databaseName: $[ dependencies.DeployAppsAndDatabaseTemplate.outputs['CaptureAppOutputs.databaseName']]
-          applicationHostname: $[ dependencies.DeployAppsAndDatabaseTemplate.outputs['CaptureAppOutputs.applicationHostname']]
-          apiHostname: $[ dependencies.DeployAppsAndDatabaseTemplate.outputs['CaptureAppOutputs.apiHostname']]
-          applicationKeyVaultName: $[ dependencies.DeployAppsAndDatabaseTemplate.outputs['CaptureAppOutputs.applicationKeyVaultName']]
-          appClientId: $[ dependencies.SetupAadObjects.outputs['SetupAad.applicationClientId']]
-          apiClientId: $[ dependencies.SetupAadObjects.outputs['SetupAad.apiClientId']]
-          appClientSecret: $[ dependencies.SetupAadObjects.outputs['SetupAad.applicationClientSecret']]
-          managedIdentityAppId: $[ dependencies.DeployAppsAndDatabaseTemplate.outputs['CaptureAppOutputs.managedIdentityAppId']]
-          apiAppInsightsKey: $[ dependencies.DeployAppsAndDatabaseTemplate.outputs['CaptureAppOutputs.apiAppInsightsKey']]
-          appAppInsightsKey: $[ dependencies.DeployAppsAndDatabaseTemplate.outputs['CaptureAppOutputs.appAppInsightsKey']]
-
-        steps:
-          - bash: az bicep build --file Platform/deploy-quickstart-apps-configuration.bicep
-            displayName: "Compile Apps Configuration Bicep to ARM"
-          - task: AzureResourceManagerTemplateDeployment@3
-            displayName: "Configure applications and databases"
-            inputs:
-              azureResourceManagerConnection: PlatformServiceConnectionProduction
-              location: "australiaeast"
-              deploymentScope: Subscription
-              templateLocation: Linked artifact
-              csmFile: "Platform/deploy-quickstart-apps-configuration.json"
-              scriptLocation: "inlineScript"
-              deploymentMode: Incremental
-              overrideParameters: -resourceGroupName $(resourceGroupName) -databaseServerName $(databaseServerName) -databaseName $(databaseName) -appHostname $(applicationHostname) -apiHostname $(apiHostname) -appKeyVaultName $(applicationKeyVaultName) -appClientId $(appClientId) -apiClientId $(apiClientId) -apiUserAssignedClientId $(managedIdentityAppId) -appClientSecret $(appClientSecret) -apiAppInsightsKey $(apiAppInsightsKey) -appAppInsightsKey $(appAppInsightsKey) -environmentName prod
-
-
-
-
+                - bash: az bicep build --file Platform/deploy-quickstart-apps-configuration.bicep
+                  displayName: "Compile Apps Configuration Bicep to ARM"
+                - task: AzureResourceManagerTemplateDeployment@3
+                  displayName: "Configure applications and databases"
+                  inputs:
+                    azureResourceManagerConnection: PlatformServiceConnectionTest
+                    location: "australiaeast"
+                    deploymentScope: Subscription
+                    templateLocation: Linked artifact
+                    csmFile: "Platform/deploy-quickstart-apps-configuration.json"
+                    scriptLocation: "inlineScript"
+                    deploymentMode: Incremental
+                    overrideParameters: -resourceGroupName $(appOutputs.resourceGroupName.value) -databaseServerName $(platformOutputs.databaseServerName.value) -databaseName $(appOutputs.databaseName.value) -appHostname $(appOutputs.applicationHostname.value) -apiHostname $(appOutputs.apiHostname.value) -appKeyVaultName $(appOutputs.applicationKeyVaultName.value) -appClientId $(SetupAad.applicationClientId) -apiClientId $(SetupAad.apiClientId) -apiUserAssignedClientId $(appOutputs.managedIdentityAppId.value) -appClientSecret $(SetupAad.applicationClientSecret) -apiAppInsightsKey $(appOutputs.apiAppInsightsKey.value) -appAppInsightsKey $(appOutputs.appAppInsightsKey.value) -environmentName prod
