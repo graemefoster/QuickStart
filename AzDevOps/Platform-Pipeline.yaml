@@ -87,6 +87,8 @@ stages:
             displayName: Execute AAD script'
             inputs:
               azureSubscription: PlatformAadServiceConnection
-              scriptType: inline
+              scriptType: bash
+              scriptLocation: inlineScript
               inlineScript: |
                 ./Platform/setup-aad.sh $(applicationHostname) $(apiHostname)
+
