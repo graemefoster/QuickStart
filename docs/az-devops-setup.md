@@ -28,7 +28,7 @@ git push origin
 Fill in the follow details: ``` Subscription Id, Subscription Name, Service principal key, Tenant ID ``` and select ``` Verify ```. Use the details from the Service Principal you created earlier.
 
 - Enter the name ``` PlatformServiceConnectionTest ``` and click ``` Verify and save ```
-- Repeat the process for name ``` PlatformServiceConnectionProd ``` and click ``` Verify and save ```. This service principal needs access to the Prod environment.
+- Repeat the process for name ``` PlatformServiceConnectionProduction ``` and click ``` Verify and save ```. This service principal needs access to the Prod environment.
 
 ## Step 4.5 - Add a Service Connection that can connect to AAD (recommend using a single service principal)
 
