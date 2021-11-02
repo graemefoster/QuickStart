@@ -55,8 +55,6 @@ stages:
         steps:
           - bash: az bicep build --file Platform/deploy-quickstart-apps.bicep
             displayName: "Compile Apps Bicep to ARM"
-          - bash: echo "---- rgn  $(platformResourceGroupName) ---"
-            displayName: "Compile Apps Bicep to ARM"
           - task: AzureResourceManagerTemplateDeployment@3
             displayName: "Deploy Test applications and databases"
             inputs:
@@ -71,8 +69,14 @@ stages:
               overrideParameters: -resourcePrefix $(RESOURCE_PREFIX) -platformResourceGroupName $(platformResourceGroupName) -serverFarmId $(serverFarmId) -databaseServerName $(databaseServerName) -logAnalyticsWorkspaceId $(logAnalyticsWorkspaceId) -environmentName test
 
           - bash: |
+              echo "##vso[task.setvariable variable=resourceGroupName;isOutput=true]$(appOutputs.resourceGroupName.value)"
               echo "##vso[task.setvariable variable=applicationHostname;isOutput=true]$(appOutputs.applicationHostname.value)"
+              echo "##vso[task.setvariable variable=databaseName;isOutput=true]$(appOutputs.databaseName.value)"
               echo "##vso[task.setvariable variable=apiHostname;isOutput=true]$(appOutputs.apiHostname.value)"
+              echo "##vso[task.setvariable variable=applicationKeyVaultName;isOutput=true]$(appOutputs.applicationKeyVaultName.value)"
+              echo "##vso[task.setvariable variable=managedIdentityAppId;isOutput=true]$(appOutputs.managedIdentityAppId.value)"
+              echo "##vso[task.setvariable variable=apiAppInsightsKey;isOutput=true]$(appOutputs.apiAppInsightsKey.value)"
+              echo "##vso[task.setvariable variable=appAppInsightsKey;isOutput=true]$(appOutputs.appAppInsightsKey.value)"
             name: CaptureAppOutputs
 
       - job: "SetupTestAadObjects"
@@ -85,6 +89,7 @@ stages:
         steps:
           - task: AzureCLI@2
             displayName: Execute AAD script'
+            name: SetupAad
             inputs:
               azureSubscription: PlatformAadServiceConnection
               scriptType: bash
@@ -92,3 +97,37 @@ stages:
               inlineScript: |
                 ./Platform/setup-aad.sh $(applicationHostname) $(apiHostname)
 
+      - job: "ConfigureTestAppsAndDatabaseTemplate"
+        displayName: "Configure Test AAD objects"
+        dependsOn:
+          - DeployPlatformTest
+          - DeployTestAppsAndDatabaseTemplate
+          - SetupTestAadObjects
+        variables:
+          resourceGroupName: $[ dependencies.DeployTestAppsAndDatabaseTemplate.outputs['CaptureAppOutputs.resourceGroupName']]
+          databaseServerName: $[ dependencies.DeployPlatformTemplate.outputs['CapturePlatformOutputs.databaseServerName']]
+          databaseName: $[ dependencies.DeployTestAppsAndDatabaseTemplate.outputs['CaptureAppOutputs.databaseName']]
+          applicationHostname: $[ dependencies.DeployTestAppsAndDatabaseTemplate.outputs['CaptureAppOutputs.applicationHostname']]
+          apiHostname: $[ dependencies.DeployTestAppsAndDatabaseTemplate.outputs['CaptureAppOutputs.apiHostname']]
+          applicationKeyVaultName: $[ dependencies.DeployTestAppsAndDatabaseTemplate.outputs['CaptureAppOutputs.applicationKeyVaultName']]
+          appClientId: $[ dependencies.SetupTestAadObjects.outputs['SetupAad.appClientId']]
+          apiClientId: $[ dependencies.SetupTestAadObjects.outputs['SetupAad.apiClientId']]
+          appClientSecret: $[ dependencies.SetupTestAadObjects.outputs['SetupAad.appClientSecret']]
+          managedIdentityAppId: $[ dependencies.DeployTestAppsAndDatabaseTemplate.outputs['CaptureAppOutputs.managedIdentityAppId']]
+          apiAppInsightsKey: $[ dependencies.DeployTestAppsAndDatabaseTemplate.outputs['CaptureAppOutputs.apiAppInsightsKey']]
+          appAppInsightsKey: $[ dependencies.DeployTestAppsAndDatabaseTemplate.outputs['CaptureAppOutputs.appAppInsightsKey']]
+
+        steps:
+          - bash: az bicep build --file Platform/deploy-quickstart-apps-configuration.bicep
+            displayName: "Compile Apps Configuration Bicep to ARM"
+          - task: AzureResourceManagerTemplateDeployment@3
+            displayName: "Configure Test applications and databases"
+            inputs:
+              azureResourceManagerConnection: PlatformServiceConnectionTest
+              location: "australiaeast"
+              deploymentScope: Subscription
+              templateLocation: Linked artifact
+              csmFile: "Platform/deploy-quickstart-apps-configuration.json"
+              scriptLocation: "inlineScript"
+              deploymentMode: Incremental
+              overrideParameters: -resourceGroupName $(resourceGroupName) -databaseServerName $(databaseServerName) -databaseName $(databaseName) -appHostname $(applicationHostname) -apiHostname $(apiHostname) -appKeyVaultName $(applicationKeyVaultName) -appClientId $(appClientId) -apiClientId $(apiClientId) -apiUserAssignedClientId $(managedIdentityAppId) -appClientSecret $(appClientSecret) -apiAppInsightsKey $(apiAppInsightsKey) -appAppInsightsKey $(appAppInsightsKey) -environmentName test
