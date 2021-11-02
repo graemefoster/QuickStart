@@ -11,13 +11,13 @@ trigger:
 
 stages:
   - stage: "DeployPlatformTest"
-    environment: Test
     displayName: "Deploying platform to test"
     variables:
       - group: PlatformTest
     jobs:
       - deployment: "DeployPlatformTemplate"
         displayName: "Deploy Platform"
+        environment: Test
         strategy:
           runOnce:
             deploy:
@@ -86,13 +86,13 @@ stages:
 
 
   - stage: "DeployPlatformProduction"
-    environment: Production
     displayName: "Deploying platform to production"
     variables:
       - group: PlatformProduction
     jobs:
       - deployment: "DeployPlatformTemplate"
         displayName: "Deploy Platform"
+        environment: Production
         strategy:
           runOnce:
             deploy:
