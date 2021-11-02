@@ -16,7 +16,7 @@ stages:
   - stage: "BuildWebApi"
     displayName: "Build and publish web api"
     jobs:
-      - job: "PublishWebApp"
+      - job: "PublishWebApi"
         steps:
 
           - task: UseDotNet@2
@@ -28,21 +28,21 @@ stages:
             displayName: "Restore project dependencies"
             inputs:
               command: "restore"
-              projects: "./Application/Api/SimpleApiWithDatabase.csproj"
+              projects: "./Application/Api/SimpleApiWithDatabase/SimpleApiWithDatabase.csproj"
 
           - task: DotNetCoreCLI@2
             displayName: "Build the project - release"
             inputs:
               command: "build"
               arguments: "--no-restore --configuration release"
-              projects: "./Application/Api/SimpleApiWithDatabase.csproj"
+              projects: "./Application/Api/SimpleApiWithDatabase/SimpleApiWithDatabase.csproj"
 
           - task: DotNetCoreCLI@2
             displayName: Publish Web Api
             inputs:
               command: "publish"
               arguments: "--no-build --no-restore --configuration release --output $(Build.ArtifactStagingDirectory)/release"
-              projects: "./Application/Api/SimpleApiWithDatabase.csproj"
+              projects: "./Application/Api/SimpleApiWithDatabase/SimpleApiWithDatabase.csproj"
               zipAfterPublish: true
               publishWebProjects: false
 
