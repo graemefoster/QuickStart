@@ -39,6 +39,7 @@ stages:
               command: "publish"
               arguments: "--no-build --no-restore --configuration release --output $(Build.ArtifactStagingDirectory)/release/SqlAadMigrationDeployer/"
               projects: "./SqlAadMigrationDeployer/SqlAadMigrationDeployer.csproj"
+              publishWebProjects: false
 
           - publish: $(Build.ArtifactStagingDirectory)/release/SqlAadMigrationDeployer/**
             artifact: SqlAadMigrationDeployer
