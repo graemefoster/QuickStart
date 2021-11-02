@@ -13,8 +13,8 @@ variables:
   - group: Platform
 
 stages:
-  - stage: "DeployPlatform"
-    displayName: "Deploying platform"
+  - stage: "DeployPlatformTest"
+    displayName: "Deploying platform to test"
     jobs:
       - job: "DeployPlatformTemplate"
         displayName: "Deploy Platform"
@@ -35,7 +35,7 @@ stages:
               scriptLocation: "inlineScript"
               deploymentMode: Incremental
               deploymentOutputs: platformOutputs
-              overrideParameters: -resourcePrefix $(RESOURCE_PREFIX) -databaseAdministratorName $(DEPLOYMENTPRINCIPAL_NAME) -databaseAdministratorObjectId $(DEPLOYMENTPRINCIPAL_ID)
+              overrideParameters: -resourcePrefix $(RESOURCE_PREFIX) -databaseAdministratorName $(DEPLOYMENTPRINCIPAL_NAME) -databaseAdministratorObjectId $(DEPLOYMENTPRINCIPAL_ID) -environment test
 
           - bash: |
               echo "##vso[task.setvariable variable=platformResourceGroupName;isOutput=true]$(platformOutputs.platformResourceGroupName.value)"
@@ -44,8 +44,8 @@ stages:
               echo "##vso[task.setvariable variable=logAnalyticsWorkspaceId;isOutput=true]$(platformOutputs.logAnalyticsWorkspaceId.value)"
             name: CapturePlatformOutputs
 
-      - job: "DeployAppsAndDatabaseTemplate"
-        displayName: "Deploy Apps and Databases"
+      - job: "DeployTestAppsAndDatabaseTemplate"
+        displayName: "Deploy Test Apps and Databases"
         dependsOn: DeployPlatformTemplate
         variables:
           platformResourceGroupName: $[ dependencies.DeployPlatformTemplate.outputs['CapturePlatformOutputs.platformResourceGroupName']]
@@ -68,18 +68,26 @@ stages:
               csmFile: "Platform/deploy-quickstart-apps.json"
               scriptLocation: "inlineScript"
               deploymentMode: Incremental
-              deploymentOutputs: platformOutputs
+              deploymentOutputs: appOutputs
               overrideParameters: -resourcePrefix $(RESOURCE_PREFIX) -platformResourceGroupName $(platformResourceGroupName) -serverFarmId $(serverFarmId) -databaseServerName $(databaseServerName) -logAnalyticsWorkspaceId $(logAnalyticsWorkspaceId) -environmentName test
 
-          - task: AzureResourceManagerTemplateDeployment@3
-            displayName: "Deploy Prod applications and databases"
-            inputs:
-              azureResourceManagerConnection: PlatformServiceConnection
-              location: "australiaeast"
-              deploymentScope: Subscription
-              templateLocation: Linked artifact
-              csmFile: "Platform/deploy-quickstart-apps.json"
-              scriptLocation: "inlineScript"
-              deploymentMode: Incremental
-              deploymentOutputs: platformOutputs
-              overrideParameters: -resourcePrefix $(RESOURCE_PREFIX) -platformResourceGroupName $(platformResourceGroupName) -serverFarmId $(serverFarmId) -databaseServerName $(databaseServerName) -logAnalyticsWorkspaceId $(logAnalyticsWorkspaceId) -environmentName prod
+          - bash: |
+              echo "##vso[task.setvariable variable=applicationHostname;isOutput=true]$(appOutputs.applicationHostname.value)"
+              echo "##vso[task.setvariable variable=apiHostname;isOutput=true]$(appOutputs.apiHostname.value)"
+            name: CaptureAppOutputs
+
+      - job: "SetupTestAadObjects"
+        displayName: "Setup Test AAD objects"
+        dependsOn: DeployTestAppsAndDatabaseTemplate
+        variables:
+          applicationHostname: $[ dependencies.DeployTestAppsAndDatabaseTemplate.outputs['CaptureAppOutputs.applicationHostname']]
+          apiHostname: $[ dependencies.DeployTestAppsAndDatabaseTemplate.outputs['CaptureAppOutputs.apiHostname']]
+
+        steps:
+          - task: AzureCLI@2
+            displayName: Execute AAD script'
+            azureSubscription: ${{ coalesce(PlatformServiceAadConnection, PlatformServiceConnection }}
+            scriptLocation: inline
+            inlineScript: |
+              ./Platform/setup-aad.sh $(applicationHostname) $(apiHostname)
+
