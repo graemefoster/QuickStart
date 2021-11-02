@@ -9,12 +9,11 @@ trigger:
     include:
       - Platform
 
-variables:
-  - group: Platform
-
 stages:
   - stage: "DeployPlatformTest"
     displayName: "Deploying platform to test"
+    variables:
+      - group: PlatformTest
     jobs:
       - job: "DeployPlatformTemplate"
         displayName: "Deploy Platform"
@@ -27,7 +26,7 @@ stages:
             displayName: "Deploy Platform"
             name: "platformDeploy"
             inputs:
-              azureResourceManagerConnection: PlatformServiceConnection
+              azureResourceManagerConnection: $(PlatformServiceConnection)
               location: "australiaeast"
               deploymentScope: Subscription
               templateLocation: Linked artifact
@@ -61,7 +60,7 @@ stages:
           - task: AzureResourceManagerTemplateDeployment@3
             displayName: "Deploy Test applications and databases"
             inputs:
-              azureResourceManagerConnection: PlatformServiceConnection
+              azureResourceManagerConnection: $(PlatformServiceConnection)
               location: "australiaeast"
               deploymentScope: Subscription
               templateLocation: Linked artifact
@@ -86,8 +85,7 @@ stages:
         steps:
           - task: AzureCLI@2
             displayName: Execute AAD script'
-            azureSubscription: ${{ coalesce(PlatformServiceAadConnection, PlatformServiceConnection }}
+            azureSubscription: $(PlatformServiceAadConnection)
             scriptLocation: inline
             inlineScript: |
               ./Platform/setup-aad.sh $(applicationHostname) $(apiHostname)
-

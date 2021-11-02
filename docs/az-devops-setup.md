@@ -29,6 +29,20 @@ Fill in the follow details: ``` Subscription Id, Subscription Name, Service prin
 
 - Enter the name ``` PlatformServiceConnection ``` and click ``` Verify and save ```
 
+## Step 4.5 - Add a Service Connection that can connect to AAD
+
+> This is only necessary if the Service Connection above cannot manipulate AAD objects.
+
+- Head to the ``` Project Settings ``` pane from your Project.
+- Select ``` Service Connections ``` from the menu
+- Select ``` Create service connection ```
+- Select ``` Azure Resource Manager ``` and select ``` Next ```
+- Select ``` Service Principal (manual) ``` and select ``` Next ```
+
+Fill in the follow details: ``` Subscription Id, Subscription Name, Service principal key, Tenant ID ``` and select ``` Verify ```. Use the details from the Service Principal you created earlier.
+
+- Enter the name ``` PlatformAadServiceConnection ``` and click ``` Verify and save ```
+
 
 ## Step 5 - Create a Variable Group to store the variables required to deploy the Platform
 
@@ -39,6 +53,8 @@ Now add the following variables:
 
 | Secret | Purpose | Other information | 
 | --- | --- | --- |
+| PlatformServiceConnection | Name of the service connection created in Step 4. |  |
+| PlatformServiceAadConnection | Name of the service connection created in Step 4.5 | If you didn't create one in 4.5, use the name of the one created in 4. |
 | RESOURCE_PREFIX | A small string that prefixes the resources. |  It's just used to prevent against resource name clashes. Some services like keyvault and web-apps require globally unique names |
 | DEPLOYMENTPRINCIPAL_ID | Application Id of the service principal you created to perform the deployment | Used to setup the AAD Admin account for Sql Server |
 | DEPLOYMENTPRINCIPAL_NAME | Application name of the service principal you created to perform the deployment | Used to setup the AAD Admin account for Sql Server. This must match the name of the AAD service principal |
