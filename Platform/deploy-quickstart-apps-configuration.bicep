@@ -58,7 +58,7 @@ module PostConfigureApiDeployment './configure-api.bicep' = {
     apiHostname: apiHostname
     apiAadClientId: apiClientId
     userAssignedClientId: apiUserAssignedClientId
-    apiAppInsightsKey : apiAppInsightsKey
+    apiAppInsightsKey: apiAppInsightsKey
     environmentName: environmentName
     spaHostname: spaHostname
   }
@@ -69,27 +69,27 @@ module PostConfigureAppDeployment './configure-app.bicep' = {
   scope: resourceGroup
   params: {
     apiHostname: apiHostname
-    appAadClientId:appClientId
-    appClientSecret:appClientSecret
-    appHostname:appHostname
-    appKeyVaultName:appKeyVaultName
-    apiAadClientId:apiClientId
-    appAppInsightsKey : appAppInsightsKey
+    appAadClientId: appClientId
+    appClientSecret: appClientSecret
+    appHostname: appHostname
+    appKeyVaultName: appKeyVaultName
+    apiAadClientId: apiClientId
+    appAppInsightsKey: appAppInsightsKey
     environmentName: environmentName
   }
 }
 
-module PostConfigureSpaDeployment './configure-app.bicep' = {
+module PostConfigureSpaDeployment './configure-static-app.bicep' = {
   name: 'PostConfigureSpaDeployment'
   scope: resourceGroup
   params: {
     apiHostname: apiHostname
-    appAadClientId:appClientId
-    appClientSecret:appClientSecret
-    appHostname:appHostname
-    appKeyVaultName:appKeyVaultName
-    apiAadClientId:apiClientId
-    appAppInsightsKey : appAppInsightsKey
+    appAadClientId: appClientId
+    appClientSecret: appClientSecret
+    spaHostname: spaHostname
+    appKeyVaultName: appKeyVaultName
+    apiAadClientId: apiClientId
+    appAppInsightsKey: appAppInsightsKey
     environmentName: environmentName
   }
 }
