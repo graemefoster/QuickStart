@@ -66,7 +66,7 @@ stages:
                     package: $(Pipeline.Workspace)/WebApplication/SimpleMvcApp.zip
 
 
-  - stage: "DeployWebApplicationToProd"
+  - stage: "DeployWebApplicationToProduction"
     dependsOn: DeployWebApplicationToTest
     displayName: "Deploy Web Application (Production)"
     jobs:
@@ -89,8 +89,8 @@ stages:
 
 
 
-  - stage: "SitchProductionSwap"
-    dependsOn: "DeployWebApiToProduction"
+  - stage: "SwitchProductionSwap"
+    dependsOn: "DeployWebApplicationToProduction"
     displayName: "Switch Production Slot"
     jobs:
       - deployment: "SwapSlot"

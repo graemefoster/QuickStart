@@ -158,7 +158,7 @@ stages:
 
 
 
-  - stage: "SitchProductionSwap"
+  - stage: "SwitchProductionSwap"
     dependsOn: "DeployWebApiToProduction"
     displayName: "Switch Production Slot"
     jobs:
