@@ -48,6 +48,10 @@ Next, let's move on to configuring the pipelines.
 
 Follow the instructions here [Github Actions Setup](./docs/actions-setup.md) to get started in Actions.
 
+## Azure Devops
+
+Follow the instructions here [Azure Devops Setup](./docs/az-devops-setup.md) to get started in Azure Devops.
+
 # Known issues
 
 ## Github Action Pipelines
