@@ -40,7 +40,7 @@ jobs:
       - uses: actions/upload-artifact@v2
         with:
           name: app
-          path: "${{ env.AZURE_WEBAPP_PACKAGE_PATH }}/build/**"
+          path: "./Application/StaticApp/sample-react-app/build/**"
 
   deploy-to-test:
     needs: build-and-test-app
