@@ -1,4 +1,4 @@
-name: Application
+name: SPA
 
 env:
   AZURE_WEBAPP_PACKAGE_PATH: "./packages" # set this to the path to your web app project, defaults to the repository root
