@@ -1,0 +1,218 @@
+name: "Platform-Pipeline"
+
+trigger:
+  branches:
+    include:
+      - main
+      - feature/*
+  paths:
+    include:
+      - Platform
+
+stages:
+  - stage: "BuildWebApi"
+    displayName: "Build and publish web api"
+    jobs:
+      - job: "PublishDatabaseMigrator"
+        steps:
+          - task: UseDotNet@2
+            inputs:
+              packageType: "sdk"
+              version: "5.0.x"
+
+          - task: DotNetCoreCLI@2
+            displayName: "Restore project dependencies"
+            inputs:
+              command: "restore"
+              projects: "./SqlAadMigrationDeployer/SqlAadMigrationDeployer.csproj"
+
+          - task: DotNetCoreCLI@2
+            displayName: "Build the project - release"
+            inputs:
+              command: "build"
+              arguments: "--no-restore --configuration release"
+              projects: "./SqlAadMigrationDeployer/SqlAadMigrationDeployer.csproj"
+
+          - task: DotNetCoreCLI@2
+            displayName: Publish Sql Migration Tool
+            inputs:
+              command: "publish"
+              arguments: "--no-build --no-restore --configuration release --output $(Build.ArtifactStagingDirectory)/release/SqlAadMigrationDeployer/"
+              projects: "./SqlAadMigrationDeployer/SqlAadMigrationDeployer.csproj"
+              publishWebProjects: false
+              zipAfterPublish: false
+
+          - publish: $(Build.ArtifactStagingDirectory)/release/SqlAadMigrationDeployer/
+            artifact: SqlAadMigrationDeployer
+
+  - stage: "DeployPlatformTest"
+    displayName: "Deploying platform to test"
+    variables:
+      - group: PlatformTest
+    jobs:
+      - deployment: "DeployPlatformTemplate"
+        displayName: "Deploy Platform"
+        environment: Test
+        strategy:
+          runOnce:
+            deploy:
+              steps:
+                - task: UseDotNet@2
+                  inputs:
+                    packageType: 'runtime'
+                    version: '5.0.x'          
+
+                - checkout: self
+
+                - bash: az bicep build --file Platform/deploy-quickstart-platform.bicep
+                  displayName: "Compile Platform Bicep to ARM"
+
+                - task: AzureResourceManagerTemplateDeployment@3
+                  displayName: "Deploy Platform"
+                  name: "platformDeploy"
+                  inputs:
+                    azureResourceManagerConnection: PlatformServiceConnectionTest
+                    location: "australiaeast"
+                    deploymentScope: Subscription
+                    templateLocation: Linked artifact
+                    csmFile: "Platform/deploy-quickstart-platform.json"
+                    scriptLocation: "inlineScript"
+                    deploymentMode: Incremental
+                    deploymentOutputs: platformOutputs
+                    overrideParameters: -resourcePrefix $(RESOURCE_PREFIX) -databaseAdministratorName $(DEPLOYMENTPRINCIPAL_NAME) -databaseAdministratorObjectId $(DEPLOYMENTPRINCIPAL_ID) -environmentName test
+
+                - bash: az bicep build --file Platform/deploy-quickstart-apps.bicep
+                  displayName: "Compile Apps Bicep to ARM"
+                - task: AzureResourceManagerTemplateDeployment@3
+                  displayName: "Deploy applications and databases"
+                  inputs:
+                    azureResourceManagerConnection: PlatformServiceConnectionTest
+                    location: "australiaeast"
+                    deploymentScope: Subscription
+                    templateLocation: Linked artifact
+                    csmFile: "Platform/deploy-quickstart-apps.json"
+                    scriptLocation: "inlineScript"
+                    deploymentMode: Incremental
+                    deploymentOutputs: appOutputs
+                    overrideParameters: -resourcePrefix $(RESOURCE_PREFIX) -platformResourceGroupName $(platformOutputs.platformResourceGroupName.value) -serverFarmId $(platformOutputs.serverFarmId.value) -databaseServerName $(platformOutputs.databaseServerName.value) -logAnalyticsWorkspaceId $(platformOutputs.logAnalyticsWorkspaceId.value) -environmentName test
+
+                - task: AzureCLI@2
+                  displayName: Execute AAD script
+                  name: SetupAad
+                  inputs:
+                    azureSubscription: PlatformAadServiceConnection
+                    scriptType: bash
+                    scriptLocation: inlineScript
+                    inlineScript: |
+                      ./Platform/setup-aad.sh $(appOutputs.applicationHostname.value) $(appOutputs.apiHostname.value)
+
+                - bash: az bicep build --file Platform/deploy-quickstart-apps-configuration.bicep
+                  displayName: "Compile Apps Configuration Bicep to ARM"
+                - task: AzureResourceManagerTemplateDeployment@3
+                  displayName: "Configure applications and databases"
+                  inputs:
+                    azureResourceManagerConnection: PlatformServiceConnectionTest
+                    location: "australiaeast"
+                    deploymentScope: Subscription
+                    templateLocation: Linked artifact
+                    csmFile: "Platform/deploy-quickstart-apps-configuration.json"
+                    scriptLocation: "inlineScript"
+                    deploymentMode: Incremental
+                    overrideParameters: -resourceGroupName $(appOutputs.resourceGroupName.value) -databaseServerName $(platformOutputs.databaseServerName.value) -databaseName $(appOutputs.databaseName.value) -appHostname $(appOutputs.applicationHostname.value) -apiHostname $(appOutputs.apiHostname.value) -appKeyVaultName $(appOutputs.applicationKeyVaultName.value) -appClientId $(SetupAad.applicationClientId) -apiClientId $(SetupAad.apiClientId) -apiUserAssignedClientId $(appOutputs.managedIdentityAppId.value) -appClientSecret $(SetupAad.applicationClientSecret) -apiAppInsightsKey $(appOutputs.apiAppInsightsKey.value) -appAppInsightsKey $(appOutputs.appAppInsightsKey.value) -environmentName test
+
+                - task: AzureCLI@2
+                  displayName: Execute Migration script
+                  name: SetupAad
+                  inputs:
+                    azureSubscription: PlatformServiceConnectionTest
+                    scriptType: bash
+                    scriptLocation: inlineScript
+                    inlineScript: |
+                      dotnet $(Pipeline.Workspace)/SqlAadMigrationDeployer/SqlAadMigrationDeployer/SqlAadMigrationDeployer.dll add-managed-identity "$(appOutputs.databaseConnectionString.value)" "$(appOutputs.managedIdentityName.value)" "$(appOutputs.managedIdentityAppId.value)" "db_owner"
+
+
+  - stage: "DeployPlatformProduction"
+    displayName: "Deploying platform to production"
+    variables:
+      - group: PlatformProduction
+    jobs:
+      - deployment: "DeployPlatformTemplate"
+        displayName: "Deploy Platform"
+        environment: Production
+        strategy:
+          runOnce:
+            deploy:
+              steps:
+
+                - task: UseDotNet@2
+                  inputs:
+                    packageType: 'runtime'
+                    version: '5.0.x'          
+
+                - checkout: self
+
+                - bash: az bicep build --file Platform/deploy-quickstart-platform.bicep
+                  displayName: "Compile Platform Bicep to ARM"
+
+                - task: AzureResourceManagerTemplateDeployment@3
+                  displayName: "Deploy Platform"
+                  name: "platformDeploy"
+                  inputs:
+                    azureResourceManagerConnection: PlatformServiceConnectionProduction
+                    location: "australiaeast"
+                    deploymentScope: Subscription
+                    templateLocation: Linked artifact
+                    csmFile: "Platform/deploy-quickstart-platform.json"
+                    scriptLocation: "inlineScript"
+                    deploymentMode: Incremental
+                    deploymentOutputs: platformOutputs
+                    overrideParameters: -resourcePrefix $(RESOURCE_PREFIX) -databaseAdministratorName $(DEPLOYMENTPRINCIPAL_NAME) -databaseAdministratorObjectId $(DEPLOYMENTPRINCIPAL_ID) -environmentName prod
+
+                - bash: az bicep build --file Platform/deploy-quickstart-apps.bicep
+                  displayName: "Compile Apps Bicep to ARM"
+                - task: AzureResourceManagerTemplateDeployment@3
+                  displayName: "Deploy applications and databases"
+                  inputs:
+                    azureResourceManagerConnection: PlatformServiceConnectionProduction
+                    location: "australiaeast"
+                    deploymentScope: Subscription
+                    templateLocation: Linked artifact
+                    csmFile: "Platform/deploy-quickstart-apps.json"
+                    scriptLocation: "inlineScript"
+                    deploymentMode: Incremental
+                    deploymentOutputs: appOutputs
+                    overrideParameters: -resourcePrefix $(RESOURCE_PREFIX) -platformResourceGroupName $(platformOutputs.platformResourceGroupName.value) -serverFarmId $(platformOutputs.serverFarmId.value) -databaseServerName $(platformOutputs.databaseServerName.value) -logAnalyticsWorkspaceId $(platformOutputs.logAnalyticsWorkspaceId.value) -environmentName prod
+
+                - task: AzureCLI@2
+                  displayName: Execute AAD script
+                  name: SetupAad
+                  inputs:
+                    azureSubscription: PlatformAadServiceConnection
+                    scriptType: bash
+                    scriptLocation: inlineScript
+                    inlineScript: |
+                      ./Platform/setup-aad.sh $(appOutputs.applicationHostname.value) $(appOutputs.apiHostname.value)
+
+                - bash: az bicep build --file Platform/deploy-quickstart-apps-configuration.bicep
+                  displayName: "Compile Apps Configuration Bicep to ARM"
+                - task: AzureResourceManagerTemplateDeployment@3
+                  displayName: "Configure applications and databases"
+                  inputs:
+                    azureResourceManagerConnection: PlatformServiceConnectionProduction
+                    location: "australiaeast"
+                    deploymentScope: Subscription
+                    templateLocation: Linked artifact
+                    csmFile: "Platform/deploy-quickstart-apps-configuration.json"
+                    scriptLocation: "inlineScript"
+                    deploymentMode: Incremental
+                    overrideParameters: -resourceGroupName $(appOutputs.resourceGroupName.value) -databaseServerName $(platformOutputs.databaseServerName.value) -databaseName $(appOutputs.databaseName.value) -appHostname $(appOutputs.applicationHostname.value) -apiHostname $(appOutputs.apiHostname.value) -appKeyVaultName $(appOutputs.applicationKeyVaultName.value) -appClientId $(SetupAad.applicationClientId) -apiClientId $(SetupAad.apiClientId) -apiUserAssignedClientId $(appOutputs.managedIdentityAppId.value) -appClientSecret $(SetupAad.applicationClientSecret) -apiAppInsightsKey $(appOutputs.apiAppInsightsKey.value) -appAppInsightsKey $(appOutputs.appAppInsightsKey.value) -environmentName prod
+
+                - task: AzureCLI@2
+                  displayName: Execute Migration script
+                  name: SetupAad
+                  inputs:
+                    azureSubscription: PlatformServiceConnectionProduction
+                    scriptType: bash
+                    scriptLocation: inlineScript
+                    inlineScript: |
+                      dotnet $(Pipeline.Workspace)/SqlAadMigrationDeployer/SqlAadMigrationDeployer.dll add-managed-identity "$(appOutputs.databaseConnectionString.value)" "$(appOutputs.managedIdentityName.value)" "$(appOutputs.managedIdentityAppId.value)" "db_owner"

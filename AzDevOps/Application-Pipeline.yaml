@@ -1,0 +1,113 @@
+name: "DeployApplication"
+
+trigger:
+  branches:
+    include:
+      - main
+      - feature/*
+  paths:
+    include:
+      - "Application/WebApp/**"
+
+stages:
+  - stage: "BuildWebApplication"
+    displayName: "Build and publish web application"
+    jobs:
+      - job: "PublishWebApp"
+        steps:
+
+          - task: UseDotNet@2
+            inputs:
+              packageType: 'sdk'
+              version: '5.0.x'          
+
+          - task: DotNetCoreCLI@2
+            displayName: "Restore project dependencies"
+            inputs:
+              command: "restore"
+              projects: "./Application/WebApp/SimpleMvcApp/SimpleMvcApp.csproj"
+
+          - task: DotNetCoreCLI@2
+            displayName: "Build the project - release"
+            inputs:
+              command: "build"
+              arguments: "--no-restore --configuration release"
+              projects: "./Application/WebApp/SimpleMvcApp/SimpleMvcApp.csproj"
+
+          - task: DotNetCoreCLI@2
+            displayName: Publish Web Application
+            inputs:
+              command: "publish"
+              arguments: "--no-build --no-restore --configuration release --output $(Build.ArtifactStagingDirectory)/release"
+              projects: "./Application/WebApp/SimpleMvcApp/SimpleMvcApp.csproj"
+              zipAfterPublish: true
+              publishWebProjects: false
+
+          - publish: $(Build.ArtifactStagingDirectory)/release/SimpleMvcApp.zip
+            artifact: WebApplication
+
+  - stage: "DeployWebApplicationToTest"
+    dependsOn: BuildWebApplication
+    displayName: "Deploy Web Application (Test)"
+    jobs:
+      - deployment: "DeployWebApplication"
+        environment: "Test"
+        variables:
+          - group: PlatformTest
+        displayName: "Deploy Web Application to app service plan"
+        strategy:
+          runOnce:
+            deploy:
+              steps:
+                - task: AzureWebApp@1
+                  inputs:
+                    azureSubscription: PlatformServiceConnectionTest
+                    appName: $(AZURE_WEBAPP_NAME)
+                    package: $(Pipeline.Workspace)/WebApplication/SimpleMvcApp.zip
+
+
+  - stage: "DeployWebApplicationToProduction"
+    dependsOn: DeployWebApplicationToTest
+    displayName: "Deploy Web Application (Production)"
+    jobs:
+      - deployment: "DeployWebApplication"
+        environment: "Production"
+        variables:
+          - group: PlatformProduction
+        displayName: "Deploy Web Application to app service plan"
+        strategy:
+          runOnce:
+            deploy:
+              steps:
+                - task: AzureWebApp@1
+                  inputs:
+                    azureSubscription: PlatformServiceConnectionProduction
+                    appName: $(AZURE_WEBAPP_NAME)
+                    package: $(Pipeline.Workspace)/WebApplication/SimpleMvcApp.zip
+                    deployToSlotOrASE: true
+                    slotName: green
+
+
+
+  - stage: "SwitchProductionSwap"
+    dependsOn: "DeployWebApplicationToProduction"
+    displayName: "Switch Production Slot"
+    jobs:
+      - deployment: "SwapSlot"
+        environment: "Production"
+        variables:
+          - group: PlatformProduction
+        displayName: "Switch Production Slot"
+        strategy:
+          runOnce:
+            deploy:
+              steps:
+                - task: AzureAppServiceManage@0
+                  inputs:
+                    azureSubscription: PlatformServiceConnectionProduction
+                    webAppName: $(AZURE_WEBAPP_NAME)
+                    resourceGroupName: "$(RESOURCE_PREFIX)-prod-rg"
+                    action: 'Swap Slots'
+                    sourceSlot: green
+                    swapWithProduction: true
+
