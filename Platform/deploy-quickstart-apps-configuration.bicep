@@ -15,6 +15,9 @@ param appHostname string
 @description('The full hostname of the app-service hosting the Web API')
 param apiHostname string
 
+@description('The full hostname of the app-service hosting the SPA')
+param spaHostname string
+
 @description('The platform resource name of the KeyVault used by the Web App')
 param appKeyVaultName string
 
@@ -57,11 +60,27 @@ module PostConfigureApiDeployment './configure-api.bicep' = {
     userAssignedClientId: apiUserAssignedClientId
     apiAppInsightsKey : apiAppInsightsKey
     environmentName: environmentName
+    spaHostname: spaHostname
   }
 }
 
 module PostConfigureAppDeployment './configure-app.bicep' = {
   name: 'PostConfigureAppDeployment'
+  scope: resourceGroup
+  params: {
+    apiHostname: apiHostname
+    appAadClientId:appClientId
+    appClientSecret:appClientSecret
+    appHostname:appHostname
+    appKeyVaultName:appKeyVaultName
+    apiAadClientId:apiClientId
+    appAppInsightsKey : appAppInsightsKey
+    environmentName: environmentName
+  }
+}
+
+module PostConfigureSpaDeployment './configure-app.bicep' = {
+  name: 'PostConfigureSpaDeployment'
   scope: resourceGroup
   params: {
     apiHostname: apiHostname

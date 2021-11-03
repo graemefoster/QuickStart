@@ -85,6 +85,7 @@ jobs:
           app-name: ${{ secrets.AZURE_SPA_NAME }}
           package: "./app/"
           slot-name: "green"
+          
       - name: logout
         run: |
           az logout

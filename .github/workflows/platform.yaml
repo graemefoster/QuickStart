@@ -101,6 +101,7 @@ jobs:
             databaseName=${{ steps.appsDeploy.outputs.databaseName }}
             appHostname=${{ steps.appsDeploy.outputs.applicationHostname }}
             apiHostname=${{ steps.appsDeploy.outputs.apiHostname }}
+            spaHostname=${{ steps.appsDeploy.outputs.spaHostname }}
             appKeyVaultName=${{ steps.appsDeploy.outputs.applicationKeyVaultName }}
             appClientId=${{ steps.setup-test-aad.outputs.applicationClientId }}
             apiClientId=${{ steps.setup-test-aad.outputs.apiClientId }}
@@ -218,6 +219,7 @@ jobs:
             databaseName=${{ steps.appsDeploy.outputs.databaseName }}
             appHostname=${{ steps.appsDeploy.outputs.applicationHostname }}
             apiHostname=${{ steps.appsDeploy.outputs.apiHostname }}
+            spaHostname=${{ steps.appsDeploy.outputs.spaHostname }}
             appKeyVaultName=${{ steps.appsDeploy.outputs.applicationKeyVaultName }}
             appClientId=${{ steps.setup-prod-aad.outputs.applicationClientId }}
             apiClientId=${{ steps.setup-prod-aad.outputs.apiClientId }}
