@@ -1,0 +1,19 @@
+{
+    "msalConfig": {
+        "auth": {
+            "clientId": "8f566f8d-2de9-404e-b802-d5bff33c6d27",
+            "authority": "https://login.microsoftonline.com/49f24cca-11a6-424d-b2e2-0650053986cc",
+            "redirectUri": "http://localhost:3000/"
+        },
+        "cache": {
+            "cacheLocation": "sessionStorage",
+            "storeAuthStateInCookie": false
+        }
+    },
+    "apiConfig": {
+        "BaseUrl": "https://api.sampleapp.localtest.me:4431/",
+        "Scopes": [
+            "api://30c96387-e02f-49e3-878c-17c2cbf34a35/Pets.Manage"
+        ]
+    }
+}
