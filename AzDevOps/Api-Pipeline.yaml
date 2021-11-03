@@ -87,7 +87,7 @@ stages:
 
 
 
-  - stage: "DeployWebApi"
+  - stage: "DeployWebApiToTest"
     dependsOn: BuildWebApi
     displayName: "Deploy Web Api"
     jobs:
@@ -118,4 +118,40 @@ stages:
                     azureSubscription: PlatformServiceConnectionTest
                     appName: $(AZURE_WEBAPI_NAME)
                     package: $(Pipeline.Workspace)/WebApi/SimpleApiWithDatabase.zip
+
+
+
+  - stage: "DeployWebApiToProduction"
+    dependsOn: BuildWebApi
+    displayName: "Deploy Web Api"
+    jobs:
+      - deployment: "DeployWebApi"
+        environment: "Production"
+        displayName: "Deploy Web Api to app service plan"
+        strategy:
+          runOnce:
+            deploy:
+              steps:
+                - task: UseDotNet@2
+                  inputs:
+                    packageType: 'runtime'
+                    version: '5.0.x'          
+
+                - task: AzureCLI@2
+                  displayName: Execute Migration script
+                  name: SetupAad
+                  inputs:
+                    azureSubscription: PlatformServiceConnectionTest
+                    scriptType: bash
+                    scriptLocation: inlineScript
+                    inlineScript: |
+                      dotnet $(Pipeline.Workspace)/SqlAadMigrationDeployer/SqlAadMigrationDeployer/SqlAadMigrationDeployer.dll migrate "$(AZURE_SQL_CONNECTION_STRING)" "$(Pipeline.Workspace)/DatabaseScript/build-database.sql"
+
+                - task: AzureWebApp@1
+                  inputs:
+                    azureSubscription: PlatformServiceConnectionTest
+                    appName: $(AZURE_WEBAPI_NAME)
+                    package: $(Pipeline.Workspace)/WebApi/SimpleApiWithDatabase.zip
+                    deployToSlotOrASE: true
+                    slotName: green
 

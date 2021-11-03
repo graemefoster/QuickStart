@@ -49,7 +49,7 @@ stages:
           - publish: $(Build.ArtifactStagingDirectory)/release/SimpleMvcApp.zip
             artifact: WebApplication
 
-  - stage: "DeployWebApplication"
+  - stage: "DeployWebApplicationToTest"
     dependsOn: BuildWebApplication
     displayName: "Deploy Web Application"
     jobs:
@@ -65,4 +65,24 @@ stages:
                     azureSubscription: PlatformServiceConnectionTest
                     appName: $(AZURE_WEBAPP_NAME)
                     package: $(Pipeline.Workspace)/WebApplication/SimpleMvcApp.zip
+
+
+  - stage: "DeployWebApplicationToProd"
+    dependsOn: DeployWebApplicationToTest
+    displayName: "Deploy Web Application"
+    jobs:
+      - deployment: "DeployWebApplication"
+        environment: "Production"
+        displayName: "Deploy Web Application to app service plan"
+        strategy:
+          runOnce:
+            deploy:
+              steps:
+                - task: AzureWebApp@1
+                  inputs:
+                    azureSubscription: PlatformServiceConnectionTest
+                    appName: $(AZURE_WEBAPP_NAME)
+                    package: $(Pipeline.Workspace)/WebApplication/SimpleMvcApp.zip
+                    deployToSlotOrASE: true
+                    slotName: green
 
