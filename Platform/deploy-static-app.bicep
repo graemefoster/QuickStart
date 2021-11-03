@@ -3,7 +3,7 @@ param serverFarmId string
 param environmentName string
 param deploySlot bool
 
-var appHostname = '${resourcePrefix}-${uniqueString(resourceGroup().name)}-${environmentName}-webapp'
+var appHostname = '${resourcePrefix}-${uniqueString(resourceGroup().name)}-${environmentName}-spa'
 
 resource WebApp 'Microsoft.Web/sites@2021-01-15' = {
   name: appHostname
