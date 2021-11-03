@@ -89,7 +89,7 @@ stages:
 
   - stage: "DeployWebApiToTest"
     dependsOn: BuildWebApi
-    displayName: "Deploy Web Api"
+    displayName: "Deploy Web Api (Test)"
     jobs:
       - deployment: "DeployWebApi"
         environment: "Test"
@@ -123,7 +123,7 @@ stages:
 
   - stage: "DeployWebApiToProduction"
     dependsOn: DeployWebApiToTest
-    displayName: "Deploy Web Api"
+    displayName: "Deploy Web Api (Production)"
     jobs:
       - deployment: "DeployWebApi"
         environment: "Production"
@@ -141,7 +141,7 @@ stages:
                   displayName: Execute Migration script
                   name: SetupAad
                   inputs:
-                    azureSubscription: PlatformServiceConnectionTest
+                    azureSubscription: PlatformServiceConnectionProduction
                     scriptType: bash
                     scriptLocation: inlineScript
                     inlineScript: |
@@ -149,9 +149,31 @@ stages:
 
                 - task: AzureWebApp@1
                   inputs:
-                    azureSubscription: PlatformServiceConnectionTest
+                    azureSubscription: PlatformServiceConnectionProduction
                     appName: $(AZURE_WEBAPI_NAME)
                     package: $(Pipeline.Workspace)/WebApi/SimpleApiWithDatabase.zip
                     deployToSlotOrASE: true
                     slotName: green
+
+
+
+  - stage: "SitchProductionSwap"
+    dependsOn: "DeployWebApiToProduction"
+    displayName: "Switch Production Slot"
+    jobs:
+      - deployment: "SwapSlot"
+        environment: "Production"
+        displayName: "Switch Production Slot"
+        strategy:
+          runOnce:
+            deploy:
+              steps:
+                - task: AzureAppServiceManage@0
+                  inputs:
+                    azureSubscription: PlatformServiceConnectionProduction
+                    webAppName: $(AZURE_WEBAPI_NAME)
+                    resourceGroupName=$: "$(RESOURCE_PREFIX)-prod-rg'"
+                    action: 'Swap Slots'
+                    sourceSlot: green
+                    swapWithProduction: true
 
