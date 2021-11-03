@@ -34,13 +34,14 @@ jobs:
           # Build and test the project, then
           # deploy to Azure Web App.
           npm install
-          npm run build
           npm run test --if-present
 
+      # Want some dynamic configuration - toying with different ways to do this. Will look to env variables from
+      # app settings and run this as server-side node, instead of static compiling (for now).
       - uses: actions/upload-artifact@v2
         with:
           name: app
-          path: "./Application/StaticApp/sample-react-app/build/**"
+          path: "./Application/StaticApp/sample-react-app/**"
 
   deploy-to-test:
     needs: build-and-test-app
@@ -85,7 +86,7 @@ jobs:
           app-name: ${{ secrets.AZURE_SPA_NAME }}
           package: "./app/"
           slot-name: "green"
-          
+
       - name: logout
         run: |
           az logout
