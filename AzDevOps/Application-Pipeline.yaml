@@ -106,7 +106,7 @@ stages:
                   inputs:
                     azureSubscription: PlatformServiceConnectionProduction
                     webAppName: $(AZURE_WEBAPP_NAME)
-                    resourceGroupName=$: "$(RESOURCE_PREFIX)-prod-rg'"
+                    resourceGroupName: "$(RESOURCE_PREFIX)-prod-rg'"
                     action: 'Swap Slots'
                     sourceSlot: green
                     swapWithProduction: true
