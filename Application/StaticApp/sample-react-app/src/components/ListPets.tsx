@@ -32,7 +32,7 @@ export const ListPets = () => {
           r.json().then((o) => setPetList(o));
         });
     }
-  });
+  }, [fetchPets, instance, accounts]);
 
   return (
     <Container>
