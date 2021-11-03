@@ -1,0 +1,41 @@
+param resourcePrefix string
+param serverFarmId string
+param environmentName string
+param deploySlot bool
+
+var appHostname = '${resourcePrefix}-${uniqueString(resourceGroup().name)}-${environmentName}-webapp'
+
+resource WebApp 'Microsoft.Web/sites@2021-01-15' = {
+  name: appHostname
+  location: resourceGroup().location
+  identity: {
+    type: 'SystemAssigned'
+  }
+  properties: {
+    httpsOnly: true
+    serverFarmId: serverFarmId
+    siteConfig: {
+      minTlsVersion: '1.2'
+      nodeVersion: 'node|12-lts'
+    }
+  }
+}
+
+resource WebAppGreen 'Microsoft.Web/sites/slots@2021-01-15' = if(deploySlot) {
+  parent: WebApp
+  name: 'green'
+  location: resourceGroup().location
+  identity: {
+    type: 'SystemAssigned'
+  }
+  properties: {
+    httpsOnly: true
+    serverFarmId: serverFarmId
+    siteConfig: {
+      minTlsVersion: '1.2'
+      netFrameworkVersion: 'v5.0'
+    }
+  }
+}
+
+output appHostname string = appHostname
