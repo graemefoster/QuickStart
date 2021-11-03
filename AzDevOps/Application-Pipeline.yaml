@@ -9,9 +9,6 @@ trigger:
     include:
       - "Application/WebApp/**"
 
-variables:
-  - group: PlatformTest
-
 stages:
   - stage: "BuildWebApplication"
     displayName: "Build and publish web application"
@@ -55,6 +52,8 @@ stages:
     jobs:
       - deployment: "DeployWebApplication"
         environment: "Test"
+        variables:
+          - group: PlatformTest
         displayName: "Deploy Web Application to app service plan"
         strategy:
           runOnce:
@@ -73,6 +72,8 @@ stages:
     jobs:
       - deployment: "DeployWebApplication"
         environment: "Production"
+        variables:
+          - group: PlatformProduction
         displayName: "Deploy Web Application to app service plan"
         strategy:
           runOnce:
@@ -94,6 +95,8 @@ stages:
     jobs:
       - deployment: "SwapSlot"
         environment: "Production"
+        variables:
+          - group: PlatformProduction
         displayName: "Switch Production Slot"
         strategy:
           runOnce:

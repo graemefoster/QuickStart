@@ -9,9 +9,6 @@ trigger:
     include:
       - "Application/Api/**"
 
-variables:
-  - group: PlatformTest
-
 stages:
   - stage: "BuildWebApi"
     displayName: "Build and publish web api"
@@ -93,6 +90,8 @@ stages:
     jobs:
       - deployment: "DeployWebApi"
         environment: "Test"
+        variables:
+          - group: PlatformTest
         displayName: "Deploy Web Api to app service plan"
         strategy:
           runOnce:
@@ -127,6 +126,8 @@ stages:
     jobs:
       - deployment: "DeployWebApi"
         environment: "Production"
+        variables:
+          - group: PlatformProduction
         displayName: "Deploy Web Api to app service plan"
         strategy:
           runOnce:
@@ -163,6 +164,8 @@ stages:
     jobs:
       - deployment: "SwapSlot"
         environment: "Production"
+        variables:
+          - group: PlatformProduction
         displayName: "Switch Production Slot"
         strategy:
           runOnce:
