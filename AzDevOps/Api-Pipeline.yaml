@@ -1,0 +1,182 @@
+name: "DeployApi"
+
+trigger:
+  branches:
+    include:
+      - main
+      - feature/*
+  paths:
+    include:
+      - "Application/Api/**"
+
+stages:
+  - stage: "BuildWebApi"
+    displayName: "Build and publish web api"
+    jobs:
+      - job: "PublishWebApi"
+        steps:
+
+          - task: UseDotNet@2
+            inputs:
+              packageType: 'sdk'
+              version: '5.0.x'          
+
+          - task: DotNetCoreCLI@2
+            displayName: "Restore project dependencies"
+            inputs:
+              command: "restore"
+              projects: "./Application/Api/SimpleApiWithDatabase/SimpleApiWithDatabase.csproj"
+
+          - task: DotNetCoreCLI@2
+            displayName: "Build the project - release"
+            inputs:
+              command: "build"
+              arguments: "--no-restore --configuration release"
+              projects: "./Application/Api/SimpleApiWithDatabase/SimpleApiWithDatabase.csproj"
+
+          - task: DotNetCoreCLI@2
+            displayName: Publish Web Api
+            inputs:
+              command: "publish"
+              arguments: "--no-build --no-restore --configuration release --output $(Build.ArtifactStagingDirectory)/release/api"
+              projects: "./Application/Api/SimpleApiWithDatabase/SimpleApiWithDatabase.csproj"
+              zipAfterPublish: true
+              publishWebProjects: false
+
+          - publish: $(Build.ArtifactStagingDirectory)/release/api/SimpleApiWithDatabase.zip
+            artifact: WebApi
+
+      - job: "PublishDatabaseMigrator"
+        steps:
+
+          - task: UseDotNet@2
+            inputs:
+              packageType: 'sdk'
+              version: '5.0.x'          
+
+          - task: DotNetCoreCLI@2
+            displayName: "Restore project dependencies"
+            inputs:
+              command: "restore"
+              projects: "./SqlAadMigrationDeployer/SqlAadMigrationDeployer.csproj"
+
+          - task: DotNetCoreCLI@2
+            displayName: "Build the project - release"
+            inputs:
+              command: "build"
+              arguments: "--no-restore --configuration release"
+              projects: "./SqlAadMigrationDeployer/SqlAadMigrationDeployer.csproj"
+
+          - task: DotNetCoreCLI@2
+            displayName: Publish Sql Migration Tool
+            inputs:
+              command: "publish"
+              arguments: "--no-build --no-restore --configuration release --output $(Build.ArtifactStagingDirectory)/release/SqlAadMigrationDeployer/"
+              projects: "./SqlAadMigrationDeployer/SqlAadMigrationDeployer.csproj"
+              publishWebProjects: false
+              zipAfterPublish: false
+
+          - publish: $(Build.ArtifactStagingDirectory)/release/SqlAadMigrationDeployer/
+            artifact: SqlAadMigrationDeployer
+
+          - publish: './Application/DatabaseUpgrades/build-database.sql'
+            artifact: DatabaseScript
+
+
+
+  - stage: "DeployWebApiToTest"
+    dependsOn: BuildWebApi
+    displayName: "Deploy Web Api (Test)"
+    jobs:
+      - deployment: "DeployWebApi"
+        environment: "Test"
+        variables:
+          - group: PlatformTest
+        displayName: "Deploy Web Api to app service plan"
+        strategy:
+          runOnce:
+            deploy:
+              steps:
+                - task: UseDotNet@2
+                  inputs:
+                    packageType: 'runtime'
+                    version: '5.0.x'          
+
+                - task: AzureCLI@2
+                  displayName: Execute Migration script
+                  name: SetupAad
+                  inputs:
+                    azureSubscription: PlatformServiceConnectionTest
+                    scriptType: bash
+                    scriptLocation: inlineScript
+                    inlineScript: |
+                      dotnet $(Pipeline.Workspace)/SqlAadMigrationDeployer/SqlAadMigrationDeployer/SqlAadMigrationDeployer.dll migrate "$(AZURE_SQL_CONNECTION_STRING)" "$(Pipeline.Workspace)/DatabaseScript/build-database.sql"
+
+                - task: AzureWebApp@1
+                  inputs:
+                    azureSubscription: PlatformServiceConnectionTest
+                    appName: $(AZURE_WEBAPI_NAME)
+                    package: $(Pipeline.Workspace)/WebApi/SimpleApiWithDatabase.zip
+
+
+
+  - stage: "DeployWebApiToProduction"
+    dependsOn: DeployWebApiToTest
+    displayName: "Deploy Web Api (Production)"
+    jobs:
+      - deployment: "DeployWebApi"
+        environment: "Production"
+        variables:
+          - group: PlatformProduction
+        displayName: "Deploy Web Api to app service plan"
+        strategy:
+          runOnce:
+            deploy:
+              steps:
+                - task: UseDotNet@2
+                  inputs:
+                    packageType: 'runtime'
+                    version: '5.0.x'          
+
+                - task: AzureCLI@2
+                  displayName: Execute Migration script
+                  name: SetupAad
+                  inputs:
+                    azureSubscription: PlatformServiceConnectionProduction
+                    scriptType: bash
+                    scriptLocation: inlineScript
+                    inlineScript: |
+                      dotnet $(Pipeline.Workspace)/SqlAadMigrationDeployer/SqlAadMigrationDeployer/SqlAadMigrationDeployer.dll migrate "$(AZURE_SQL_CONNECTION_STRING)" "$(Pipeline.Workspace)/DatabaseScript/build-database.sql"
+
+                - task: AzureWebApp@1
+                  inputs:
+                    azureSubscription: PlatformServiceConnectionProduction
+                    appName: $(AZURE_WEBAPI_NAME)
+                    package: $(Pipeline.Workspace)/WebApi/SimpleApiWithDatabase.zip
+                    deployToSlotOrASE: true
+                    slotName: green
+
+
+
+  - stage: "SwitchProductionSwap"
+    dependsOn: "DeployWebApiToProduction"
+    displayName: "Switch Production Slot"
+    jobs:
+      - deployment: "SwapSlot"
+        environment: "Production"
+        variables:
+          - group: PlatformProduction
+        displayName: "Switch Production Slot"
+        strategy:
+          runOnce:
+            deploy:
+              steps:
+                - task: AzureAppServiceManage@0
+                  inputs:
+                    azureSubscription: PlatformServiceConnectionProduction
+                    webAppName: $(AZURE_WEBAPI_NAME)
+                    resourceGroupName: "$(RESOURCE_PREFIX)-prod-rg"
+                    action: 'Swap Slots'
+                    sourceSlot: green
+                    swapWithProduction: true
+

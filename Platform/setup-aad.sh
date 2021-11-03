@@ -103,6 +103,14 @@ echo "Created service principal to represent APP in directory"
 #Get a secret so we can do a code exchange in the app
 WEBSITE_CLIENT_SECRET=$(az ad app credential reset --id $AAD_WEBSITE_APPLICATION_ID --credential-description 'AADClientSecret' --append --query "password" -o tsv)
 
+#TODO conditionally set variables!
+
+#Github actions
 echo "::set-output name=applicationClientId::${AAD_WEBSITE_APPLICATION_ID}"
 echo "::set-output name=applicationClientSecret::${WEBSITE_CLIENT_SECRET}"
 echo "::set-output name=apiClientId::${AAD_API_APPLICATION_ID}"
+
+#Az Devops
+echo "##vso[task.setvariable variable=applicationClientId;isOutput=true]${AAD_WEBSITE_APPLICATION_ID}"
+echo "##vso[task.setvariable variable=applicationClientSecret;isOutput=true;issecret=true]${WEBSITE_CLIENT_SECRET}"
+echo "##vso[task.setvariable variable=apiClientId;isOutput=true]${AAD_API_APPLICATION_ID}"

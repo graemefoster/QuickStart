@@ -46,7 +46,7 @@ This will kick off deployment of the core resources and will take a few minutes 
 | Secret | Purpose | Other information | 
 | --- | --- | --- |
 | AZURE_WEBAPP_NAME | The name of the test web-app deployed in Step 4 |
-| AZURE_WEBAPP_NAME | The name of the test web-api deployed in Step 4 |
+| AZURE_WEBAPI_NAME | The name of the test web-api deployed in Step 4 |
 | AZURE_SQL_CONNECTION_STRING | Sql connection string to the database deployed in Step 4 | This is used by the CI/CD pipeline to deploy the database. Format: ``` Server=tcp:<database-server-name>.database.windows.net,1433;Initial Catalog=<test-database-name>;Persist Security Info=False;;MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30; ```   |
 
 The server-name / database-name can be found in the ``` <prefix>-platform-rg ``` resource group deployed in step 4.
