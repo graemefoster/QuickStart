@@ -1,0 +1,17 @@
+name: Application
+
+env:
+  AZURE_WEBAPP_PACKAGE_PATH: "./packages" # set this to the path to your web app project, defaults to the repository root
+  NODE_VERSION: '16.x'
+on:
+  push:
+    branches: [main]
+    paths:
+      - "Application/StaticApp/**"
+  pull_request:
+    paths:
+      - "Application/StaticApp/**"
+    branches:
+      - main
+  workflow_dispatch:
+
