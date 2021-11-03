@@ -75,5 +75,29 @@ At this point the pipeline will wait for permission to use the Service Connectio
 
 - Click ``` View ``` and select ``` Permit ``` on the two required permissions.
 
+The platform pipeline is now ready to run. Run it and it will deploy the core app-services / keyvaults / databases required to run the application / api.
 
+
+## Step 7 - Add the variables required for the application and api deployments
+
+Head to the library section of your project. We're going to add the following variables to the PlatformTest, and the PlatformProduction group.
+
+| Secret | Purpose | Other information | 
+| --- | --- | --- |
+| AZURE_WEBAPP_NAME | The name of the test web-app deployed in Step 6 |
+| AZURE_WEBAPI_NAME | The name of the test web-api deployed in Step 6 |
+| AZURE_SQL_CONNECTION_STRING | Sql connection string to the database deployed in Step 4 | This is used by the CI/CD pipeline to deploy the database. Format: ``` Server=tcp:<database-server-name>.database.windows.net,1433;Initial Catalog=<test-database-name>;Persist Security Info=False;;MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30; ```   |
+
+# Step 8 - Add the application and the api pipelines to devops
+
+Complete these steps **twice**, once for the Application-Pipeline.yaml file, the next for the Api-Pipeline.yaml file
+
+- Head to the Pipelines section of your Project.
+- Select ``` Create Pipeline ```
+- Select ``` Azure Repos Git ``` when asked 'Where is your code?'
+- Select the Quickstart Repository
+- Select ``` Existing Azure Pipelines YAML file ``` when asked to 'Configure your pipeline'
+- Locate the ``` AzDevOps/[Application or Api]-Pipeline.yaml ``` file and select 'Continue'
+- Press the dropdown on the ``` Run ``` button and click ``` Save ```
+- Select ` Run Pipeline ` to deploy
 
