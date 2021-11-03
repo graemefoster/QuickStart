@@ -35,6 +35,7 @@ jobs:
           # deploy to Azure Web App.
           npm install
           npm run test --if-present
+          rm -rf ./node_modules/
 
       # Want some dynamic configuration - toying with different ways to do this. Will look to env variables from
       # app settings and run this as server-side node, instead of static compiling (for now).
