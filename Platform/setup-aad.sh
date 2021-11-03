@@ -8,6 +8,7 @@
 
 WEBSITE_HOST_NAME=$1
 WEB_API_HOST_NAME=$2
+SPA_HOST_NAME=$2
 
 # Build the application representing the API.
 read -r -d '' API_ROLES << EOM
@@ -93,7 +94,7 @@ read -r -d '' REQUIRED_WEBSITE_RESOURCE_ACCESS << EOM
 }]
 EOM
 
-AAD_WEBSITE_APPLICATION_ID=$(az ad app create --display-name $WEBSITE_HOST_NAME --reply-urls "https://${WEBSITE_HOST_NAME}.azurewebsites.net/signin-oidc" "https://${WEBSITE_HOST_NAME}-green.azurewebsites.net/signin-oidc" --required-resource-access "$REQUIRED_WEBSITE_RESOURCE_ACCESS" --query "appId" -o tsv | tr -d '\r')
+AAD_WEBSITE_APPLICATION_ID=$(az ad app create --display-name $WEBSITE_HOST_NAME --reply-urls "https://${WEBSITE_HOST_NAME}.azurewebsites.net/signin-oidc" "https://${WEBSITE_HOST_NAME}-green.azurewebsites.net/signin-oidc" "https://${SPA_HOST_NAME}.azurewebsites.net" "https://${SPA_HOST_NAME}-green.azurewebsites.net" --required-resource-access "$REQUIRED_WEBSITE_RESOURCE_ACCESS" --query "appId" -o tsv | tr -d '\r')
 _=$(az ad app update --id $AAD_WEBSITE_APPLICATION_ID --identifier-uris "api://${AAD_WEBSITE_APPLICATION_ID}")
 echo "Created / retrieved Web Application Id ${AAD_WEBSITE_APPLICATION_ID}"
 
