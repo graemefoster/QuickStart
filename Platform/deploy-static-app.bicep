@@ -16,7 +16,7 @@ resource WebApp 'Microsoft.Web/sites@2021-01-15' = {
     serverFarmId: serverFarmId
     siteConfig: {
       minTlsVersion: '1.2'
-      nodeVersion: 'node|12-lts'
+      nodeVersion: 'node|16-lts'
     }
   }
 }
@@ -33,7 +33,7 @@ resource WebAppGreen 'Microsoft.Web/sites/slots@2021-01-15' = if(deploySlot) {
     serverFarmId: serverFarmId
     siteConfig: {
       minTlsVersion: '1.2'
-      netFrameworkVersion: 'v5.0'
+      nodeVersion: 'node|16-lts'
     }
   }
 }
