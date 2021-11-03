@@ -85,9 +85,7 @@ module PostConfigureSpaDeployment './configure-static-app.bicep' = {
   params: {
     apiHostname: apiHostname
     appAadClientId: appClientId
-    appClientSecret: appClientSecret
     spaHostname: spaHostname
-    appKeyVaultName: appKeyVaultName
     apiAadClientId: apiClientId
     appAppInsightsKey: appAppInsightsKey
     environmentName: environmentName
