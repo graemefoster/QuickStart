@@ -96,7 +96,7 @@ EOM
 
 AAD_WEBSITE_APPLICATION_ID=$(az ad app create --display-name $WEBSITE_HOST_NAME --required-resource-access "$REQUIRED_WEBSITE_RESOURCE_ACCESS" --query "appId" -o tsv | tr -d '\r')
 _=$(az ad app update --id $AAD_WEBSITE_APPLICATION_ID --identifier-uris "api://${AAD_WEBSITE_APPLICATION_ID}")
-AAD_WEBSITE_OBJECT_ID=$(az ad app show --appId $AAD_WEBSITE_APPLICATION_ID --query "objectId" -o tsv | tr -d '\r')
+AAD_WEBSITE_OBJECT_ID=$(az ad app show --id $AAD_WEBSITE_APPLICATION_ID --query "objectId" -o tsv | tr -d '\r')
 echo "Created / retrieved Web Application Id ${AAD_WEBSITE_APPLICATION_ID}. ObjectId ${AAD_WEBSITE_OBJECT_ID}"
 
 #https://github.com/Azure/azure-cli/issues/9501
