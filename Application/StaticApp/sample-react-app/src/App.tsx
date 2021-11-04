@@ -1,7 +1,6 @@
 import {
   AuthenticatedTemplate,
-  UnauthenticatedTemplate,
-  useMsal,
+  UnauthenticatedTemplate
 } from "@azure/msal-react";
 import { SignInButton } from "./components/SignInButton";
 import { Nav, Navbar, Container } from "react-bootstrap";

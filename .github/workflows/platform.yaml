@@ -76,6 +76,7 @@ jobs:
           ./Platform/setup-aad.sh
           ${{ steps.appsDeploy.outputs.applicationHostname }} 
           ${{ steps.appsDeploy.outputs.apiHostname }}
+          ${{ steps.appsDeploy.outputs.spaHostname }}
 
       - name: Logout of Azure
         if: ${{ env.SEPARATE_AAD_LOGIN }}
@@ -101,6 +102,7 @@ jobs:
             databaseName=${{ steps.appsDeploy.outputs.databaseName }}
             appHostname=${{ steps.appsDeploy.outputs.applicationHostname }}
             apiHostname=${{ steps.appsDeploy.outputs.apiHostname }}
+            spaHostname=${{ steps.appsDeploy.outputs.spaHostname }}
             appKeyVaultName=${{ steps.appsDeploy.outputs.applicationKeyVaultName }}
             appClientId=${{ steps.setup-test-aad.outputs.applicationClientId }}
             apiClientId=${{ steps.setup-test-aad.outputs.apiClientId }}
@@ -193,6 +195,7 @@ jobs:
           ./Platform/setup-aad.sh 
           ${{ steps.appsDeploy.outputs.applicationHostname }}
           ${{ steps.appsDeploy.outputs.apiHostname }}
+          ${{ steps.appsDeploy.outputs.spaHostname }}
 
       - name: Logout of Azure
         if: ${{ env.SEPARATE_AAD_LOGIN }}
@@ -218,6 +221,7 @@ jobs:
             databaseName=${{ steps.appsDeploy.outputs.databaseName }}
             appHostname=${{ steps.appsDeploy.outputs.applicationHostname }}
             apiHostname=${{ steps.appsDeploy.outputs.apiHostname }}
+            spaHostname=${{ steps.appsDeploy.outputs.spaHostname }}
             appKeyVaultName=${{ steps.appsDeploy.outputs.applicationKeyVaultName }}
             appClientId=${{ steps.setup-prod-aad.outputs.applicationClientId }}
             apiClientId=${{ steps.setup-prod-aad.outputs.apiClientId }}

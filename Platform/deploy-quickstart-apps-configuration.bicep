@@ -15,6 +15,9 @@ param appHostname string
 @description('The full hostname of the app-service hosting the Web API')
 param apiHostname string
 
+@description('The full hostname of the app-service hosting the SPA')
+param spaHostname string
+
 @description('The platform resource name of the KeyVault used by the Web App')
 param appKeyVaultName string
 
@@ -55,8 +58,9 @@ module PostConfigureApiDeployment './configure-api.bicep' = {
     apiHostname: apiHostname
     apiAadClientId: apiClientId
     userAssignedClientId: apiUserAssignedClientId
-    apiAppInsightsKey : apiAppInsightsKey
+    apiAppInsightsKey: apiAppInsightsKey
     environmentName: environmentName
+    spaHostname: spaHostname
   }
 }
 
@@ -65,12 +69,25 @@ module PostConfigureAppDeployment './configure-app.bicep' = {
   scope: resourceGroup
   params: {
     apiHostname: apiHostname
-    appAadClientId:appClientId
-    appClientSecret:appClientSecret
-    appHostname:appHostname
-    appKeyVaultName:appKeyVaultName
-    apiAadClientId:apiClientId
-    appAppInsightsKey : appAppInsightsKey
+    appAadClientId: appClientId
+    appClientSecret: appClientSecret
+    appHostname: appHostname
+    appKeyVaultName: appKeyVaultName
+    apiAadClientId: apiClientId
+    appAppInsightsKey: appAppInsightsKey
+    environmentName: environmentName
+  }
+}
+
+module PostConfigureSpaDeployment './configure-static-app.bicep' = {
+  name: 'PostConfigureSpaDeployment'
+  scope: resourceGroup
+  params: {
+    apiHostname: apiHostname
+    appAadClientId: appClientId
+    spaHostname: spaHostname
+    apiAadClientId: apiClientId
+    appAppInsightsKey: appAppInsightsKey
     environmentName: environmentName
   }
 }

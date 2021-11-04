@@ -1,5 +1,5 @@
 import { useMsal } from "@azure/msal-react";
-import { loginRequest, apiEndpoint } from "../authConfig";
+import { spaConfig } from "../authConfig";
 import { useState, useEffect } from "react";
 import { Container, Table } from "react-bootstrap";
 
@@ -16,13 +16,15 @@ export const ListPets = () => {
   useEffect(() => {
     if (fetchPets) {
       setFetchPets(false);
-      instance
+
+      spaConfig.then(config => {
+        instance
         .acquireTokenSilent({
-          ...loginRequest,
+          scopes: config.apiConfig.Scopes,
           account: accounts[0],
         })
         .then((response) => {
-          return fetch(`${apiEndpoint.petsApiEndpoint}pets`, {
+          return fetch(`${config.apiConfig.BaseUrl}pets`, {
             headers: {
               Authorization: `Bearer ${response.accessToken}`,
             },
@@ -31,8 +33,9 @@ export const ListPets = () => {
         .then((r) => {
           r.json().then((o) => setPetList(o));
         });
+      })
     }
-  });
+  }, [fetchPets, instance, accounts]);
 
   return (
     <Container>

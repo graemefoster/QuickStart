@@ -8,6 +8,7 @@
 
 WEBSITE_HOST_NAME=$1
 WEB_API_HOST_NAME=$2
+SPA_HOST_NAME=$3
 
 # Build the application representing the API.
 read -r -d '' API_ROLES << EOM
@@ -93,9 +94,45 @@ read -r -d '' REQUIRED_WEBSITE_RESOURCE_ACCESS << EOM
 }]
 EOM
 
-AAD_WEBSITE_APPLICATION_ID=$(az ad app create --display-name $WEBSITE_HOST_NAME --reply-urls "https://${WEBSITE_HOST_NAME}.azurewebsites.net/signin-oidc" "https://${WEBSITE_HOST_NAME}-green.azurewebsites.net/signin-oidc" --required-resource-access "$REQUIRED_WEBSITE_RESOURCE_ACCESS" --query "appId" -o tsv | tr -d '\r')
+AAD_WEBSITE_APPLICATION_ID=$(az ad app create --display-name $WEBSITE_HOST_NAME --required-resource-access "$REQUIRED_WEBSITE_RESOURCE_ACCESS" --query "appId" -o tsv | tr -d '\r')
 _=$(az ad app update --id $AAD_WEBSITE_APPLICATION_ID --identifier-uris "api://${AAD_WEBSITE_APPLICATION_ID}")
-echo "Created / retrieved Web Application Id ${AAD_WEBSITE_APPLICATION_ID}"
+AAD_WEBSITE_OBJECT_ID=$(az ad app show --id $AAD_WEBSITE_APPLICATION_ID --query "objectId" -o tsv | tr -d '\r')
+echo "Created / retrieved Web Application Id ${AAD_WEBSITE_APPLICATION_ID}. ObjectId ${AAD_WEBSITE_OBJECT_ID}"
+
+#https://github.com/Azure/azure-cli/issues/9501
+echo "Calling REST Api to update redirects for web and public client"
+read -r -d '' CLIENT_SPA_REDIRECTS << EOM
+{
+    "spa" : {
+        "redirectUris" : [ "https://${SPA_HOST_NAME}.azurewebsites.net/", "https://${SPA_HOST_NAME}-green.azurewebsites.net/" ]
+    }
+}
+EOM
+
+az rest --method PATCH \
+    --uri "https://graph.microsoft.com/v1.0/applications/${AAD_WEBSITE_OBJECT_ID}" \
+    --headers 'Content-Type=application/json' \
+    --body "$CLIENT_SPA_REDIRECTS"
+
+echo "Patched SPA redirects"
+
+read -r -d '' CLIENT_WEB_REDIRECTS << EOM
+{
+
+    "web" : {
+        "redirectUris" : [ "https://${WEBSITE_HOST_NAME}.azurewebsites.net/signin-oidc", "https://${WEBSITE_HOST_NAME}-green.azurewebsites.net/signin-oidc" ]
+    }
+}
+EOM
+
+az rest --method PATCH \
+    --uri "https://graph.microsoft.com/v1.0/applications/${AAD_WEBSITE_OBJECT_ID}" \
+    --headers 'Content-Type=application/json' \
+    --body "$CLIENT_WEB_REDIRECTS"
+
+echo "Patched Web redirects"
+
+echo "Patched redirects for web and public client"
 
 _=$(az ad sp create --id $AAD_WEBSITE_APPLICATION_ID)
 echo "Created service principal to represent APP in directory"

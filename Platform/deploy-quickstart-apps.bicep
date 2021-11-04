@@ -70,9 +70,21 @@ module WebAppDeployment './deploy-app.bicep' = {
   }
 }
 
+module StaticAppDeployment './deploy-static-app.bicep' = {
+  name: 'DeployStaticApp'
+  scope: resourceGroup
+  params: {
+    resourcePrefix: resourcePrefix
+    serverFarmId: serverFarmId
+    environmentName: environmentName
+    deploySlot: hasSlot
+  }
+}
+
 output resourceGroupName string = resourceGroup.name
 output applicationHostname string = WebAppDeployment.outputs.appHostname
 output apiHostname string = WebApiDeployment.outputs.apiHostname
+output spaHostname string = StaticAppDeployment.outputs.appHostname
 output applicationKeyVaultName string = WebAppDeployment.outputs.appKeyVaultName
 output databaseName string = DatabaseDeployment.outputs.apiDatabaseName
 output databaseConnectionString string = DatabaseDeployment.outputs.apiDatabaseConnectionString
