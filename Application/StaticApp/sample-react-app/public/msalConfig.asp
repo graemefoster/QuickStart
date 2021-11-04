@@ -19,7 +19,7 @@ hostName = foo.Environment("PROCESS").Item("WEBSITE_HOSTNAME")
         }
     },
     "apiConfig": {
-        "BaseUrl": "<%= apiUrl %>",
+        "BaseUrl": "<%= apiUrl %>/",
         "Scopes": [
             "<%= scope %>"
         ]

@@ -94,9 +94,27 @@ read -r -d '' REQUIRED_WEBSITE_RESOURCE_ACCESS << EOM
 }]
 EOM
 
-AAD_WEBSITE_APPLICATION_ID=$(az ad app create --display-name $WEBSITE_HOST_NAME --reply-urls "https://${WEBSITE_HOST_NAME}.azurewebsites.net/signin-oidc" "https://${WEBSITE_HOST_NAME}-green.azurewebsites.net/signin-oidc" "https://${SPA_HOST_NAME}.azurewebsites.net" "https://${SPA_HOST_NAME}-green.azurewebsites.net" --required-resource-access "$REQUIRED_WEBSITE_RESOURCE_ACCESS" --query "appId" -o tsv | tr -d '\r')
+AAD_WEBSITE_APPLICATION_ID=$(az ad app create --display-name $WEBSITE_HOST_NAME --required-resource-access "$REQUIRED_WEBSITE_RESOURCE_ACCESS" --query "appId" -o tsv | tr -d '\r')
 _=$(az ad app update --id $AAD_WEBSITE_APPLICATION_ID --identifier-uris "api://${AAD_WEBSITE_APPLICATION_ID}")
 echo "Created / retrieved Web Application Id ${AAD_WEBSITE_APPLICATION_ID}"
+
+#https://github.com/Azure/azure-cli/issues/9501
+echo "Calling REST Api to update redirects for web and public client"
+read -r -d '' PUBLIC_CLIENT_REDIRECTS << EOM
+{
+    "publicClient" : {
+        "redirectUris" : [ "https://${SPA_HOST_NAME}.azurewebsites.net", "https://${SPA_HOST_NAME}-green.azurewebsites.net" ]
+    },
+    "web" : {
+        "redirectUris" : [ "https://${WEBSITE_HOST_NAME}.azurewebsites.net/signin-oidc" "https://${WEBSITE_HOST_NAME}-green.azurewebsites.net/signin-oidc" ]
+    }
+}
+EOM
+
+az rest --method PATCH \
+    --uri "https://graph.microsoft.com/v1.0/applications/${AAD_WEBSITE_APPLICATION_ID}" \
+    --headers 'Content-Type=application/json' \
+    --body $PUBLIC_CLIENT_REDIRECTS
 
 _=$(az ad sp create --id $AAD_WEBSITE_APPLICATION_ID)
 echo "Created service principal to represent APP in directory"
