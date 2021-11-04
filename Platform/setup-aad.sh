@@ -8,7 +8,7 @@
 
 WEBSITE_HOST_NAME=$1
 WEB_API_HOST_NAME=$2
-SPA_HOST_NAME=$2
+SPA_HOST_NAME=$3
 
 # Build the application representing the API.
 read -r -d '' API_ROLES << EOM
