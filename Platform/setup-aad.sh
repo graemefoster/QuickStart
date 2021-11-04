@@ -104,9 +104,6 @@ read -r -d '' CLIENT_REDIRECTS << EOM
 {
     "publicClient" : {
         "redirectUris" : [ "https://${SPA_HOST_NAME}.azurewebsites.net", "https://${SPA_HOST_NAME}-green.azurewebsites.net" ]
-    },
-    "web" : {
-        "redirectUris" : [ "https://${WEBSITE_HOST_NAME}.azurewebsites.net/signin-oidc" "https://${WEBSITE_HOST_NAME}-green.azurewebsites.net/signin-oidc" ]
     }
 }
 EOM
@@ -115,6 +112,11 @@ az rest --method PATCH \
     --uri "https://graph.microsoft.com/v1.0/applications/${AAD_WEBSITE_APPLICATION_ID}" \
     --headers 'Content-Type=application/json' \
     --body "$CLIENT_REDIRECTS"
+
+# ,
+#     "web" : {
+#         "redirectUris" : [ "https://${WEBSITE_HOST_NAME}.azurewebsites.net/signin-oidc" "https://${WEBSITE_HOST_NAME}-green.azurewebsites.net/signin-oidc" ]
+#     }
 
 _=$(az ad sp create --id $AAD_WEBSITE_APPLICATION_ID)
 echo "Created service principal to represent APP in directory"
