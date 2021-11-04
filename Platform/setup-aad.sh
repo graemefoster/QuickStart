@@ -114,11 +114,13 @@ az rest --method PATCH \
     --headers 'Content-Type=application/json' \
     --body "$CLIENT_SPA_REDIRECTS"
 
+echo "Patched SPA redirects"
+
 read -r -d '' CLIENT_WEB_REDIRECTS << EOM
 {
 
     "web" : {
-        "redirectUris" : [ "https://${WEBSITE_HOST_NAME}.azurewebsites.net/signin-oidc" "https://${WEBSITE_HOST_NAME}-green.azurewebsites.net/signin-oidc" ]
+        "redirectUris" : [ "https://${WEBSITE_HOST_NAME}.azurewebsites.net/signin-oidc", "https://${WEBSITE_HOST_NAME}-green.azurewebsites.net/signin-oidc" ]
     }
 }
 EOM
@@ -127,6 +129,8 @@ az rest --method PATCH \
     --uri "https://graph.microsoft.com/v1.0/applications/${AAD_WEBSITE_OBJECT_ID}" \
     --headers 'Content-Type=application/json' \
     --body "$CLIENT_WEB_REDIRECTS"
+
+echo "Patched Web redirects"
 
 echo "Patched redirects for web and public client"
 
