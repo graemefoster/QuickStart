@@ -101,7 +101,7 @@ echo "Created / retrieved Web Application Id ${AAD_WEBSITE_APPLICATION_ID}. Obje
 
 #https://github.com/Azure/azure-cli/issues/9501
 echo "Calling REST Api to update redirects for web and public client"
-read -r -d '' CLIENT_REDIRECTS << EOM
+read -r -d '' CLIENT_SPA_REDIRECTS << EOM
 {
     "publicClient" : {
         "redirectUris" : [ "https://${SPA_HOST_NAME}.azurewebsites.net", "https://${SPA_HOST_NAME}-green.azurewebsites.net" ]
@@ -112,9 +112,9 @@ EOM
 az rest --method PATCH \
     --uri "https://graph.microsoft.com/v1.0/applications/${AAD_WEBSITE_OBJECT_ID}" \
     --headers 'Content-Type=application/json' \
-    --body "$CLIENT_REDIRECTS"
+    --body "$CLIENT_SPA_REDIRECTS"
 
-read -r -d '' CLIENT_REDIRECTS << EOM
+read -r -d '' CLIENT_WEB_REDIRECTS << EOM
 {
 
     "web" : {
@@ -126,7 +126,7 @@ EOM
 az rest --method PATCH \
     --uri "https://graph.microsoft.com/v1.0/applications/${AAD_WEBSITE_OBJECT_ID}" \
     --headers 'Content-Type=application/json' \
-    --body "$CLIENT_REDIRECTS"
+    --body "$CLIENT_WEB_REDIRECTS"
 
 echo "Patched redirects for web and public client"
 
