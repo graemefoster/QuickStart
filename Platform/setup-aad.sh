@@ -104,7 +104,7 @@ echo "Calling REST Api to update redirects for web and public client"
 read -r -d '' CLIENT_SPA_REDIRECTS << EOM
 {
     "spa" : {
-        "redirectUris" : [ "https://${SPA_HOST_NAME}.azurewebsites.net", "https://${SPA_HOST_NAME}-green.azurewebsites.net" ]
+        "redirectUris" : [ "https://${SPA_HOST_NAME}.azurewebsites.net/", "https://${SPA_HOST_NAME}-green.azurewebsites.net/" ]
     }
 }
 EOM
