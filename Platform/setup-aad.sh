@@ -103,7 +103,7 @@ echo "Created / retrieved Web Application Id ${AAD_WEBSITE_APPLICATION_ID}. Obje
 echo "Calling REST Api to update redirects for web and public client"
 read -r -d '' CLIENT_SPA_REDIRECTS << EOM
 {
-    "publicClient" : {
+    "spa" : {
         "redirectUris" : [ "https://${SPA_HOST_NAME}.azurewebsites.net", "https://${SPA_HOST_NAME}-green.azurewebsites.net" ]
     }
 }
