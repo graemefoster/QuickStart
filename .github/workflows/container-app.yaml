@@ -54,7 +54,7 @@ jobs:
           az provider register --namespace Microsoft.Web
           az containerapp update \
             --name 'microservice-test' \
-            --resource-group '${resourcePrefix}-test-rg' \
+            --resource-group '${{ secrets.RESOURCE_PREFIX }}-test-rg' \
             --image "ghcr.io/${{ github.actor }}/sample-microservice:latest"
 
   deploy-to-production-green:
@@ -71,7 +71,7 @@ jobs:
           az provider register --namespace Microsoft.Web
           az containerapp update \
             --name 'microservice-test' \
-            --resource-group '${resourcePrefix}-prod-rg' \
+            --resource-group '${{ secrets.RESOURCE_PREFIX }}-prod-rg' \
             --image "ghcr.io/${{ github.actor }}/sample-microservice:latest"
             
   deploy-to-production:
@@ -89,6 +89,6 @@ jobs:
           az provider register --namespace Microsoft.Web
           az containerapp activate  \
             --name 'microservice-test' \
-            --resource-group '${resourcePrefix}-prod-rg' \
+            --resource-group '${{ secrets.RESOURCE_PREFIX }}-prod-rg' \
             --image "ghcr.io/${{ github.actor }}/sample-microservice:latest"
       
