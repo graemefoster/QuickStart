@@ -63,14 +63,14 @@ jobs:
           azcliversion: 2.29.2
           inlineScript: |
             az deployment sub create -f ./Platform/deploy-quickstart-apps.bicep --location australiaeast \
-            -p \
-            resourcePrefix=${{ secrets.RESOURCE_PREFIX }} \
-            platformResourceGroupName=${{ steps.platformDeploy.outputs.platformResourceGroupName }}  \
-            serverFarmId=${{ steps.platformDeploy.outputs.serverFarmId }}  \
-            databaseServerName=${{ steps.platformDeploy.outputs.databaseServerName }} \
-            logAnalyticsWorkspaceId=${{ steps.platformDeploy.outputs.logAnalyticsWorkspaceId }} \
-            containerEnvironmentId=$ {{ steps.platformDeploy.outputs.containerEnvironmentId }} \
-            environmentName=test
+              -p \
+              resourcePrefix=${{ secrets.RESOURCE_PREFIX }} \
+              platformResourceGroupName=${{ steps.platformDeploy.outputs.platformResourceGroupName }}  \
+              serverFarmId=${{ steps.platformDeploy.outputs.serverFarmId }}  \
+              databaseServerName=${{ steps.platformDeploy.outputs.databaseServerName }} \
+              logAnalyticsWorkspaceId=${{ steps.platformDeploy.outputs.logAnalyticsWorkspaceId }} \
+              containerEnvironmentId=$ {{ steps.platformDeploy.outputs.containerEnvironmentId }} \
+              environmentName=test
     
       # - name: Deploy Test Applications and Databases
       #   uses: azure/arm-deploy@v1
