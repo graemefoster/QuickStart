@@ -7,7 +7,7 @@ type Pet = {
   name: string;
 };
 
-export const ListPets = () => {
+export const MicroServiceCall = () => {
   const [fetchResource, setFetchResource] = useState<Boolean>(true);
   const [resource, setResource] = useState<Pet[]>([]);
 
