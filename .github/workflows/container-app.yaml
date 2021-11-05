@@ -60,6 +60,7 @@ jobs:
   deploy-to-production-green:
     needs: deploy-to-test
     runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main'
     environment: Production
     steps:
       - uses: azure/login@v1
@@ -78,6 +79,7 @@ jobs:
     needs:
       - deploy-to-production-green
     runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main'
     environment: Production
     steps:
       - uses: azure/login@v1

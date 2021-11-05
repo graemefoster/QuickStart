@@ -12,7 +12,7 @@
         }
     },
     "apiConfig": {
-        "MicroServiceUrl" : "<%= Environment.GetEnvironmentVariable("ApiSettings__MicroServiceUrl") %>/"
+        "MicroServiceUrl" : "<%= Environment.GetEnvironmentVariable("ApiSettings__MicroServiceUrl") %>/",
         "BaseUrl": "<%= Environment.GetEnvironmentVariable("ApiSettings__URL") %>/",
         "Scopes": [
             "<%= Environment.GetEnvironmentVariable("ApiSettings__Scope") %>"
