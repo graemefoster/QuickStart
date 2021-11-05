@@ -48,13 +48,15 @@ jobs:
       - uses: azure/login@v1
         with:
           creds: ${{ secrets.AZURE_CREDENTIALS }}
-      - run: az extension add --name deploy-to-azure
-      - name: "Deploy new version of image"
-        run: >
-          az containerapp update \
-            --name 'microservice-test' \
-            --resource-group '${resourcePrefix}-test-rg' \
-            --image "ghcr.io/${{ github.actor }}/sample-microservice:latest"
+      - name: Update Container App
+        uses: azure/CLI@v1
+        with:
+          azcliversion: 2.29.2
+          inlineScript: |
+            az containerapp update \
+              --name 'microservice-test' \
+              --resource-group '${resourcePrefix}-test-rg' \
+              --image "ghcr.io/${{ github.actor }}/sample-microservice:latest"
 
   deploy-to-production-green:
     needs: deploy-to-test
@@ -64,13 +66,15 @@ jobs:
       - uses: azure/login@v1
         with:
           creds: ${{ secrets.AZURE_CREDENTIALS }}
-      - run: az extension add --name deploy-to-azure
-      - name: "Deploy new version of image"
-        run: >
-          az containerapp update \
-            --name 'microservice-test' \
-            --resource-group '${resourcePrefix}-prod-rg' \
-            --image "ghcr.io/${{ github.actor }}/sample-microservice:latest"
+      - name: Update Container App
+        uses: azure/CLI@v1
+        with:
+          azcliversion: 2.29.2
+          inlineScript: |
+            az containerapp update \
+              --name 'microservice-test' \
+              --resource-group '${resourcePrefix}-prod-rg' \
+              --image "ghcr.io/${{ github.actor }}/sample-microservice:latest"
             
   deploy-to-production:
     needs:
@@ -81,11 +85,13 @@ jobs:
       - uses: azure/login@v1
         with:
           creds: ${{ secrets.AZURE_CREDENTIALS }}
-      - run: az extension add --name deploy-to-azure
-      - name: "Activate new revision"
-        run: >
-          az containerapp activate  \
-            --name 'microservice-test' \
-            --resource-group '${resourcePrefix}-prod-rg' \
-            --image "ghcr.io/${{ github.actor }}/sample-microservice:latest"
+      - name: Update Container App
+        uses: azure/CLI@v1
+        with:
+          azcliversion: 2.29.2
+          inlineScript: |
+            az containerapp activate  \
+              --name 'microservice-test' \
+              --resource-group '${resourcePrefix}-prod-rg' \
+              --image "ghcr.io/${{ github.actor }}/sample-microservice:latest"
       
