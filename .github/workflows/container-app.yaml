@@ -48,10 +48,14 @@ jobs:
       - uses: azure/login@v1
         with:
           creds: ${{ secrets.AZURE_CREDENTIALS }}
-      - name: "Deploy new version of image"
+      - name: "Activate new revision"
         run: |
           az extension add --source https://workerappscliextension.blob.core.windows.net/azure-cli-extension/containerapp-0.2.0-py2.py3-none-any.whl
+      - name: "Activate new revision"
+        run: |
           az provider register --namespace Microsoft.Web
+      - name: "Activate new revision"
+        run: |
           az containerapp update \
             --name 'microservice-test' \
             --resource-group '${{ secrets.RESOURCE_PREFIX }}-test-rg' \
@@ -65,10 +69,14 @@ jobs:
       - uses: azure/login@v1
         with:
           creds: ${{ secrets.AZURE_CREDENTIALS }}
-      - name: "Deploy new version of image"
+      - name: "Activate new revision"
         run: |
           az extension add --source https://workerappscliextension.blob.core.windows.net/azure-cli-extension/containerapp-0.2.0-py2.py3-none-any.whl
+      - name: "Activate new revision"
+        run: |
           az provider register --namespace Microsoft.Web
+      - name: "Activate new revision"
+        run: |
           az containerapp update \
             --name 'microservice-test' \
             --resource-group '${{ secrets.RESOURCE_PREFIX }}-prod-rg' \
@@ -86,7 +94,11 @@ jobs:
       - name: "Activate new revision"
         run: |
           az extension add --source https://workerappscliextension.blob.core.windows.net/azure-cli-extension/containerapp-0.2.0-py2.py3-none-any.whl
+      - name: "Activate new revision"
+        run: |
           az provider register --namespace Microsoft.Web
+      - name: "Activate new revision"
+        run: |
           az containerapp activate  \
             --name 'microservice-test' \
             --resource-group '${{ secrets.RESOURCE_PREFIX }}-prod-rg' \
