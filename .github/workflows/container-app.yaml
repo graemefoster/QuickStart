@@ -48,14 +48,11 @@ jobs:
       - uses: azure/login@v1
         with:
           creds: ${{ secrets.AZURE_CREDENTIALS }}
-      - name: Update Container App
-        uses: azure/CLI@v1
-        with:
-          azcliversion: 2.29.2
-          inlineScript: |
-            az extension add --source https://workerappscliextension.blob.core.windows.net/azure-cli-extension/containerapp-0.2.0-py2.py3-none-any.whl
-            az provider register --namespace Microsoft.Web
-            az containerapp update \
+      - name: "Deploy new version of image"
+        run: >
+          az extension add --source https://workerappscliextension.blob.core.windows.net/azure-cli-extension/containerapp-0.2.0-py2.py3-none-any.whl
+          az provider register --namespace Microsoft.Web
+          az containerapp update \
             --name 'microservice-test' \
             --resource-group '${resourcePrefix}-test-rg' \
             --image "ghcr.io/${{ github.actor }}/sample-microservice:latest"
@@ -68,17 +65,14 @@ jobs:
       - uses: azure/login@v1
         with:
           creds: ${{ secrets.AZURE_CREDENTIALS }}
-      - name: Update Container App
-        uses: azure/CLI@v1
-        with:
-          azcliversion: 2.29.2
-          inlineScript: |
-            az extension add --source https://workerappscliextension.blob.core.windows.net/azure-cli-extension/containerapp-0.2.0-py2.py3-none-any.whl
-            az provider register --namespace Microsoft.Web
-            az containerapp update \
-              --name 'microservice-test' \
-              --resource-group '${resourcePrefix}-prod-rg' \
-              --image "ghcr.io/${{ github.actor }}/sample-microservice:latest"
+      - name: "Deploy new version of image"
+        run: >
+          az extension add --source https://workerappscliextension.blob.core.windows.net/azure-cli-extension/containerapp-0.2.0-py2.py3-none-any.whl
+          az provider register --namespace Microsoft.Web
+          az containerapp update \
+            --name 'microservice-test' \
+            --resource-group '${resourcePrefix}-prod-rg' \
+            --image "ghcr.io/${{ github.actor }}/sample-microservice:latest"
             
   deploy-to-production:
     needs:
@@ -89,15 +83,12 @@ jobs:
       - uses: azure/login@v1
         with:
           creds: ${{ secrets.AZURE_CREDENTIALS }}
-      - name: Update Container App
-        uses: azure/CLI@v1
-        with:
-          azcliversion: 2.29.2
-          inlineScript: |
-            az extension add --source https://workerappscliextension.blob.core.windows.net/azure-cli-extension/containerapp-0.2.0-py2.py3-none-any.whl
-            az provider register --namespace Microsoft.Web
-            az containerapp activate  \
-              --name 'microservice-test' \
-              --resource-group '${resourcePrefix}-prod-rg' \
-              --image "ghcr.io/${{ github.actor }}/sample-microservice:latest"
+      - name: "Activate new revision"
+        run: >
+          az extension add --source https://workerappscliextension.blob.core.windows.net/azure-cli-extension/containerapp-0.2.0-py2.py3-none-any.whl
+          az provider register --namespace Microsoft.Web
+          az containerapp activate  \
+            --name 'microservice-test' \
+            --resource-group '${resourcePrefix}-prod-rg' \
+            --image "ghcr.io/${{ github.actor }}/sample-microservice:latest"
       
