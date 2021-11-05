@@ -2,14 +2,14 @@ import { spaConfig } from "../authConfig";
 import { useState, useEffect } from "react";
 import { Container } from "react-bootstrap";
 
-type Pet = {
-  id: string;
+type Resource = {
   name: string;
+  pets: [];
 };
 
 export const MicroServiceCall = () => {
   const [fetchResource, setFetchResource] = useState<Boolean>(true);
-  const [resource, setResource] = useState<Pet[]>([]);
+  const [resource, setResource] = useState<Resource>();
 
   useEffect(() => {
     if (fetchResource) {
@@ -25,7 +25,7 @@ export const MicroServiceCall = () => {
   return (
     <Container>
       <h2>Resource</h2>
-      <p>{resource}</p>
+      <p>{resource?.name ?? 'Loading'}</p>
     </Container>
   );
 };
