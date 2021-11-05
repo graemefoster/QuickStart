@@ -62,7 +62,7 @@ jobs:
         with:
           azcliversion: 2.29.2
           inlineScript: |
-            az deployment subscription create -f ./Platform/deploy-quickstart-apps.bicep \
+            az deployment sub create -f ./Platform/deploy-quickstart-apps.bicep --location australiaeast \
             -p \
             resourcePrefix=${{ secrets.RESOURCE_PREFIX }} \
             platformResourceGroupName=${{ steps.platformDeploy.outputs.platformResourceGroupName }}  \
