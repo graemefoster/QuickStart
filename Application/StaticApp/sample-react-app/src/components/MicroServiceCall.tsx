@@ -16,7 +16,7 @@ export const MicroServiceCall = () => {
       setFetchResource(false);
 
       spaConfig
-        .then((config) => fetch(`${config.apiConfig.BaseUrl}resource`))
+        .then((config) => fetch(`${config.apiConfig.MicroServiceUrl}resource`))
         .then((r) => r.json())
         .then((o) => setResource(o));
     }
