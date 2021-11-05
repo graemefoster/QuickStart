@@ -1,6 +1,6 @@
 import { spaConfig } from "../authConfig";
 import { useState, useEffect } from "react";
-import { Container, Table } from "react-bootstrap";
+import { Container } from "react-bootstrap";
 
 type Pet = {
   id: string;
