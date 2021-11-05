@@ -1,7 +1,7 @@
 param containerAppName string
-param location string = 'canadacentral'
-param environmentId string
 param containerImage string
+param environmentId string
+param location string = 'canadacentral'
 
 resource containerApp 'Microsoft.Web/containerApps@2021-03-01' = {
   name: containerAppName
