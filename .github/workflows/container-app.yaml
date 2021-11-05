@@ -48,6 +48,7 @@ jobs:
       - uses: azure/login@v1
         with:
           creds: ${{ secrets.AZURE_CREDENTIALS }}
+      - run: az extension add --name deploy-to-azure
       - name: "Deploy new version of image"
         run: >
           az containerapp update \
@@ -63,6 +64,7 @@ jobs:
       - uses: azure/login@v1
         with:
           creds: ${{ secrets.AZURE_CREDENTIALS }}
+      - run: az extension add --name deploy-to-azure
       - name: "Deploy new version of image"
         run: >
           az containerapp update \
@@ -79,6 +81,7 @@ jobs:
       - uses: azure/login@v1
         with:
           creds: ${{ secrets.AZURE_CREDENTIALS }}
+      - run: az extension add --name deploy-to-azure
       - name: "Activate new revision"
         run: >
           az containerapp activate  \
