@@ -29,6 +29,19 @@ jobs:
         with:
           creds: ${{secrets.AZURE_CREDENTIALS}} 
 
+      # - name: Deploy bicep
+      #   uses: azure/CLI@v1
+      #   with:
+      #     azcliversion: 2.29.2
+      #     inlineScript: |
+      #       az deployment subscription create -f ./Platform/deploy-quickstart-platform.bicep \
+      #        -p \
+      #           resourcePrefix=${{ secrets.RESOURCE_PREFIX }}  \
+      #           databaseAdministratorObjectId=${{ secrets.DEPLOYMENTPRINCIPAL_ID }} \
+      #           databaseAdministratorName=${{ secrets.DEPLOYMENTPRINCIPAL_NAME }} \
+      #           environmentName=test \
+
+
       - name: Deploy Platform
         uses: azure/arm-deploy@v1
         id: 'platformDeploy'
@@ -41,7 +54,7 @@ jobs:
             databaseAdministratorObjectId=${{ secrets.DEPLOYMENTPRINCIPAL_ID }} 
             databaseAdministratorName=${{ secrets.DEPLOYMENTPRINCIPAL_NAME }}
             environmentName=test
-          failOnStdErr: true
+          failOnStdErr: false # container-apps produces warning
 
       - name: Deploy Test Applications and Databases
         uses: azure/arm-deploy@v1
