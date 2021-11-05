@@ -133,6 +133,7 @@ jobs:
             appHostname=${{ steps.appsDeploy.outputs.applicationHostname }}
             apiHostname=${{ steps.appsDeploy.outputs.apiHostname }}
             spaHostname=${{ steps.appsDeploy.outputs.spaHostname }}
+            containerAppFqdn=${{ steps.appsDeploy.outputs.containerAppFqdn }}
             appKeyVaultName=${{ steps.appsDeploy.outputs.applicationKeyVaultName }}
             appClientId=${{ steps.setup-test-aad.outputs.applicationClientId }}
             apiClientId=${{ steps.setup-test-aad.outputs.apiClientId }}

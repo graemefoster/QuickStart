@@ -98,6 +98,7 @@ output resourceGroupName string = resourceGroup.name
 output applicationHostname string = WebAppDeployment.outputs.appHostname
 output apiHostname string = WebApiDeployment.outputs.apiHostname
 output spaHostname string = StaticAppDeployment.outputs.appHostname
+output containerAppFqdn string = ContainerAppDeployment.outputs.containerAppFqdn
 output applicationKeyVaultName string = WebAppDeployment.outputs.appKeyVaultName
 output databaseName string = DatabaseDeployment.outputs.apiDatabaseName
 output databaseConnectionString string = DatabaseDeployment.outputs.apiDatabaseConnectionString

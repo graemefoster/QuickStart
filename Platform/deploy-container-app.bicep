@@ -35,4 +35,4 @@ resource containerApp 'Microsoft.Web/containerApps@2021-03-01' = {
   }
 }
 
-output fqdn string = containerApp.properties.configuration.ingress.fqdn
+output containerAppFqdn string = containerApp.properties.configuration.ingress.fqdn
