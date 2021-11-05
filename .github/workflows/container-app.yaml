@@ -38,7 +38,9 @@ jobs:
         with:
           context: ./Application/MicroService/
           push: true
-          tags: "ghcr.io/${{ github.actor }}/sample-microservice:latest"
+          tags: |
+            "ghcr.io/${{ github.actor }}/sample-microservice:latest"
+            "ghcr.io/${{ github.actor }}/sample-microservice:${{github.run_number}}"
 
   deploy-to-test:
     needs: package-app
@@ -55,7 +57,7 @@ jobs:
           az containerapp update \
             --name 'microservice-test' \
             --resource-group '${{ secrets.RESOURCE_PREFIX }}-test-rg' \
-            --image "ghcr.io/${{ github.actor }}/sample-microservice:latest"
+            --image "ghcr.io/${{ github.actor }}/sample-microservice:${{github.run_number}}"
 
   deploy-to-production-green:
     needs: deploy-to-test
@@ -73,7 +75,7 @@ jobs:
           az containerapp update \
             --name 'microservice-test' \
             --resource-group '${{ secrets.RESOURCE_PREFIX }}-prod-rg' \
-            --image "ghcr.io/${{ github.actor }}/sample-microservice:latest"
+            --image "ghcr.io/${{ github.actor }}/sample-microservice:${{github.run_number}}"
             
   deploy-to-production:
     needs:
@@ -92,5 +94,5 @@ jobs:
           az containerapp activate  \
             --name 'microservice-test' \
             --resource-group '${{ secrets.RESOURCE_PREFIX }}-prod-rg' \
-            --image "ghcr.io/${{ github.actor }}/sample-microservice:latest"
+            --image "ghcr.io/${{ github.actor }}/sample-microservice:${{github.run_number}}"
       
