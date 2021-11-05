@@ -1,54 +1,88 @@
 name: ContainerApp
 
-
 on:
   push:
-    branches: [ main ]
+    branches: [main]
     paths:
-      - 'Application/MicroService/**'
+      - "Application/MicroService/**"
   pull_request:
     paths:
-      - 'Application/MicroService/**'
+      - "Application/MicroService/**"
     branches:
       - main
   workflow_dispatch:
-    
+
 jobs:
   package-app:
     runs-on: ubuntu-latest
 
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
-    - uses: actions/checkout@v2
+      - uses: actions/checkout@v2
 
-    - name: Set up QEMU
-      uses: docker/setup-qemu-action@v1
-    - name: Set up Docker Buildx
-      uses: docker/setup-buildx-action@v1
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v1
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v1
 
-    - name: Login to Github Packages
-      uses: docker/login-action@v1
-      with:
-        registry: ghcr.io
-        username: ${{ github.actor }}
-        password: ${{ secrets.GITHUB_TOKEN }}
+      - name: Login to Github Packages
+        uses: docker/login-action@v1
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
 
-    - name: Build and push
-      id: docker_build
-      uses: docker/build-push-action@v2
-      with:
-        context: ./Application/MicroService/
-        push: true
-        tags: "ghcr.io/${{ github.actor }}/sample-microservice:latest"
+      - name: Build and push
+        id: docker_build
+        uses: docker/build-push-action@v2
+        with:
+          context: ./Application/MicroService/
+          push: true
+          tags: "ghcr.io/${{ github.actor }}/sample-microservice:latest"
 
   deploy-to-test:
-    needs:
-      - package-app
+    needs: build-and-test-app
     runs-on: ubuntu-latest
     environment: Test
     steps:
-    - uses: actions/setup-dotnet@v1
-      with:
-        dotnet-version: '5.0.x'
+      - uses: azure/login@v1
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
+      - name: "Deploy new version of image"
+        run: >
+          az containerapp update \
+            --name 'microservice-test' \
+            --resource-group '${resourcePrefix}-test-rg' \
+            --image "ghcr.io/${{ github.actor }}/sample-microservice:latest"
 
-  
+  deploy-to-production-green:
+    needs: deploy-to-test
+    runs-on: ubuntu-latest
+    environment: Production
+    steps:
+      - uses: azure/login@v1
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
+      - name: "Deploy new version of image"
+        run: >
+          az containerapp update \
+            --name 'microservice-test' \
+            --resource-group '${resourcePrefix}-prod-rg' \
+            --image "ghcr.io/${{ github.actor }}/sample-microservice:latest"
+            
+  deploy-to-production:
+    needs:
+      - deploy-to-production-green
+    runs-on: ubuntu-latest
+    environment: Production
+    steps:
+      - uses: azure/login@v1
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
+      - name: "Activate new revision"
+        run: >
+          az containerapp activate  \
+            --name 'microservice-test' \
+            --resource-group '${resourcePrefix}-prod-rg' \
+            --image "ghcr.io/${{ github.actor }}/sample-microservice:latest"
+      
