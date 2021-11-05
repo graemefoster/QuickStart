@@ -5,7 +5,7 @@ param containerImage string
 
 resource containerApp 'Microsoft.Web/containerApps@2021-03-01' = {
   name: containerAppName
-  kind: 'containerapp'
+  kind: 'containerapps'
   location: location
   properties: {
     kubeEnvironmentId: environmentId
