@@ -71,7 +71,7 @@ jobs:
             logAnalyticsWorkspaceId=${{ steps.platformDeploy.outputs.logAnalyticsWorkspaceId }}
             containerEnvironmentId=$ {{ steps.platformDeploy.outputs.containerEnvironmentId }}
             environmentName=test
-          failOnStdErr: true
+          failOnStdErr: false
 
       - name: Logout of Azure
         if: ${{ env.SEPARATE_AAD_LOGIN }}
@@ -191,7 +191,7 @@ jobs:
             logAnalyticsWorkspaceId=${{ steps.platformDeploy.outputs.logAnalyticsWorkspaceId }}
             containerEnvironmentId=$ {{ steps.platformDeploy.outputs.containerEnvironmentId }}
             environmentName=prod
-          failOnStdErr: true
+          failOnStdErr: false
 
       - name: Logout of Azure
         if: ${{ env.SEPARATE_AAD_LOGIN }}
