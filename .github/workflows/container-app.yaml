@@ -41,7 +41,7 @@ jobs:
           tags: "ghcr.io/${{ github.actor }}/sample-microservice:latest"
 
   deploy-to-test:
-    needs: build-and-test-app
+    needs: package-app
     runs-on: ubuntu-latest
     environment: Test
     steps:
