@@ -42,7 +42,7 @@ jobs:
       with:
         context: ./Application/MicroService/
         push: true
-        tags: ${{ github.actor }}/sample-microservice:latest
+        tags: "ghcr.io/${{ github.actor }}/sample-microservice:latest"
 
   
   
