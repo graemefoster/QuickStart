@@ -6,7 +6,7 @@ param hasSlot bool
 
 var databaseServerName = '${resourcePrefix}-${environmentName}-sqlserver'
 var location = resourceGroup().location
-var containerAppLocation = 'canadacentral'
+var containerAppLocation = 'northeurope'
 
 resource LogAnalyticsWorkspace 'Microsoft.OperationalInsights/workspaces@2021-06-01' = {
   name: '${resourcePrefix}-${environmentName}-loga'
@@ -62,7 +62,6 @@ resource ContainerAppsEnvironment 'Microsoft.Web/kubeEnvironments@2021-02-01' = 
   name: '${resourcePrefix}-${environmentName}-ctrapps'
   location: containerAppLocation
   properties: {
-    type: 'managed'
     internalLoadBalancerEnabled: false
     appLogsConfiguration: {
       destination: 'log-analytics'
@@ -70,9 +69,6 @@ resource ContainerAppsEnvironment 'Microsoft.Web/kubeEnvironments@2021-02-01' = 
         customerId: LogAnalyticsWorkspace.properties.customerId
         sharedKey: LogAnalyticsWorkspace.listKeys().primarySharedKey
       }
-    }
-    containerAppsConfiguration: {
-      daprAIInstrumentationKey: ContainerAppsAppInsights.properties.InstrumentationKey
     }
   }
 }

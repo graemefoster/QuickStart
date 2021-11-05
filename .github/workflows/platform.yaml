@@ -29,13 +29,6 @@ jobs:
         with:
           creds: ${{secrets.AZURE_CREDENTIALS}} 
 
-      - name: Try update CLI for container apps
-        uses: azure/CLI@v1
-        with:
-          azcliversion: 2.29.2
-          inlineScript: | 
-            az --version
-
       - name: Deploy Platform
         uses: azure/arm-deploy@v1
         id: 'platformDeploy'
