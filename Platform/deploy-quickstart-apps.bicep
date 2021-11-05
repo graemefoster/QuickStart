@@ -20,6 +20,9 @@ param databaseServerName string
 @description('Used to construct app / api / keyvault names. Suggestions include test, prod, nonprod')
 param environmentName string
 
+@description('Resource Id of the Container Environment')
+param containerEnvironmentId string
+
 var hasSlot = environmentName != 'test'
 
 resource platformResourceGroup 'Microsoft.Resources/resourceGroups@2021-04-01' = {
@@ -78,6 +81,16 @@ module StaticAppDeployment './deploy-static-app.bicep' = {
     serverFarmId: serverFarmId
     environmentName: environmentName
     deploySlot: hasSlot
+  }
+}
+
+module ContainerAppDeployment './deploy-container-app.bicep' = {
+  name: 'DeployContainerApp'
+  scope: resourceGroup
+  params: {
+    containerAppName: 'microservice-test'
+    containerImage: 'ghcr.io/graemefoster/sample-microservice:latest'
+    environmentId: containerEnvironmentId
   }
 }
 

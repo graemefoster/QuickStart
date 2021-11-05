@@ -106,4 +106,4 @@ resource SqlFirewallAllowAzureServices 'Microsoft.Sql/servers/firewallRules@2021
 output serverFarmId string = QuickStartServerFarm.id
 output databaseServerName string = databaseServerName
 output logAnalyticsWorkspaceId string = LogAnalyticsWorkspace.id
-output continerEnvironmentId string = ContainerAppsEnvironment.id
+output containerEnvironmentId string = ContainerAppsEnvironment.id
