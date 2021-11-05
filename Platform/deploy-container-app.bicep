@@ -1,5 +1,5 @@
 param containerAppName string
-param location string = resourceGroup().location
+param location string = 'canadacentral'
 param environmentId string
 param containerImage string
 
@@ -10,7 +10,6 @@ resource containerApp 'Microsoft.Web/containerApps@2021-03-01' = {
   properties: {
     kubeEnvironmentId: environmentId
     configuration: {
-      activeRevisionsMode: 'multiple'
       secrets: []
       registries: [
         {
@@ -28,7 +27,6 @@ resource containerApp 'Microsoft.Web/containerApps@2021-03-01' = {
         {
           image: containerImage
           name: containerAppName
-          env: {}
         }
       ]
       scale: {
