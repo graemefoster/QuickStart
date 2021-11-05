@@ -11,11 +11,7 @@ resource containerApp 'Microsoft.Web/containerApps@2021-03-01' = {
     kubeEnvironmentId: environmentId
     configuration: {
       secrets: []
-      registries: [
-        {
-          server: 'ghcr.io'
-        }
-      ]
+      registries: []
       ingress: {
         external: true
         targetPort: 3000
@@ -34,9 +30,6 @@ resource containerApp 'Microsoft.Web/containerApps@2021-03-01' = {
       }
       dapr: {
         enabled: false
-        // appPort: containerPort
-        // appId: containerAppName
-        // components: daprComponents
       }
     }
   }

@@ -89,7 +89,7 @@ module ContainerAppDeployment './deploy-container-app.bicep' = {
   scope: resourceGroup
   params: {
     containerAppName: 'microservice-test'
-    containerImage: 'graemefoster/sample-microservice:latest'
+    containerImage: 'ghcr.io/graemefoster/sample-microservice:latest'
     environmentId: containerEnvironmentId
   }
 }
