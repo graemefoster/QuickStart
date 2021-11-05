@@ -48,12 +48,8 @@ jobs:
       - uses: azure/login@v1
         with:
           creds: ${{ secrets.AZURE_CREDENTIALS }}
-      - name: "Activate new revision"
-        run: |
-          az extension add --source https://workerappscliextension.blob.core.windows.net/azure-cli-extension/containerapp-0.2.0-py2.py3-none-any.whl
-      - name: "Activate new revision"
-        run: |
-          az provider register --namespace Microsoft.Web
+      - name: "Add az containerapp extension"
+        run: az extension add --source https://workerappscliextension.blob.core.windows.net/azure-cli-extension/containerapp-0.2.0-py2.py3-none-any.whl -y
       - name: "Activate new revision"
         run: |
           az containerapp update \
@@ -69,12 +65,8 @@ jobs:
       - uses: azure/login@v1
         with:
           creds: ${{ secrets.AZURE_CREDENTIALS }}
-      - name: "Activate new revision"
-        run: |
-          az extension add --source https://workerappscliextension.blob.core.windows.net/azure-cli-extension/containerapp-0.2.0-py2.py3-none-any.whl
-      - name: "Activate new revision"
-        run: |
-          az provider register --namespace Microsoft.Web
+      - name: "Add az containerapp extension"
+        run: az extension add --source https://workerappscliextension.blob.core.windows.net/azure-cli-extension/containerapp-0.2.0-py2.py3-none-any.whl -y
       - name: "Activate new revision"
         run: |
           az containerapp update \
@@ -91,12 +83,8 @@ jobs:
       - uses: azure/login@v1
         with:
           creds: ${{ secrets.AZURE_CREDENTIALS }}
-      - name: "Activate new revision"
-        run: |
-          az extension add --source https://workerappscliextension.blob.core.windows.net/azure-cli-extension/containerapp-0.2.0-py2.py3-none-any.whl
-      - name: "Activate new revision"
-        run: |
-          az provider register --namespace Microsoft.Web
+      - name: "Add az containerapp extension"
+        run: az extension add --source https://workerappscliextension.blob.core.windows.net/azure-cli-extension/containerapp-0.2.0-py2.py3-none-any.whl -y
       - name: "Activate new revision"
         run: |
           az containerapp activate  \
