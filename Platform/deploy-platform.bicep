@@ -6,7 +6,7 @@ param hasSlot bool
 
 var databaseServerName = '${resourcePrefix}-${environmentName}-sqlserver'
 var location = resourceGroup().location
-var containerAppLocation = 'westeurope'
+var containerAppLocation = 'canadacentral'
 
 resource LogAnalyticsWorkspace 'Microsoft.OperationalInsights/workspaces@2021-06-01' = {
   name: '${resourcePrefix}-${environmentName}-loga'
