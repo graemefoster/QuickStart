@@ -62,6 +62,7 @@ resource ContainerAppsEnvironment 'Microsoft.Web/kubeEnvironments@2021-02-01' = 
   name: '${resourcePrefix}-${environmentName}-ctrapps'
   location: containerAppLocation
   properties: {
+    type: 'managed'
     internalLoadBalancerEnabled: false
     appLogsConfiguration: {
       destination: 'log-analytics'
@@ -69,6 +70,9 @@ resource ContainerAppsEnvironment 'Microsoft.Web/kubeEnvironments@2021-02-01' = 
         customerId: LogAnalyticsWorkspace.properties.customerId
         sharedKey: LogAnalyticsWorkspace.listKeys().primarySharedKey
       }
+    }
+    containerAppsConfiguration: {
+      daprAIInstrumentationKey: ContainerAppsAppInsights.properties.InstrumentationKey
     }
   }
 }
