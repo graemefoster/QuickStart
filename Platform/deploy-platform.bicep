@@ -49,7 +49,7 @@ resource AppServicePlanDiagnostics 'Microsoft.Insights/diagnosticSettings@2021-0
 
 resource ContainerAppsAppInsights 'Microsoft.Insights/components@2020-02-02-preview' = {
   name: '${resourcePrefix}-${environmentName}-ctrapps-appi'
-  location: containerAppLocation
+  location: location
   kind: 'web'
   properties: { 
     Application_Type: 'web'
@@ -60,7 +60,7 @@ resource ContainerAppsAppInsights 'Microsoft.Insights/components@2020-02-02-prev
 
 resource ContainerAppsEnvironment 'Microsoft.Web/kubeEnvironments@2021-02-01' = {
   name: '${resourcePrefix}-${environmentName}-ctrapps'
-  location: location
+  location: containerAppLocation
   properties: {
     type: 'managed'
     internalLoadBalancerEnabled: false
