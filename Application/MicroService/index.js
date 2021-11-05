@@ -6,7 +6,7 @@ const port = 3000;
 app.use(cors());
 
 app.get("/resource", (req, res) => {
-  res.send({ name: "Graeme", pets: ["dog"] });
+  res.send({ name: "Graeme", pets: ["dog", "goldfish"] });
 });
 
 app.listen(port, () => {
