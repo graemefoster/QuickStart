@@ -52,7 +52,7 @@ jobs:
           creds: ${{ secrets.AZURE_CREDENTIALS }}
       - name: "Add az containerapp extension"
         run: az extension add --source https://workerappscliextension.blob.core.windows.net/azure-cli-extension/containerapp-0.2.0-py2.py3-none-any.whl -y
-      - name: "Activate new revision"
+      - name: "Dpeloy new revision to test"
         # Uses the az cli to update the latest revision of the container-app. This will direct all traffic to the new revision
         run: |
           az containerapp update \
@@ -78,20 +78,22 @@ jobs:
         run: |
           foo=$(echo "BAR")
           echo "$foo"
-          currentRevisionName=$(az containerapp show --name 'microservice-test' --resource-group '${{ secrets.RESOURCE_PREFIX }}-prod-rg' --query 'latestRevisionName' -o tsv | tr -d '\r')
-          echo "Latest revision in container-app is $(currentRevisionName)"
-          newRevisionFqdn=$(az containerapp update \
+          REVISION_NAME=$(az containerapp show --name 'microservice-test' --resource-group '${{ secrets.RESOURCE_PREFIX }}-prod-rg' --query 'latestRevisionName' -o tsv | tr -d '\r')
+          echo "Latest revision in containerapp is $(REVISION_NAME)"
+
+          NEW_REVISION_FQDN=$(az containerapp update \
             --name 'microservice-test' \
             --resource-group '${{ secrets.RESOURCE_PREFIX }}-prod-rg' \
             --image "ghcr.io/${{ github.actor }}/sample-microservice:${{github.run_number}}" \
-            --traffic-weight "latest=0,$(currentRevisionName)=100"
+            --traffic-weight "latest=0,$(REVISION_NAME)=100" \
             --query "latestRevisionFqdn" -o tsv | tr -d '\r')
 
-          echo "::set-output name=newRevisionFqdn::${newRevisionFqdn}"
-          echo "::set-output name=previousRevisionName::${currentRevisionName}"
-          echo "##vso[task.setvariable variable=newRevisionFqdn;isOutput=true]${newRevisionFqdn}"
-          echo "##vso[task.setvariable variable=previousRevisionName;isOutput=true]${currentRevisionName}"
-          echo "New revision can be tested at https://$(newRevisionFqdn)"
+          echo "::set-output name=newRevisionFqdn::${NEW_REVISION_FQDN}"
+          echo "::set-output name=previousRevisionName::${REVISION_NAME}"
+          echo "##vso[task.setvariable variable=newRevisionFqdn;isOutput=true]${NEW_REVISION_FQDN}"
+          echo "##vso[task.setvariable variable=previousRevisionName;isOutput=true]${REVISION_NAME}"
+          echo "New revision can be tested at https://$(NEW_REVISION_FQDN)"
+
     outputs:
       previousRevisionName: ${{ steps.deploy-new-revision.outputs.previousRevisionName }}
 
