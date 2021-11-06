@@ -82,7 +82,7 @@ jobs:
             --name 'microservice-prod' \
             --resource-group '${{ secrets.RESOURCE_PREFIX }}-prod-rg' \
             --image "ghcr.io/${{ github.actor }}/sample-microservice:${{github.run_number}}" \
-            --traffic-weight "latest=0,$(REVISION_NAME)=100" \
+            --traffic-weight "latest=0,${REVISION_NAME}=100" \
             --query "latestRevisionFqdn" -o tsv | tr -d '\r')
 
           echo "::set-output name=newRevisionFqdn::${NEW_REVISION_FQDN}"
