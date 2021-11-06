@@ -1,0 +1,116 @@
+name: ContainerApp
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "Application/MicroService/**"
+  pull_request:
+    paths:
+      - "Application/MicroService/**"
+    branches:
+      - main
+  workflow_dispatch:
+
+jobs:
+  package-app:
+    runs-on: ubuntu-latest
+
+    # Steps represent a sequence of tasks that will be executed as part of the job
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v1
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v1
+
+      - name: Login to Github Packages
+        uses: docker/login-action@v1
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build and push
+        id: docker_build
+        uses: docker/build-push-action@v2
+        with:
+          context: ./Application/MicroService/
+          push: true
+          tags: |
+            "ghcr.io/${{ github.actor }}/sample-microservice:latest"
+            "ghcr.io/${{ github.actor }}/sample-microservice:${{github.run_number}}"
+
+  deploy-to-test:
+    needs: package-app
+    runs-on: ubuntu-latest
+    environment: Test
+    steps:
+      - uses: azure/login@v1
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
+      - name: "Add az containerapp extension"
+        run: az extension add --source https://workerappscliextension.blob.core.windows.net/azure-cli-extension/containerapp-0.2.0-py2.py3-none-any.whl -y
+      - name: "Activate new revision"
+        # Uses the az cli to update the latest revision of the container-app. This will direct all traffic to the new revision
+        run: |
+          az containerapp update \
+            --name 'microservice-test' \
+            --resource-group '${{ secrets.RESOURCE_PREFIX }}-test-rg' \
+            --image "ghcr.io/${{ github.actor }}/sample-microservice:${{github.run_number}}"
+
+  deploy-to-production-green:
+    needs: deploy-to-test
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main'
+    environment: Production
+    steps:
+      - uses: azure/login@v1
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
+      - name: "Add az containerapp extension"
+        run: az extension add --source https://workerappscliextension.blob.core.windows.net/azure-cli-extension/containerapp-0.2.0-py2.py3-none-any.whl -y
+      - name: "Deploy new revision to production green slot"
+        id: "deploy-new-revision"
+        # Uses the az cli to update the latest revision of the container-app. 
+        # We need the name of the current revision so we can use it for the blue/green swap after happy testing
+        run: |
+          currentRevisionName=$(az containerapp show --name 'microservice-test' --resource-group '${{ secrets.RESOURCE_PREFIX }}-prod-rg' --query 'latestRevisionName' -o tsv | tr -d '\r')
+          echo "Latest revision in container-app is $(currentRevisionName)"
+          newRevisionFqdn=$(az containerapp update \
+            --name 'microservice-test' \
+            --resource-group '${{ secrets.RESOURCE_PREFIX }}-prod-rg' \
+            --image "ghcr.io/${{ github.actor }}/sample-microservice:${{github.run_number}}" \
+            --traffic-weight "latest=0,$(currentRevisionName)=100"
+            --query "latestRevisionFqdn" -o tsv | tr -d '\r')
+
+          echo "::set-output name=newRevisionFqdn::${newRevisionFqdn}"
+          echo "::set-output name=previousRevisionName::${currentRevisionName}"
+          echo "##vso[task.setvariable variable=newRevisionFqdn;isOutput=true]${newRevisionFqdn}"
+          echo "##vso[task.setvariable variable=previousRevisionName;isOutput=true]${currentRevisionName}"
+          echo "New revision can be tested at https://$(newRevisionFqdn)"
+    outputs:
+      previousRevisionName: ${{ steps.deploy-new-revision.outputs.previousRevisionName }}
+
+  deploy-to-production:
+    needs:
+      - deploy-to-production-green
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main'
+    environment: Production
+    steps:
+      - uses: azure/login@v1
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
+      - name: "Add az containerapp extension"
+        run: az extension add --source https://workerappscliextension.blob.core.windows.net/azure-cli-extension/containerapp-0.2.0-py2.py3-none-any.whl -y
+      - name: "Activate new revision"
+        # Change the weights so the new revision takes all the traffic and the previous none (a class blue/green switch)
+        run: |
+          az containerapp update \
+            --name 'microservice-test' \
+            --resource-group '${{ secrets.RESOURCE_PREFIX }}-prod-rg' \
+            --image "ghcr.io/${{ github.actor }}/sample-microservice:${{github.run_number}}" \
+            --traffic-weight "latest=100,${{ jobs.deploy-to-production-green.outputs.previousRevisionName }}=0"          
+      

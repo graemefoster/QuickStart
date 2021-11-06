@@ -15,6 +15,9 @@ param appHostname string
 @description('The full hostname of the app-service hosting the Web API')
 param apiHostname string
 
+@description('The fully qualified domain name of the container app hosting the entry micro-service')
+param containerAppFqdn string
+
 @description('The full hostname of the app-service hosting the SPA')
 param spaHostname string
 
@@ -76,6 +79,7 @@ module PostConfigureAppDeployment './configure-app.bicep' = {
     apiAadClientId: apiClientId
     appAppInsightsKey: appAppInsightsKey
     environmentName: environmentName
+    containerAppFqdn: containerAppFqdn
   }
 }
 
@@ -89,5 +93,6 @@ module PostConfigureSpaDeployment './configure-static-app.bicep' = {
     apiAadClientId: apiClientId
     appAppInsightsKey: appAppInsightsKey
     environmentName: environmentName
+    containerAppFqdn: containerAppFqdn
   }
 }

@@ -1,5 +1,6 @@
 import { useMsal } from "@azure/msal-react";
 import { spaConfig } from "../authConfig";
+import { MicroServiceCall } from "./MicroServiceCall";
 import { useState, useEffect } from "react";
 import { Container, Table } from "react-bootstrap";
 
@@ -54,6 +55,7 @@ export const ListPets = () => {
           ))}
         </tbody>
       </Table>
+      <MicroServiceCall />
     </Container>
   );
 };

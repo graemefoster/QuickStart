@@ -5,10 +5,12 @@ param environmentName string
 param hasSlot bool
 
 var databaseServerName = '${resourcePrefix}-${environmentName}-sqlserver'
+var location = resourceGroup().location
+var containerAppLocation = 'canadacentral'
 
 resource LogAnalyticsWorkspace 'Microsoft.OperationalInsights/workspaces@2021-06-01' = {
   name: '${resourcePrefix}-${environmentName}-loga'
-  location: resourceGroup().location
+  location: location
   properties: {
     sku: {
       name: 'PerGB2018'
@@ -21,7 +23,7 @@ resource LogAnalyticsWorkspace 'Microsoft.OperationalInsights/workspaces@2021-06
 
 resource QuickStartServerFarm 'Microsoft.Web/serverfarms@2021-01-15' = {
   name: '${resourcePrefix}-${environmentName}-asp'
-  location: resourceGroup().location
+  location: location
   sku: {
     name: hasSlot ? 'S1' : 'F1'
   }
@@ -45,9 +47,40 @@ resource AppServicePlanDiagnostics 'Microsoft.Insights/diagnosticSettings@2021-0
   }
 }
 
+resource ContainerAppsAppInsights 'Microsoft.Insights/components@2020-02-02-preview' = {
+  name: '${resourcePrefix}-${environmentName}-ctrapps-appi'
+  location: location
+  kind: 'web'
+  properties: { 
+    Application_Type: 'web'
+    Flow_Type: 'Bluefield'
+    Request_Source: 'rest'
+  }
+}
+
+resource ContainerAppsEnvironment 'Microsoft.Web/kubeEnvironments@2021-02-01' = {
+  name: '${resourcePrefix}-${environmentName}-ctrapps'
+  location: containerAppLocation
+  properties: {
+    type: 'managed'
+    internalLoadBalancerEnabled: false
+    appLogsConfiguration: {
+      destination: 'log-analytics'
+      logAnalyticsConfiguration: {
+        customerId: LogAnalyticsWorkspace.properties.customerId
+        sharedKey: LogAnalyticsWorkspace.listKeys().primarySharedKey
+      }
+    }
+    containerAppsConfiguration: {
+      daprAIInstrumentationKey: ContainerAppsAppInsights.properties.InstrumentationKey
+    }
+  }
+}
+
+
 resource SqlDatabaseServer 'Microsoft.Sql/servers@2021-02-01-preview' = {
   name: databaseServerName
-  location: resourceGroup().location
+  location: location
   properties: {
     minimalTlsVersion: '1.2'
     administrators: {
@@ -73,3 +106,4 @@ resource SqlFirewallAllowAzureServices 'Microsoft.Sql/servers/firewallRules@2021
 output serverFarmId string = QuickStartServerFarm.id
 output databaseServerName string = databaseServerName
 output logAnalyticsWorkspaceId string = LogAnalyticsWorkspace.id
+output containerEnvironmentId string = ContainerAppsEnvironment.id

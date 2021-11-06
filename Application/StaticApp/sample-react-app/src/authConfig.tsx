@@ -6,6 +6,7 @@
 import { Configuration, LogLevel } from "@azure/msal-browser";
 
 type ApiConfig = {
+  MicroServiceUrl: string;
   BaseUrl: string;
   Scopes: [string];
 };
