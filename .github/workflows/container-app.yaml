@@ -53,6 +53,7 @@ jobs:
       - name: "Add az containerapp extension"
         run: az extension add --source https://workerappscliextension.blob.core.windows.net/azure-cli-extension/containerapp-0.2.0-py2.py3-none-any.whl -y
       - name: "Activate new revision"
+        # Uses the az cli to update the latest revision of the container-app. This will direct all traffic to the new revision
         run: |
           az containerapp update \
             --name 'microservice-test' \
@@ -70,13 +71,28 @@ jobs:
           creds: ${{ secrets.AZURE_CREDENTIALS }}
       - name: "Add az containerapp extension"
         run: az extension add --source https://workerappscliextension.blob.core.windows.net/azure-cli-extension/containerapp-0.2.0-py2.py3-none-any.whl -y
-      - name: "Activate new revision"
+      - name: "Deploy new revision to production green slot"
+        id: "deploy-new-revision"
+        # Uses the az cli to update the latest revision of the container-app. 
+        # We need the name of the current revision so we can use it for the blue/green swap after happy testing
         run: |
-          az containerapp update \
+          currentRevisionName=$(az containerapp show --name 'microservice-test' --resource-group '${{ secrets.RESOURCE_PREFIX }}-prod-rg' --query 'latestRevisionName' -o tsv | tr -d '\r')
+          echo "Latest revision in container-app is $(currentRevisionName)"
+          newRevisionFqdn=$(az containerapp update \
             --name 'microservice-test' \
             --resource-group '${{ secrets.RESOURCE_PREFIX }}-prod-rg' \
-            --image "ghcr.io/${{ github.actor }}/sample-microservice:${{github.run_number}}"
-            
+            --image "ghcr.io/${{ github.actor }}/sample-microservice:${{github.run_number}}" \
+            --traffic-weight "latest=0,$(currentRevisionName)=100"
+            --query "latestRevisionFqdn" -o tsv | tr -d '\r')
+
+          echo "::set-output name=newRevisionFqdn::${newRevisionFqdn}"
+          echo "::set-output name=previousRevisionName::${currentRevisionName}"
+          echo "##vso[task.setvariable variable=newRevisionFqdn;isOutput=true]${newRevisionFqdn}"
+          echo "##vso[task.setvariable variable=previousRevisionName;isOutput=true]${currentRevisionName}"
+          echo "New revision can be tested at https://$(newRevisionFqdn)"
+    outputs:
+      previousRevisionName: ${{ steps.deploy-new-revision.outputs.previousRevisionName }}
+
   deploy-to-production:
     needs:
       - deploy-to-production-green
@@ -90,9 +106,11 @@ jobs:
       - name: "Add az containerapp extension"
         run: az extension add --source https://workerappscliextension.blob.core.windows.net/azure-cli-extension/containerapp-0.2.0-py2.py3-none-any.whl -y
       - name: "Activate new revision"
+        # Change the weights so the new revision takes all the traffic and the previous none (a class blue/green switch)
         run: |
-          az containerapp activate  \
+          az containerapp update \
             --name 'microservice-test' \
             --resource-group '${{ secrets.RESOURCE_PREFIX }}-prod-rg' \
-            --image "ghcr.io/${{ github.actor }}/sample-microservice:${{github.run_number}}"
+            --image "ghcr.io/${{ github.actor }}/sample-microservice:${{github.run_number}}" \
+            --traffic-weight "latest=100,${{ jobs.deploy-to-production-green.outputs.previousRevisionName }}=0"          
       
