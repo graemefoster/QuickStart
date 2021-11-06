@@ -89,7 +89,7 @@ jobs:
           echo "::set-output name=previousRevisionName::${REVISION_NAME}"
           echo "##vso[task.setvariable variable=newRevisionFqdn;isOutput=true]${NEW_REVISION_FQDN}"
           echo "##vso[task.setvariable variable=previousRevisionName;isOutput=true]${REVISION_NAME}"
-          echo "New revision can be tested at https://$(NEW_REVISION_FQDN)"
+          echo "New revision can be tested at https://${NEW_REVISION_FQDN}"
 
     outputs:
       previousRevisionName: ${{ steps.deploy-new-revision.outputs.previousRevisionName }}
