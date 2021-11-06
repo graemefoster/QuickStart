@@ -76,6 +76,8 @@ jobs:
         # Uses the az cli to update the latest revision of the container-app. 
         # We need the name of the current revision so we can use it for the blue/green swap after happy testing
         run: |
+          FOO='bar'
+          echo "$FOO is FOO"
           echo "Fetching latest revision"
           az containerapp show --name 'microservice-test' --resource-group '${{ secrets.RESOURCE_PREFIX }}-prod-rg' --query 'latestRevisionName' -o tsv | tr -d '\r'
           CURRENT_REVISION_NAME=$(az containerapp show --name 'microservice-test' --resource-group '${{ secrets.RESOURCE_PREFIX }}-prod-rg' --query 'latestRevisionName' -o tsv | tr -d '\r')
