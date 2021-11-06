@@ -112,5 +112,5 @@ jobs:
           az containerapp update \
             --name 'microservice-prod' \
             --resource-group '${{ secrets.RESOURCE_PREFIX }}-prod-rg' \
-            --traffic-weight "latest=100,${{ needs.jobs.deploy-to-production-green.outputs.previousRevisionName }}=0"          
+            --traffic-weight "latest=100,${{ needs.deploy-to-production-green.outputs.previousRevisionName }}=0"          
       
