@@ -88,7 +88,7 @@ module ContainerAppDeployment './deploy-container-app.bicep' = {
   name: 'DeployContainerApp'
   scope: resourceGroup
   params: {
-    containerAppName: 'microservice-test'
+    containerAppName: 'microservice-${environmentName}'
     //not ideal but I don't have a built image at this point so need something to get it moving
     containerImage: 'ghcr.io/graemefoster/sample-microservice:latest'
     environmentId: containerEnvironmentId
