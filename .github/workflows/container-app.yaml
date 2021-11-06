@@ -55,9 +55,6 @@ jobs:
       - name: "Dpeloy new revision to test"
         # Uses the az cli to update the latest revision of the container-app. This will direct all traffic to the new revision
         run: |
-          foo=$(echo '${{ secrets.RESOURCE_PREFIX }}-prod-rg')
-          echo "$foo"
-
           az containerapp update \
             --name 'microservice-test' \
             --resource-group '${{ secrets.RESOURCE_PREFIX }}-test-rg' \
@@ -80,8 +77,7 @@ jobs:
         # We need the name of the current revision so we can use it for the blue/green swap after happy testing
         run: |
           REVISION_NAME=$(az containerapp show --name 'microservice-test' --resource-group '${{ secrets.RESOURCE_PREFIX }}-prod-rg' --query 'latestRevisionName' -o tsv | tr -d '\r')
-          echo "Latest revision in containerapp is $(REVISION_NAME)"
-
+          echo "Latest revision in containerapp is ${REVISION_NAME}"
           NEW_REVISION_FQDN=$(az containerapp update \
             --name 'microservice-test' \
             --resource-group '${{ secrets.RESOURCE_PREFIX }}-prod-rg' \
