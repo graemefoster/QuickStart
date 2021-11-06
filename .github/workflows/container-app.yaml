@@ -80,7 +80,7 @@ jobs:
           echo "$FOO is FOO"
           echo "Fetching latest revision"
           az containerapp show --name 'microservice-test' --resource-group '${{ secrets.RESOURCE_PREFIX }}-prod-rg' --query 'latestRevisionName' -o tsv | tr -d '\r'
-          CURRENT_REVISION_NAME=$(az containerapp show --name 'microservice-test' --resource-group '${{ secrets.RESOURCE_PREFIX }}-prod-rg' --query 'latestRevisionName' -o tsv | tr -d '\r')
+          CURRENT_REVISION_NAME="$(az containerapp show --name 'microservice-test' --resource-group '${{ secrets.RESOURCE_PREFIX }}-prod-rg' --query 'latestRevisionName' -o tsv | tr -d '\r')"
           echo "Latest revision in containerapp is $(CURRENT_REVISION_NAME)"
 
           NEW_REVISION_FQDN=$(az containerapp update \
