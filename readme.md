@@ -17,6 +17,8 @@ QuickStart tries to do that for a simple scenario:
  
  The aim is to not just create the resources, but wire them up securely, and provide sample blue / greeen deployment pipelines against a variety of CI / CD systems.
 
+![Deployed resources in Azure](/QuickStart.png "Azure Deployment")
+
 # Supported CI / CD platforms
 | CI / CD | Status|
 |---|---| 

@@ -112,6 +112,5 @@ jobs:
           az containerapp update \
             --name 'microservice-prod' \
             --resource-group '${{ secrets.RESOURCE_PREFIX }}-prod-rg' \
-            --image "ghcr.io/${{ github.actor }}/sample-microservice:${{github.run_number}}" \
             --traffic-weight "latest=100,${{ needs.jobs.deploy-to-production-green.outputs.previousRevisionName }}=0"          
       
