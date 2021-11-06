@@ -77,8 +77,9 @@ jobs:
         # We need the name of the current revision so we can use it for the blue/green swap after happy testing
         run: |
           echo "Fetching latest revision"
+          az containerapp show --name 'microservice-test' --resource-group '${{ secrets.RESOURCE_PREFIX }}-prod-rg' --query 'latestRevisionName' -o tsv | tr -d '\r'
           CURRENT_REVISION_NAME=$(az containerapp show --name 'microservice-test' --resource-group '${{ secrets.RESOURCE_PREFIX }}-prod-rg' --query 'latestRevisionName' -o tsv | tr -d '\r')
-          echo "Latest revision in container-app is $(CURRENT_REVISION_NAME)"
+          echo "Latest revision in containerapp is $(CURRENT_REVISION_NAME)"
 
           NEW_REVISION_FQDN=$(az containerapp update \
             --name 'microservice-test' \
