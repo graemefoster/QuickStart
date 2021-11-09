@@ -4,7 +4,7 @@
         "auth": {
             "clientId": "<%= Environment.GetEnvironmentVariable("AzureAD__ClientId") %>",
             "authority": "https://login.microsoftonline.com/49f24cca-11a6-424d-b2e2-0650053986cc",
-            "redirectUri": "https://<%= Environment.GetEnvironmentVariable("WEBSITE_HOSTNAME") %>/"
+            "redirectUri": "https://<%= Request.Url.Host %>/"
         },
         "cache": {
             "cacheLocation": "sessionStorage",
