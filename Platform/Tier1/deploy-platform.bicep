@@ -1,9 +1,11 @@
 param resourcePrefix string
+param apimPublishedEmail string
 param databaseAdministratorName string
 param databaseAdministratorObjectId string
 param environmentName string
 param hasSlot bool
 
+var apimName = '${resourcePrefix}-${environmentName}-apim'
 var databaseServerName = '${resourcePrefix}-${environmentName}-sqlserver'
 var location = resourceGroup().location
 var containerAppLocation = 'canadacentral'
@@ -103,7 +105,21 @@ resource SqlFirewallAllowAzureServices 'Microsoft.Sql/servers/firewallRules@2021
   }
 }
 
+resource Apim 'Microsoft.ApiManagement/service@2021-04-01-preview' = {
+  location: location
+  name: apimName
+  sku: {
+    capacity:0
+    name: 'Consumption'
+  }
+  properties: {
+    publisherEmail: apimPublishedEmail
+    publisherName: 'ApimPublisher'
+  }
+}
+
 output serverFarmId string = QuickStartServerFarm.id
 output databaseServerName string = databaseServerName
 output logAnalyticsWorkspaceId string = LogAnalyticsWorkspace.id
 output containerEnvironmentId string = ContainerAppsEnvironment.id
+output apimId string = Apim.id

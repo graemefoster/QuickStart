@@ -13,6 +13,9 @@ param databaseAdministratorObjectId string
 @description('Used to construct app / api / keyvault names. Suggestions include test, prod, nonprod')
 param environmentName string
 
+@description('Publisher email used for the apim service')
+param apimPublisherEmail string
+
 var hasSlot = environmentName != 'test'
 
 var platformRgName = '${resourcePrefix}-platform-${environmentName}-rg'
@@ -22,7 +25,7 @@ resource platformResourceGroup 'Microsoft.Resources/resourceGroups@2021-04-01' =
   location: deployment().location
 }
 
-module PlatformDeployment './deploy-platform.bicep' = {
+module PlatformDeployment './Tier1/deploy-platform.bicep' = {
   name: 'DeployPlatform'
   scope: platformResourceGroup
   params: {
@@ -31,6 +34,7 @@ module PlatformDeployment './deploy-platform.bicep' = {
     databaseAdministratorObjectId: databaseAdministratorObjectId
     environmentName: environmentName
     hasSlot: hasSlot
+    apimPublishedEmail: apimPublisherEmail
   }
 }
 

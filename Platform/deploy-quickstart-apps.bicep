@@ -38,7 +38,7 @@ resource resourceGroup 'Microsoft.Resources/resourceGroups@2021-04-01' = {
 // Databases need to live in the same resource group as the server. We could push the server into the API RG
 // but its quite common to use a sql server pool, and have many databases for different apis / apps contained in it.
 // For this Quickstart the approach taken is to keep the server in the platform, and put the databases with it.
-module DatabaseDeployment './deploy-api-database.bicep' = {
+module DatabaseDeployment './Tier2/deploy-api-database.bicep' = {
   name: 'DeployDatabase'
   scope: platformResourceGroup
   params: {
@@ -49,7 +49,7 @@ module DatabaseDeployment './deploy-api-database.bicep' = {
   }
 }
 
-module WebApiDeployment './deploy-api.bicep' = {
+module WebApiDeployment './Tier2/deploy-api.bicep' = {
   name: 'DeployApi'
   scope: resourceGroup
   params: {
@@ -61,7 +61,7 @@ module WebApiDeployment './deploy-api.bicep' = {
   }
 }
 
-module WebAppDeployment './deploy-app.bicep' = {
+module WebAppDeployment './Tier2/deploy-app.bicep' = {
   name: 'DeployApp'
   scope: resourceGroup
   params: {
@@ -73,7 +73,7 @@ module WebAppDeployment './deploy-app.bicep' = {
   }
 }
 
-module StaticAppDeployment './deploy-static-app.bicep' = {
+module StaticAppDeployment './Tier2/deploy-static-app.bicep' = {
   name: 'DeployStaticApp'
   scope: resourceGroup
   params: {
@@ -84,7 +84,7 @@ module StaticAppDeployment './deploy-static-app.bicep' = {
   }
 }
 
-module ContainerAppDeployment './deploy-container-app.bicep' = {
+module ContainerAppDeployment './Tier2/deploy-container-app.bicep' = {
   name: 'DeployContainerApp'
   scope: resourceGroup
   params: {
