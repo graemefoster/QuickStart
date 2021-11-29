@@ -51,7 +51,7 @@ resource resourceGroup 'Microsoft.Resources/resourceGroups@2021-04-01' = {
   location: deployment().location
 }
 
-module PostConfigureApiDeployment './configure-api.bicep' = {
+module PostConfigureApiDeployment './Tier2/configure-api.bicep' = {
   name: 'PostConfigureApiDeployment'
   scope: resourceGroup
   params: {
@@ -67,7 +67,7 @@ module PostConfigureApiDeployment './configure-api.bicep' = {
   }
 }
 
-module PostConfigureAppDeployment './configure-app.bicep' = {
+module PostConfigureAppDeployment './Tier2/configure-app.bicep' = {
   name: 'PostConfigureAppDeployment'
   scope: resourceGroup
   params: {
@@ -83,7 +83,7 @@ module PostConfigureAppDeployment './configure-app.bicep' = {
   }
 }
 
-module PostConfigureSpaDeployment './configure-static-app.bicep' = {
+module PostConfigureSpaDeployment './Tier2/configure-static-app.bicep' = {
   name: 'PostConfigureSpaDeployment'
   scope: resourceGroup
   params: {
