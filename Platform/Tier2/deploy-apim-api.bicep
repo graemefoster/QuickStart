@@ -14,6 +14,7 @@ resource Api 'Microsoft.ApiManagement/service/apis@2021-04-01-preview' = {
     apiType: 'http'
     description: 'Sample Api backed by app-service'
     subscriptionRequired: true
+    displayName: 'SampleApi'
   }
 }
 
