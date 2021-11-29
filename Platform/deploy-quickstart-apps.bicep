@@ -55,7 +55,7 @@ module WebApiDeployment './Tier2/deploy-api.bicep' = {
   params: {
     resourcePrefix: resourcePrefix
     serverFarmId: serverFarmId
-    environmentName : environmentName
+    environmentName: environmentName
     logAnalyticsWorkspaceId: logAnalyticsWorkspaceId
     deploySlot: hasSlot
   }
@@ -63,10 +63,11 @@ module WebApiDeployment './Tier2/deploy-api.bicep' = {
 
 module ApimApiDeployment './Tier2/deploy-apim-api.bicep' = {
   name: 'DeployApimApi'
-  scope: resourceGroup
+  scope: platformResourceGroup
   params: {
     resourcePrefix: resourcePrefix
-    environmentName : environmentName
+    environmentName: environmentName
+    logAnalyticsWorkspaceId: logAnalyticsWorkspaceId
   }
 }
 
