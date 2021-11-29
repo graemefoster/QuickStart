@@ -87,6 +87,7 @@ resource WebApiGreen 'Microsoft.Web/sites/slots@2021-01-15' = if(deploySlot) {
   }
 }
 
+
 output apiHostname string = apiHostname
 output managedIdentityName string = ManagedIdentity.name
 output managedIdentityAppId string = ManagedIdentity.properties.clientId

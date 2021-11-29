@@ -61,6 +61,15 @@ module WebApiDeployment './Tier2/deploy-api.bicep' = {
   }
 }
 
+module ApimApiDeployment './Tier2/deploy-apim-api.bicep' = {
+  name: 'DeployApimApi'
+  scope: resourceGroup
+  params: {
+    resourcePrefix: resourcePrefix
+    environmentName : environmentName
+  }
+}
+
 module WebAppDeployment './Tier2/deploy-app.bicep' = {
   name: 'DeployApp'
   scope: resourceGroup
