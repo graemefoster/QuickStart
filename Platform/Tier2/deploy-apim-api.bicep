@@ -4,7 +4,7 @@ param logAnalyticsWorkspaceId string
 
 var apimServiceName = '${resourcePrefix}-${environmentName}-apim'
 
-resource ApimApiInsights 'Microsoft.Insights/components@2020-02-02' = {
+resource ApimApiAppInsights 'Microsoft.Insights/components@2020-02-02' = {
   name: '${apimServiceName}-sampleapi-appi'
   location: resourceGroup().location
   kind: 'Api'
@@ -18,9 +18,9 @@ resource ApiAppInsights 'Microsoft.ApiManagement/service/loggers@2021-04-01-prev
   name: '${apimServiceName}/sample-api-logger'
   properties: {
     loggerType: 'applicationInsights'
-    resourceId: ApimApiInsights.id
+    resourceId: ApimApiAppInsights.id
     credentials: {
-      instrumentationKey: ApimApiInsights.properties.InstrumentationKey
+      instrumentationKey: ApimApiAppInsights.properties.InstrumentationKey
     }
   }
 }
@@ -41,7 +41,7 @@ resource Api 'Microsoft.ApiManagement/service/apis@2021-04-01-preview' = {
   resource ApiAppInsightsLogging 'diagnostics@2021-04-01-preview' = {
     name: 'applicationInsights'
     properties: {
-      loggerId: ApimApiInsights.id
+      loggerId: ApiAppInsights.id
       httpCorrelationProtocol: 'W3C'
     }
   }
