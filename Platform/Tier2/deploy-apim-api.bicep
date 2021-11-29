@@ -36,5 +36,8 @@ resource ApiAppInsights 'Microsoft.ApiManagement/service/loggers@2021-04-01-prev
   properties: {
     loggerType: 'applicationInsights'
     resourceId: ApimApiInsights.id
+    credentials: {
+      instrumentationKey: ApimApiInsights.properties.InstrumentationKey
+    }
   }
 }
