@@ -37,7 +37,7 @@ resource Api 'Microsoft.ApiManagement/service/apis@2021-04-01-preview' = {
     description: 'Sample Api backed by app-service'
     subscriptionRequired: true
     displayName: 'SampleApi'
-    serviceUrl: 'https://${webApiHostname}/api/'
+    serviceUrl: 'https://${webApiHostname}/'
   }
 
   resource ApiOperation 'operations@2021-04-01-preview' = {
@@ -45,7 +45,7 @@ resource Api 'Microsoft.ApiManagement/service/apis@2021-04-01-preview' = {
     properties: {
       displayName: 'Get Pets'
       method: 'GET'
-      urlTemplate: ''
+      urlTemplate: '/pets'
     }
   }
 
