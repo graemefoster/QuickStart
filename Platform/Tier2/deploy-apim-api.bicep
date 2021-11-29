@@ -1,6 +1,7 @@
 param resourcePrefix string
 param environmentName string
 param logAnalyticsWorkspaceId string
+param webApiHostname string
 
 var apimServiceName = '${resourcePrefix}-${environmentName}-apim'
 
@@ -36,6 +37,16 @@ resource Api 'Microsoft.ApiManagement/service/apis@2021-04-01-preview' = {
     description: 'Sample Api backed by app-service'
     subscriptionRequired: true
     displayName: 'SampleApi'
+    serviceUrl: 'https://${webApiHostname}/api/'
+  }
+
+  resource ApiOperation 'operations@2021-04-01-preview' = {
+    name: 'GetPets'
+    properties: {
+      displayName: 'Get Pets'
+      method: 'GET'
+      urlTemplate: ''
+    }
   }
 
   resource ApiAppInsightsLogging 'diagnostics@2021-04-01-preview' = {

@@ -68,6 +68,7 @@ module ApimApiDeployment './Tier2/deploy-apim-api.bicep' = {
     resourcePrefix: resourcePrefix
     environmentName: environmentName
     logAnalyticsWorkspaceId: logAnalyticsWorkspaceId
+    webApiHostname: WebApiDeployment.outputs.apiHostname
   }
 }
 
