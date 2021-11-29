@@ -39,7 +39,7 @@ resource Api 'Microsoft.ApiManagement/service/apis@2021-04-01-preview' = {
   }
 
   resource ApiAppInsightsLogging 'diagnostics@2021-04-01-preview' = {
-    name: 'applicationInsights'
+    name: 'applicationinsights'
     properties: {
       loggerId: ApiAppInsights.id
       httpCorrelationProtocol: 'W3C'
