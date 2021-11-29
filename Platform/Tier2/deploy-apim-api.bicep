@@ -6,6 +6,15 @@ var apimServiceName = '${resourcePrefix}-${environmentName}-apim'
 
 resource Api 'Microsoft.ApiManagement/service/apis@2021-04-01-preview' = {
   name: '${apimServiceName}/SampleApi'
+  properties: {
+    protocols: [
+      'https'
+    ]
+    path: 'SampleApi'
+    apiType: 'http'
+    description: 'Sample Api backed by app-service'
+    subscriptionRequired: true
+  }
 }
 
 resource ApimApiInsights 'Microsoft.Insights/components@2020-02-02' = {
