@@ -15,6 +15,9 @@ param appHostname string
 @description('The full hostname of the api-management service fronting the API')
 param apimHostname string
 
+@description('Subscription key to the pets api product')
+param productSubscriptionKey string
+
 @description('The full hostname of the app-service hosting the Web API')
 param apiHostname string
 
@@ -75,6 +78,7 @@ module PostConfigureAppDeployment './Tier2/configure-app.bicep' = {
   scope: resourceGroup
   params: {
     apiHostname: apimHostname
+    productSubscriptionKey: productSubscriptionKey
     appAadClientId: appClientId
     appClientSecret: appClientSecret
     appHostname: appHostname
@@ -91,6 +95,7 @@ module PostConfigureSpaDeployment './Tier2/configure-static-app.bicep' = {
   scope: resourceGroup
   params: {
     apiHostname: apimHostname
+    productSubscriptionKey: productSubscriptionKey
     appAadClientId: appClientId
     spaHostname: spaHostname
     apiAadClientId: apiClientId

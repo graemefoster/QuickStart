@@ -16,7 +16,11 @@ export const MicroServiceCall = () => {
       setFetchResource(false);
 
       spaConfig
-        .then((config) => fetch(`${config.apiConfig.MicroServiceUrl}resource`))
+        .then((config) => fetch(`${config.apiConfig.MicroServiceUrl}resource`, {
+          headers: {
+            'Ocp-Apim-Subscription-Key' : config.apiConfig.SubscriptionKey
+          }
+        }))
         .then((r) => r.json())
         .then((o) => setResource(o));
     }

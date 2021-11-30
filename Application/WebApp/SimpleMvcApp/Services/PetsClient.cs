@@ -39,6 +39,7 @@ namespace SimpleMvcApp.Services
             var token = await _tokenAcquisition.GetAccessTokenForUserAsync(new[] { _settings.Value.Scope });
             var req = new HttpRequestMessage(HttpMethod.Get, "pets");
             req.Headers.Authorization = new AuthenticationHeaderValue("Bearer", token);
+            req.Headers.Add("Ocp-Apim-Subscription-Key", _settings.Value.SubscriptionKey);
             return await _client.SendAsync(req).AsJsonAsync<ReferenceItem[]>();
         }
 
@@ -49,6 +50,7 @@ namespace SimpleMvcApp.Services
             var req = new HttpRequestMessage(HttpMethod.Post, "pets");
             req.Content = new StringContent(JsonSerializer.Serialize(newPetCommand), Encoding.UTF8, "application/json");
             req.Headers.Authorization = new AuthenticationHeaderValue("Bearer", token);
+            req.Headers.Add("Ocp-Apim-Subscription-Key", _settings.Value.SubscriptionKey);
             await _client.SendAsync(req);
         }
     }

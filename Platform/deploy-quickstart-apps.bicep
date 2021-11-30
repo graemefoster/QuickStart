@@ -118,3 +118,4 @@ output managedIdentityAppId string = WebApiDeployment.outputs.managedIdentityApp
 output managedIdentityName string = WebApiDeployment.outputs.managedIdentityName
 output apiAppInsightsKey string = WebApiDeployment.outputs.appInsightsKey
 output appAppInsightsKey string = WebAppDeployment.outputs.appInsightsKey
+output productSubscriptionKey string = ApimApiDeployment.outputs.productSubscriptionKey
