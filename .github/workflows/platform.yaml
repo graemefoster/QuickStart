@@ -114,6 +114,7 @@ jobs:
             apiAppInsightsKey=${{ steps.appsDeploy.outputs.apiAppInsightsKey }}
             appAppInsightsKey=${{ steps.appsDeploy.outputs.appAppInsightsKey }}
             apimHostname=${{ steps.appsDeploy.outputs.apimHostname }}
+            productSubscriptionKey=${{ steps.appsDeploy.outputs.productSubscriptionKey }}
             environmentName=test
           failOnStdErr: true
 
@@ -236,6 +237,7 @@ jobs:
             appClientSecret=${{ steps.setup-prod-aad.outputs.applicationClientSecret }}
             apiAppInsightsKey=${{ steps.appsDeploy.outputs.apiAppInsightsKey }}
             appAppInsightsKey=${{ steps.appsDeploy.outputs.appAppInsightsKey }}
+            productSubscriptionKey=${{ steps.appsDeploy.outputs.productSubscriptionKey }}
             environmentName=prod
           failOnStdErr: true
 
