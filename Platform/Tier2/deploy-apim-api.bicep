@@ -67,10 +67,10 @@ resource PetsApiProduct 'Microsoft.ApiManagement/service/products@2021-04-01-pre
     subscriptionRequired: true
     state: 'published'
   }
+}
 
-  resource PetsApi 'apis@2021-04-01-preview' = {
-    name: Api.id
-  }
+resource PetsApi 'Microsoft.ApiManagement/service/products/apis@2021-04-01-preview' = {
+  name: '${apimServiceName}/PetsProduct/${Api.id}'
 }
 
 resource PetsApiSubscription 'Microsoft.ApiManagement/service/subscriptions@2021-04-01-preview' = {
