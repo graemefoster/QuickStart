@@ -16,6 +16,7 @@ param appHostname string
 param apimHostname string
 
 @description('Subscription key to the pets api product')
+@secure()
 param productSubscriptionKey string
 
 @description('The full hostname of the app-service hosting the Web API')

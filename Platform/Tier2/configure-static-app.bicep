@@ -5,6 +5,8 @@ param apiAadClientId string
 param environmentName string
 param appAppInsightsKey string
 param containerAppFqdn string
+
+@secure()
 param productSubscriptionKey string
 
 var hasSlot = environmentName != 'test'
