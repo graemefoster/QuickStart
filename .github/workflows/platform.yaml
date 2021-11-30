@@ -113,6 +113,7 @@ jobs:
             appClientSecret=${{ steps.setup-test-aad.outputs.applicationClientSecret }}
             apiAppInsightsKey=${{ steps.appsDeploy.outputs.apiAppInsightsKey }}
             appAppInsightsKey=${{ steps.appsDeploy.outputs.appAppInsightsKey }}
+            spaAppInsightsKey=${{ steps.appsDeploy.outputs.spaAppInsightsKey }}
             apimHostname=${{ steps.platformDeploy.outputs.apimHostname }}
             productSubscriptionKey=${{ steps.appsDeploy.outputs.productSubscriptionKey }}
             environmentName=test
@@ -237,6 +238,7 @@ jobs:
             appClientSecret=${{ steps.setup-prod-aad.outputs.applicationClientSecret }}
             apiAppInsightsKey=${{ steps.appsDeploy.outputs.apiAppInsightsKey }}
             appAppInsightsKey=${{ steps.appsDeploy.outputs.appAppInsightsKey }}
+            spaAppInsightsKey=${{ steps.appsDeploy.outputs.spaAppInsightsKey }}
             apimHostname=${{ steps.platformDeploy.outputs.apimHostname }}
             productSubscriptionKey=${{ steps.appsDeploy.outputs.productSubscriptionKey }}
             environmentName=prod

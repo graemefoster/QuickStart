@@ -81,6 +81,7 @@ module StaticAppDeployment './Tier2/deploy-static-app.bicep' = {
     resourcePrefix: resourcePrefix
     serverFarmId: serverFarmId
     environmentName: environmentName
+    logAnalyticsWorkspaceId: logAnalyticsWorkspaceId
     deploySlot: hasSlot
   }
 }

@@ -46,6 +46,9 @@ param apiAppInsightsKey string
 @description('The App Insights Key for the API')
 param appAppInsightsKey string
 
+@description('The App Insights Key for the SPA')
+param spaAppInsightsKey string
+
 @description('The environment being configured')
 param environmentName string
 
@@ -100,7 +103,7 @@ module PostConfigureSpaDeployment './Tier2/configure-static-app.bicep' = {
     appAadClientId: appClientId
     spaHostname: spaHostname
     apiAadClientId: apiClientId
-    appAppInsightsKey: appAppInsightsKey
+    appAppInsightsKey: spaAppInsightsKey
     environmentName: environmentName
     containerAppFqdn: containerAppFqdn
   }
