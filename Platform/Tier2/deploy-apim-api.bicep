@@ -58,3 +58,22 @@ resource Api 'Microsoft.ApiManagement/service/apis@2021-04-01-preview' = {
     }
   }
 }
+
+resource PetsApiProduct 'Microsoft.ApiManagement/service/products@2021-04-01-preview' = {
+  name: '${apimServiceName}/PetsProduct'
+  properties: {
+    displayName: 'Access to the pets product'
+    approvalRequired: true
+    subscriptionRequired: true
+    state: 'published'
+  }
+}
+
+resource PetsApiSubscription 'Microsoft.ApiManagement/service/subscriptions@2021-04-01-preview' = {
+  name: '${apimServiceName}/PetsSubscription'
+  properties: {
+    displayName: 'Pets Subscription'
+    scope: '/products/${PetsApiProduct.id}'
+  }
+}
+
