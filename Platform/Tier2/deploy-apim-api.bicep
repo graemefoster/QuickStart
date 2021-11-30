@@ -80,3 +80,5 @@ resource PetsApiSubscription 'Microsoft.ApiManagement/service/subscriptions@2021
     scope: '/products/${PetsApiProduct.id}'
   }
 }
+
+output productSubscriptionKey string = PetsApiSubscription.properties.primaryKey
