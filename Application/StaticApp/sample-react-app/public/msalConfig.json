@@ -11,6 +11,7 @@
         }
     },
     "apiConfig": {
+        "AppInsightsKey" : "",
         "MicroServiceUrl": "http://localhost:3000/",
         "BaseUrl": "https://api.sampleapp.localtest.me:4431/",
         "SubscriptionKey" : "",

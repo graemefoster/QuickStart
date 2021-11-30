@@ -1,13 +1,15 @@
 import { spaConfig } from "../authConfig";
 import { useState, useEffect } from "react";
 import { Container } from "react-bootstrap";
+import { withAITracking } from '@microsoft/applicationinsights-react-js';
+import { reactPlugin } from '../appInsights';
 
 type Resource = {
   name: string;
   pets: [];
 };
 
-export const MicroServiceCall = () => {
+const MicroServiceCall = () => {
   const [fetchResource, setFetchResource] = useState<Boolean>(true);
   const [resource, setResource] = useState<Resource>();
 
@@ -29,3 +31,5 @@ export const MicroServiceCall = () => {
     </Container>
   );
 };
+
+export default withAITracking(reactPlugin, MicroServiceCall)
