@@ -39,7 +39,15 @@ resource Api 'Microsoft.ApiManagement/service/apis@2021-04-01-preview' = {
     description: 'Pets Api backed by app-service'
     subscriptionRequired: true
     displayName: 'PetsApi'
-    serviceUrl: 'https://${apiName}.azurewebsites.net/'
+    serviceUrl: 'https://${apiName}.azurewebsites.net/pets'
+  }
+
+  resource CorsPolicy 'policies@2021-04-01-preview' = {
+    name: 'policy'
+    properties: {
+      format: 'xml'
+      value: '<policies><inbound><cors><allowed-origins><origin>*</origin></allowed-origins><allowed-methods><method>GET</method><method>POST</method></allowed-methods><allowed-headers><header>authorization</header></allowed-headers</cors></inbound><backend<forward-request /></backend><outbound /><on-error /></policies>'
+    }
   }
 
   resource ApiOperation 'operations@2021-04-01-preview' = {
