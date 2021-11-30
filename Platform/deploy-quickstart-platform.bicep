@@ -43,3 +43,4 @@ output serverFarmId string = PlatformDeployment.outputs.serverFarmId
 output databaseServerName string = PlatformDeployment.outputs.databaseServerName
 output logAnalyticsWorkspaceId string = PlatformDeployment.outputs.logAnalyticsWorkspaceId
 output containerEnvironmentId string = PlatformDeployment.outputs.containerEnvironmentId
+output apimHostname string = PlatformDeployment.outputs.apimHostname
