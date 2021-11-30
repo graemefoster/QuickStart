@@ -1,14 +1,14 @@
 param resourcePrefix string
 param environmentName string
 param logAnalyticsWorkspaceId string
-param webApiHostname string
+param apiName string
 
 var apimServiceName = '${resourcePrefix}-${environmentName}-apim'
 var productName = 'PetsProduct'
-var apiName = 'pets'
+var apimApiName = 'pets'
 
 resource ApimApiAppInsights 'Microsoft.Insights/components@2020-02-02' = {
-  name: '${apimServiceName}-${apiName}-appi'
+  name: '${apimServiceName}-${apimApiName}-appi'
   location: resourceGroup().location
   kind: 'Api'
   properties: {
@@ -18,7 +18,7 @@ resource ApimApiAppInsights 'Microsoft.Insights/components@2020-02-02' = {
 }
 
 resource ApiAppInsights 'Microsoft.ApiManagement/service/loggers@2021-04-01-preview' = {
-  name: '${apimServiceName}/${apiName}-logger'
+  name: '${apimServiceName}/${apimApiName}-logger'
   properties: {
     loggerType: 'applicationInsights'
     resourceId: ApimApiAppInsights.id
@@ -29,7 +29,7 @@ resource ApiAppInsights 'Microsoft.ApiManagement/service/loggers@2021-04-01-prev
 }
 
 resource Api 'Microsoft.ApiManagement/service/apis@2021-04-01-preview' = {
-  name: '${apimServiceName}/${apiName}'
+  name: '${apimServiceName}/${apimApiName}'
   properties: {
     protocols: [
       'https'
@@ -39,7 +39,7 @@ resource Api 'Microsoft.ApiManagement/service/apis@2021-04-01-preview' = {
     description: 'Pets Api backed by app-service'
     subscriptionRequired: true
     displayName: 'PetsApi'
-    serviceUrl: 'https://${webApiHostname}.azurewebsites.net/'
+    serviceUrl: 'https://${apiName}.azurewebsites.net/'
   }
 
   resource ApiOperation 'operations@2021-04-01-preview' = {
@@ -70,7 +70,7 @@ resource PetsApiProduct 'Microsoft.ApiManagement/service/products@2021-04-01-pre
   }
 
   resource PetsApi 'apis@2021-04-01-preview' = {
-    name: apiName
+    name: apimApiName
   }
 }
 

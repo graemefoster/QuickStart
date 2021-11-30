@@ -68,7 +68,7 @@ module ApimApiDeployment './Tier2/deploy-apim-api.bicep' = {
     resourcePrefix: resourcePrefix
     environmentName: environmentName
     logAnalyticsWorkspaceId: logAnalyticsWorkspaceId
-    webApiHostname: WebApiDeployment.outputs.apiHostname
+    apiName: WebApiDeployment.outputs.apiName
   }
 }
 
@@ -108,7 +108,7 @@ module ContainerAppDeployment './Tier2/deploy-container-app.bicep' = {
 
 output resourceGroupName string = resourceGroup.name
 output applicationHostname string = WebAppDeployment.outputs.appHostname
-output apiName string = WebApiDeployment.outputs.apiHostname
+output apiName string = WebApiDeployment.outputs.apiName
 output spaHostname string = StaticAppDeployment.outputs.appHostname
 output containerAppFqdn string = ContainerAppDeployment.outputs.containerAppFqdn
 output applicationKeyVaultName string = WebAppDeployment.outputs.appKeyVaultName
