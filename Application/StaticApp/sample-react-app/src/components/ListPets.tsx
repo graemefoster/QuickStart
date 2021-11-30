@@ -28,6 +28,7 @@ export const ListPets = () => {
           return fetch(`${config.apiConfig.BaseUrl}pets`, {
             headers: {
               Authorization: `Bearer ${response.accessToken}`,
+              'Ocp-Apim-Subscription-Key' : config.apiConfig.SubscriptionKey
             },
           });
         })
