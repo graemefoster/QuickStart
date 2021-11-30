@@ -71,7 +71,7 @@ resource PetsApiProduct 'Microsoft.ApiManagement/service/products@2021-04-01-pre
 }
 
 resource PetsApi 'Microsoft.ApiManagement/service/products/apis@2021-04-01-preview' = {
-  name: '${apimServiceName}/${productName}/${Api.name}'
+  name: '${apimServiceName}/${productName}/${apiName}'
 }
 
 resource PetsApiSubscription 'Microsoft.ApiManagement/service/subscriptions@2021-04-01-preview' = {
