@@ -33,12 +33,12 @@ resource Api 'Microsoft.ApiManagement/service/apis@2021-04-01-preview' = {
     protocols: [
       'https'
     ]
-    path: 'SampleApi'
+    path: 'Pets'
     apiType: 'http'
-    description: 'Sample Api backed by app-service'
+    description: 'Pets Api backed by app-service'
     subscriptionRequired: true
-    displayName: 'SampleApi'
-    serviceUrl: 'https://${webApiHostname}/'
+    displayName: 'PetsApi'
+    serviceUrl: 'https://${webApiHostname}.azurewebsites.net/'
   }
 
   resource ApiOperation 'operations@2021-04-01-preview' = {
@@ -46,7 +46,7 @@ resource Api 'Microsoft.ApiManagement/service/apis@2021-04-01-preview' = {
     properties: {
       displayName: 'Get Pets'
       method: 'GET'
-      urlTemplate: '/'
+      urlTemplate: '/Pets'
     }
   }
 
@@ -67,6 +67,10 @@ resource PetsApiProduct 'Microsoft.ApiManagement/service/products@2021-04-01-pre
     subscriptionRequired: true
     state: 'published'
   }
+
+  resource PetsApi 'apis@2021-04-01-preview' = {
+    name: Api.id
+  }
 }
 
 resource PetsApiSubscription 'Microsoft.ApiManagement/service/subscriptions@2021-04-01-preview' = {
@@ -76,4 +80,3 @@ resource PetsApiSubscription 'Microsoft.ApiManagement/service/subscriptions@2021
     scope: '/products/${PetsApiProduct.id}'
   }
 }
-
