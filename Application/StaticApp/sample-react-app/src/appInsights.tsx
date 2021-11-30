@@ -18,7 +18,6 @@ const appinsightsPromise = spaConfig.then(config => {
         }
     });
     appInsights.loadAppInsights();
-        config.apiConfig.AppInsightsKey
 
     return appInsights;
 })
