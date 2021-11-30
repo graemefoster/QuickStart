@@ -113,6 +113,7 @@ jobs:
             appClientSecret=${{ steps.setup-test-aad.outputs.applicationClientSecret }}
             apiAppInsightsKey=${{ steps.appsDeploy.outputs.apiAppInsightsKey }}
             appAppInsightsKey=${{ steps.appsDeploy.outputs.appAppInsightsKey }}
+            apimHostname=${{ steps.appsDeploy.outputs.apimHostname }}
             environmentName=test
           failOnStdErr: true
 

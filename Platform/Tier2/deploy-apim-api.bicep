@@ -4,9 +4,10 @@ param logAnalyticsWorkspaceId string
 param webApiHostname string
 
 var apimServiceName = '${resourcePrefix}-${environmentName}-apim'
+var apiName = 'pets'
 
 resource ApimApiAppInsights 'Microsoft.Insights/components@2020-02-02' = {
-  name: '${apimServiceName}-sampleapi-appi'
+  name: '${apimServiceName}-${apiName}-appi'
   location: resourceGroup().location
   kind: 'Api'
   properties: {
@@ -16,7 +17,7 @@ resource ApimApiAppInsights 'Microsoft.Insights/components@2020-02-02' = {
 }
 
 resource ApiAppInsights 'Microsoft.ApiManagement/service/loggers@2021-04-01-preview' = {
-  name: '${apimServiceName}/sample-api-logger'
+  name: '${apimServiceName}/${apiName}-logger'
   properties: {
     loggerType: 'applicationInsights'
     resourceId: ApimApiAppInsights.id
@@ -27,7 +28,7 @@ resource ApiAppInsights 'Microsoft.ApiManagement/service/loggers@2021-04-01-prev
 }
 
 resource Api 'Microsoft.ApiManagement/service/apis@2021-04-01-preview' = {
-  name: '${apimServiceName}/SampleApi'
+  name: '${apimServiceName}/${apiName}'
   properties: {
     protocols: [
       'https'
@@ -45,7 +46,7 @@ resource Api 'Microsoft.ApiManagement/service/apis@2021-04-01-preview' = {
     properties: {
       displayName: 'Get Pets'
       method: 'GET'
-      urlTemplate: '/pets'
+      urlTemplate: '/'
     }
   }
 

@@ -122,4 +122,5 @@ output serverFarmId string = QuickStartServerFarm.id
 output databaseServerName string = databaseServerName
 output logAnalyticsWorkspaceId string = LogAnalyticsWorkspace.id
 output containerEnvironmentId string = ContainerAppsEnvironment.id
+output apimHostname string = Apim.properties.hostnameConfigurations[0].hostName
 output apimId string = Apim.id

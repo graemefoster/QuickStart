@@ -12,6 +12,9 @@ param databaseName string
 @description('The full hostname of the app-service hosting the Web Application')
 param appHostname string
 
+@description('The full hostname of the api-management service fronting the API')
+param apimHostname string
+
 @description('The full hostname of the app-service hosting the Web API')
 param apiHostname string
 
@@ -71,7 +74,7 @@ module PostConfigureAppDeployment './Tier2/configure-app.bicep' = {
   name: 'PostConfigureAppDeployment'
   scope: resourceGroup
   params: {
-    apiHostname: apiHostname
+    apiHostname: apimHostname
     appAadClientId: appClientId
     appClientSecret: appClientSecret
     appHostname: appHostname
@@ -87,7 +90,7 @@ module PostConfigureSpaDeployment './Tier2/configure-static-app.bicep' = {
   name: 'PostConfigureSpaDeployment'
   scope: resourceGroup
   params: {
-    apiHostname: apiHostname
+    apiHostname: apimHostname
     appAadClientId: appClientId
     spaHostname: spaHostname
     apiAadClientId: apiClientId
