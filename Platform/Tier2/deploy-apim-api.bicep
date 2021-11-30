@@ -2,10 +2,17 @@ param resourcePrefix string
 param environmentName string
 param logAnalyticsWorkspaceId string
 param apiName string
+param appHostname string
+param spaHostname string
 
 var apimServiceName = '${resourcePrefix}-${environmentName}-apim'
 var productName = 'PetsProduct'
 var apimApiName = 'pets'
+
+var cors0 = 'https://${appHostname}.azurewebsites.net'
+var cors1 = 'https://${appHostname}-green.azurewebsites.net'
+var cors2 =  'https://${spaHostname}.azurewebsites.net'
+var cors3 =  'https://${spaHostname}-green.azurewebsites.net'
 
 resource ApimApiAppInsights 'Microsoft.Insights/components@2020-02-02' = {
   name: '${apimServiceName}-${apimApiName}-appi'
@@ -46,7 +53,7 @@ resource Api 'Microsoft.ApiManagement/service/apis@2021-04-01-preview' = {
     name: 'policy'
     properties: {
       format: 'xml'
-      value: '<policies><inbound><cors><allowed-origins><origin>*</origin></allowed-origins><allowed-methods><method>GET</method><method>POST</method></allowed-methods><allowed-headers><header>authorization</header></allowed-headers</cors></inbound><backend<forward-request /></backend><outbound /><on-error /></policies>'
+      value: '<policies><inbound><cors><allowed-origins><origin>${cors0}</origin><origin>${cors1}</origin><origin>${cors2}</origin><origin>${cors3}</origin></allowed-origins><allowed-methods><method>GET</method><method>POST</method></allowed-methods><allowed-headers><header>authorization</header></allowed-headers</cors></inbound><backend<forward-request /></backend><outbound /><on-error /></policies>'
     }
   }
 
