@@ -61,16 +61,6 @@ module WebApiDeployment './Tier2/deploy-api.bicep' = {
   }
 }
 
-module ApimApiDeployment './Tier2/deploy-apim-api.bicep' = {
-  name: 'DeployApimApi'
-  scope: platformResourceGroup
-  params: {
-    resourcePrefix: resourcePrefix
-    environmentName: environmentName
-    logAnalyticsWorkspaceId: logAnalyticsWorkspaceId
-    apiName: WebApiDeployment.outputs.apiName
-  }
-}
 
 module WebAppDeployment './Tier2/deploy-app.bicep' = {
   name: 'DeployApp'
@@ -103,6 +93,20 @@ module ContainerAppDeployment './Tier2/deploy-container-app.bicep' = {
     //not ideal but I don't have a built image at this point so need something to get it moving
     containerImage: 'ghcr.io/graemefoster/sample-microservice:latest'
     environmentId: containerEnvironmentId
+  }
+}
+
+
+module ApimApiDeployment './Tier2/deploy-apim-api.bicep' = {
+  name: 'DeployApimApi'
+  scope: platformResourceGroup
+  params: {
+    resourcePrefix: resourcePrefix
+    environmentName: environmentName
+    logAnalyticsWorkspaceId: logAnalyticsWorkspaceId
+    apiName: WebApiDeployment.outputs.apiName
+    spaHostname: StaticAppDeployment.outputs.appHostname
+    appHostname: WebAppDeployment.outputs.appHostname
   }
 }
 
