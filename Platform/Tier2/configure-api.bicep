@@ -4,7 +4,7 @@ param databaseName string
 param appHostname string
 param spaHostname string
 param apiAadClientId string
-param apiHostname string
+param apiName string
 param userAssignedClientId string
 param apiAppInsightsKey string
 param environmentName string
@@ -12,7 +12,7 @@ param environmentName string
 var hasSlot = environmentName != 'test'
 
 resource WebApiConfiguration 'Microsoft.Web/sites/config@2021-02-01' = {
-  name: '${apiHostname}/appSettings'
+  name: '${apiName}/appSettings'
   properties: {
     'WEBSITE_RUN_FROM_PACKAGE' : 1
     'ASPNETCORE_ENVIRONMENT': 'Production'
@@ -28,7 +28,7 @@ resource WebApiConfiguration 'Microsoft.Web/sites/config@2021-02-01' = {
 }
 
 resource ProductionSlotWebApiConfiguration 'Microsoft.Web/sites/slots/config@2021-02-01' = if(hasSlot) {
-  name: '${apiHostname}/green/appsettings'
+  name: '${apiName}/green/appsettings'
   properties: {
     'WEBSITE_RUN_FROM_PACKAGE' : 1
     'ASPNETCORE_ENVIRONMENT': 'Production'

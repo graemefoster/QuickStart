@@ -103,7 +103,7 @@ jobs:
             databaseServerName=${{ steps.platformDeploy.outputs.databaseServerName }}
             databaseName=${{ steps.appsDeploy.outputs.databaseName }}
             appHostname=${{ steps.appsDeploy.outputs.applicationHostname }}
-            apiHostname=${{ steps.appsDeploy.outputs.apiHostname }}
+            apiName=${{ steps.appsDeploy.outputs.apiName }}
             spaHostname=${{ steps.appsDeploy.outputs.spaHostname }}
             containerAppFqdn=${{ steps.appsDeploy.outputs.containerAppFqdn }}
             appKeyVaultName=${{ steps.appsDeploy.outputs.applicationKeyVaultName }}
@@ -227,7 +227,7 @@ jobs:
             databaseServerName=${{ steps.platformDeploy.outputs.databaseServerName }}
             databaseName=${{ steps.appsDeploy.outputs.databaseName }}
             appHostname=${{ steps.appsDeploy.outputs.applicationHostname }}
-            apiHostname=${{ steps.appsDeploy.outputs.apiHostname }}
+            apiName=${{ steps.appsDeploy.outputs.apiName }}
             spaHostname=${{ steps.appsDeploy.outputs.spaHostname }}
             containerAppFqdn=${{ steps.appsDeploy.outputs.containerAppFqdn }}
             appKeyVaultName=${{ steps.appsDeploy.outputs.applicationKeyVaultName }}

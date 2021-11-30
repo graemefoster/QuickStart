@@ -4,7 +4,7 @@ param environmentName string
 param logAnalyticsWorkspaceId string
 param deploySlot bool
 
-var apiHostname = '${resourcePrefix}-${uniqueString(resourceGroup().name)}-${environmentName}-api'
+var apiName = '${resourcePrefix}-${uniqueString(resourceGroup().name)}-${environmentName}-api'
 var apiMsiName = '${resourcePrefix}-${uniqueString(resourceGroup().name)}-${environmentName}-msi'
 
 resource ManagedIdentity 'Microsoft.ManagedIdentity/userAssignedIdentities@2018-11-30' = {
@@ -13,7 +13,7 @@ resource ManagedIdentity 'Microsoft.ManagedIdentity/userAssignedIdentities@2018-
 }
 
 resource WebApi 'Microsoft.Web/sites@2021-01-15' = {
-  name: apiHostname
+  name: apiName
   location: resourceGroup().location
   identity: {
     type: 'UserAssigned'
@@ -32,7 +32,7 @@ resource WebApi 'Microsoft.Web/sites@2021-01-15' = {
 }
 
 resource WebAppAppInsights 'Microsoft.Insights/components@2020-02-02' = {
-  name: '${apiHostname}-appi'
+  name: '${apiName}-appi'
   location: resourceGroup().location
   kind: 'Web'
   properties: {
@@ -57,7 +57,7 @@ resource WebAppInsightsHealthCheck 'Microsoft.Insights/webtests@2018-05-01-previ
     Enabled: true
     Timeout: 10
     Configuration: {
-      WebTest: '<WebTest Name="webapi-ping-test" Id="678ddf92-1ab8-44c8-9274-123456789abc" Enabled="True" CssProjectStructure="" CssIteration="" Timeout="300" WorkItemIds="" xmlns="http://microsoft.com/schemas/VisualStudio/TeamTest/2010" Description="" CredentialUserName="" CredentialPassword="" PreAuthenticate="True" Proxy="default" StopOnError="False" RecordedResultFile="" ResultsLocale="" ><Items><Request Method="GET" Guid="b4162485-9114-fcfc-e086-123456789abc" Version="1.1" Url="https://${apiHostname}.azurewebsites.net/health" ThinkTime="0" Timeout="120" ParseDependentRequests="False" FollowRedirects="False" RecordResult="True" Cache="False" ResponseTimeGoal="0" Encoding="utf-8" ExpectedHttpStatusCode="200" ExpectedResponseUrl="" ReportingName="" IgnoreHttpStatusCode="False" /></Items></WebTest>'
+      WebTest: '<WebTest Name="webapi-ping-test" Id="678ddf92-1ab8-44c8-9274-123456789abc" Enabled="True" CssProjectStructure="" CssIteration="" Timeout="300" WorkItemIds="" xmlns="http://microsoft.com/schemas/VisualStudio/TeamTest/2010" Description="" CredentialUserName="" CredentialPassword="" PreAuthenticate="True" Proxy="default" StopOnError="False" RecordedResultFile="" ResultsLocale="" ><Items><Request Method="GET" Guid="b4162485-9114-fcfc-e086-123456789abc" Version="1.1" Url="https://${apiName}.azurewebsites.net/health" ThinkTime="0" Timeout="120" ParseDependentRequests="False" FollowRedirects="False" RecordResult="True" Cache="False" ResponseTimeGoal="0" Encoding="utf-8" ExpectedHttpStatusCode="200" ExpectedResponseUrl="" ReportingName="" IgnoreHttpStatusCode="False" /></Items></WebTest>'
     }
     Locations: [
       {
@@ -88,7 +88,7 @@ resource WebApiGreen 'Microsoft.Web/sites/slots@2021-01-15' = if(deploySlot) {
 }
 
 
-output apiHostname string = apiHostname
+output apiName string = apiName
 output managedIdentityName string = ManagedIdentity.name
 output managedIdentityAppId string = ManagedIdentity.properties.clientId
 output appInsightsKey string = reference(WebAppAppInsights.id).InstrumentationKey

@@ -19,8 +19,8 @@ param apimHostname string
 @secure()
 param productSubscriptionKey string
 
-@description('The full hostname of the app-service hosting the Web API')
-param apiHostname string
+@description('The name of the API')
+param apiName string
 
 @description('The fully qualified domain name of the container app hosting the entry micro-service')
 param containerAppFqdn string
@@ -65,7 +65,7 @@ module PostConfigureApiDeployment './Tier2/configure-api.bicep' = {
     databaseServerName: databaseServerName
     databaseName: databaseName
     appHostname: appHostname
-    apiHostname: apiHostname
+    apiName: apiName
     apiAadClientId: apiClientId
     userAssignedClientId: apiUserAssignedClientId
     apiAppInsightsKey: apiAppInsightsKey

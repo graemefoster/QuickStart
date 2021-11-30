@@ -108,7 +108,7 @@ module ContainerAppDeployment './Tier2/deploy-container-app.bicep' = {
 
 output resourceGroupName string = resourceGroup.name
 output applicationHostname string = WebAppDeployment.outputs.appHostname
-output apiHostname string = WebApiDeployment.outputs.apiHostname
+output apiName string = WebApiDeployment.outputs.apiHostname
 output spaHostname string = StaticAppDeployment.outputs.appHostname
 output containerAppFqdn string = ContainerAppDeployment.outputs.containerAppFqdn
 output applicationKeyVaultName string = WebAppDeployment.outputs.appKeyVaultName
