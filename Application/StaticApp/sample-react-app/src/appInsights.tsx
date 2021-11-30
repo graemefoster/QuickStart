@@ -11,7 +11,11 @@ const appinsightsPromise = spaConfig.then(config => {
     const appInsights = new ApplicationInsights({
         config: {
             instrumentationKey: config.apiConfig.AppInsightsKey,
-            extensions: [reactPlugin],
+            disableFetchTracking: false,
+            enableCorsCorrelation: true,
+            enableRequestHeaderTracking: true,
+            enableResponseHeaderTracking: true,
+                    extensions: [reactPlugin],
             extensionConfig: {
               [reactPlugin.identifier]: { history: browserHistory }
             }
