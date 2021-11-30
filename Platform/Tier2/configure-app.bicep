@@ -31,7 +31,7 @@ resource WebAppConfiguration 'Microsoft.Web/sites/config@2021-02-01' = {
     'APPINSIGHTS_INSTRUMENTATIONKEY' : appAppInsightsKey
     'ApiSettings__MicroServiceUrl': 'https://${containerAppFqdn}'
     'ApiSettings__SubscriptionKey': productSubscriptionKey
-    'ApiSettings__URL': 'https://${apiHostname}.azurewebsites.net'
+    'ApiSettings__URL': 'https://${apiHostname}'
     'ApiSettings__Scope' : 'api://${apiAadClientId}/Pets.Manage'
     'AzureAD__ClientId': appAadClientId
     'AzureAD__ClientSecret': '@Microsoft.KeyVault(VaultName=${appKeyVaultName};SecretName=ApplicationClientSecret)'
@@ -46,7 +46,7 @@ resource SlotWebAppConfiguration 'Microsoft.Web/sites/slots/config@2021-02-01' =
     'APPINSIGHTS_INSTRUMENTATIONKEY' : appAppInsightsKey
     'ApiSettings__MicroServiceUrl': 'https://${containerAppFqdn}'
     'ApiSettings__SubscriptionKey': productSubscriptionKey
-    'ApiSettings__URL': 'https://${apiHostname}.azurewebsites.net'
+    'ApiSettings__URL': 'https://${apiHostname}'
     'ApiSettings__Scope' : 'api://${apiAadClientId}/Pets.Manage'
     'AzureAD__ClientId': appAadClientId
     'AzureAD__ClientSecret': '@Microsoft.KeyVault(VaultName=${appKeyVaultName};SecretName=ApplicationClientSecret)'
