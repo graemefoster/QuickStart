@@ -4,6 +4,7 @@ param logAnalyticsWorkspaceId string
 param webApiHostname string
 
 var apimServiceName = '${resourcePrefix}-${environmentName}-apim'
+var productName = 'PetsProduct'
 var apiName = 'pets'
 
 resource ApimApiAppInsights 'Microsoft.Insights/components@2020-02-02' = {
@@ -60,9 +61,9 @@ resource Api 'Microsoft.ApiManagement/service/apis@2021-04-01-preview' = {
 }
 
 resource PetsApiProduct 'Microsoft.ApiManagement/service/products@2021-04-01-preview' = {
-  name: '${apimServiceName}/PetsProduct'
+  name: '${apimServiceName}/${productName}'
   properties: {
-    displayName: 'Access to the pets product'
+    displayName: 'Access to the Pets Product'
     approvalRequired: true
     subscriptionRequired: true
     state: 'published'
@@ -70,7 +71,7 @@ resource PetsApiProduct 'Microsoft.ApiManagement/service/products@2021-04-01-pre
 }
 
 resource PetsApi 'Microsoft.ApiManagement/service/products/apis@2021-04-01-preview' = {
-  name: '${apimServiceName}/PetsProduct/${Api.id}'
+  name: '${apimServiceName}/${productName}/${Api.name}'
 }
 
 resource PetsApiSubscription 'Microsoft.ApiManagement/service/subscriptions@2021-04-01-preview' = {
