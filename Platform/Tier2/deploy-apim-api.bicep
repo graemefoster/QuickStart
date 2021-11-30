@@ -47,7 +47,7 @@ resource Api 'Microsoft.ApiManagement/service/apis@2021-04-01-preview' = {
     properties: {
       displayName: 'Get Pets'
       method: 'GET'
-      urlTemplate: '/Pets'
+      urlTemplate: '/'
     }
   }
 
