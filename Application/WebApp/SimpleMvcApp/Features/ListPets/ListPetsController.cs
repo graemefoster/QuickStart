@@ -32,7 +32,7 @@ namespace SimpleMvcApp.Features.ListPets
             _logger.LogInformation("Starting sleep");
             await Task.Delay(System.TimeSpan.FromSeconds(5));
             _logger.LogInformation("Ending  sleep");
-            return View(new ListPetsViewModel { Pets = await _client.GetAll() });
+            return View("Index", new ListPetsViewModel { Pets = await _client.GetAll() });
         }
     }
 }
