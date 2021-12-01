@@ -25,5 +25,14 @@ namespace SimpleMvcApp.Features.ListPets
         {
             return View(new ListPetsViewModel { Pets = await _client.GetAll() });
         }
+
+        [Route("")]
+        public async Task<IActionResult> IndexSlow()
+        {
+            _logger.LogInformation("Starting sleep");
+            await Task.Delay(System.TimeSpan.FromSeconds(5));
+            _logger.LogInformation("Ending  sleep");
+            return View(new ListPetsViewModel { Pets = await _client.GetAll() });
+        }
     }
 }
