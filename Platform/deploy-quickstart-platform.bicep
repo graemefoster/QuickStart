@@ -7,6 +7,7 @@ param resourcePrefix string
 
 @description('AAD Service Principal name to set as the database administrator. This principal will be used to deploy databases to the server.')
 param databaseAdministratorName string
+
 @description('AAD Object Id of the Service Principal used as the database administrator.')
 param databaseAdministratorObjectId string
 
@@ -44,3 +45,6 @@ output databaseServerName string = PlatformDeployment.outputs.databaseServerName
 output logAnalyticsWorkspaceId string = PlatformDeployment.outputs.logAnalyticsWorkspaceId
 output containerEnvironmentId string = PlatformDeployment.outputs.containerEnvironmentId
 output apimHostname string = PlatformDeployment.outputs.apimHostname
+
+output resourcePrefix string = resourcePrefix
+output databaseAdministratorName string = databaseAdministratorName

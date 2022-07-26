@@ -1,0 +1,25 @@
+{
+    "outputs" : {
+        "platformResourceGroupName" : {
+            "value" : ""
+        },
+        "serverFarmId" : {
+            "value" : ""
+        },
+        "databaseServerName" : {
+            "value" : ""
+        },
+        "logAnalyticsWorkspaceId" : {
+            "value" : ""
+        },
+        "containerEnvironmentId" : {
+            "value" : ""
+        },
+        "apimHostname" : {
+            "value" : ""
+        },
+        "resourcePrefix" : {
+            "value" : ""
+        }
+    }
+}

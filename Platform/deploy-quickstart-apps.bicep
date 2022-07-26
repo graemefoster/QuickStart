@@ -1,38 +1,23 @@
 targetScope = 'subscription'
 
-@description('A prefix to add to all resources to keep them unique')
-@minLength(3)
-@maxLength(6)
-param resourcePrefix string
-
-@description('The resource group that platform components were deployed to. Template assume s Sql Server is in here, and databases must be deployed to the same resource group.')
-param platformResourceGroupName string
-
-@description('Resource Id of the App Service Plan hosting the apis / apps')
-param serverFarmId string
-
-@description('Resource Id of the Platform Log Analytics Workspace')
-param logAnalyticsWorkspaceId string
-
-@description('Resource name of the platform Sql Server')
-param databaseServerName string
-
 @description('Used to construct app / api / keyvault names. Suggestions include test, prod, nonprod')
 param environmentName string
 
-@description('Resource Id of the Container Environment')
-param containerEnvironmentId string
+param location string = deployment().location
+
+var environment = loadJsonContent('./platform.json')
+var resourcePrefix = environment.outputs.resourcePrefix.value
 
 var hasSlot = environmentName != 'test'
 
 resource platformResourceGroup 'Microsoft.Resources/resourceGroups@2021-04-01' = {
-  name: platformResourceGroupName
-  location: deployment().location
+  name: environment.outputs.platformResourceGroupName.value
+  location: location
 }
 
 resource resourceGroup 'Microsoft.Resources/resourceGroups@2021-04-01' = {
   name: '${resourcePrefix}-${environmentName}-rg'
-  location: deployment().location
+  location: location
 }
 
 // Databases need to live in the same resource group as the server. We could push the server into the API RG
@@ -43,9 +28,9 @@ module DatabaseDeployment './Tier2/deploy-api-database.bicep' = {
   scope: platformResourceGroup
   params: {
     resourcePrefix: resourcePrefix
-    databaseServerName: databaseServerName
+    databaseServerName: environment.outputs.databaseServerName.value
     environmentName: environmentName
-    logAnalyticsWorkspaceId: logAnalyticsWorkspaceId
+    logAnalyticsWorkspaceId: environment.outputs.logAnalyticsWorkspaceId.value
   }
 }
 
@@ -54,9 +39,9 @@ module WebApiDeployment './Tier2/deploy-api.bicep' = {
   scope: resourceGroup
   params: {
     resourcePrefix: resourcePrefix
-    serverFarmId: serverFarmId
+    serverFarmId: environment.outputs.serverFarmId.value
     environmentName: environmentName
-    logAnalyticsWorkspaceId: logAnalyticsWorkspaceId
+    logAnalyticsWorkspaceId: environment.outputs.logAnalyticsWorkspaceId.value
     deploySlot: hasSlot
   }
 }
@@ -67,9 +52,9 @@ module WebAppDeployment './Tier2/deploy-app.bicep' = {
   scope: resourceGroup
   params: {
     resourcePrefix: resourcePrefix
-    serverFarmId: serverFarmId
+    serverFarmId: environment.outputs.serverFarmId.value
     environmentName: environmentName
-    logAnalyticsWorkspaceId: logAnalyticsWorkspaceId
+    logAnalyticsWorkspaceId: environment.outputs.logAnalyticsWorkspaceId.value
     deploySlot: hasSlot
   }
 }
@@ -79,9 +64,9 @@ module StaticAppDeployment './Tier2/deploy-static-app.bicep' = {
   scope: resourceGroup
   params: {
     resourcePrefix: resourcePrefix
-    serverFarmId: serverFarmId
+    serverFarmId: environment.outputs.serverFarmId.value
     environmentName: environmentName
-    logAnalyticsWorkspaceId: logAnalyticsWorkspaceId
+    logAnalyticsWorkspaceId: environment.outputs.logAnalyticsWorkspaceId.value
     deploySlot: hasSlot
   }
 }
@@ -90,10 +75,11 @@ module ContainerAppDeployment './Tier2/deploy-container-app.bicep' = {
   name: 'DeployContainerApp'
   scope: resourceGroup
   params: {
+    location: location
     containerAppName: 'microservice-${environmentName}'
     //not ideal but I don't have a built image at this point so need something to get it moving
     containerImage: 'ghcr.io/graemefoster/sample-microservice:latest'
-    environmentId: containerEnvironmentId
+    environmentId: environment.outputs.containerEnvironmentId.value
   }
 }
 
@@ -104,7 +90,7 @@ module ApimApiDeployment './Tier2/deploy-apim-api.bicep' = {
   params: {
     resourcePrefix: resourcePrefix
     environmentName: environmentName
-    logAnalyticsWorkspaceId: logAnalyticsWorkspaceId
+    logAnalyticsWorkspaceId: environment.outputs.logAnalyticsWorkspaceId.value
     apiName: WebApiDeployment.outputs.apiName
     spaHostname: StaticAppDeployment.outputs.appHostname
     appHostname: WebAppDeployment.outputs.appHostname
