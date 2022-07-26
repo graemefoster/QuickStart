@@ -17,19 +17,22 @@ param environmentName string
 @description('Publisher email used for the apim service')
 param apimPublisherEmail string
 
+param location string = deployment().location
+
 var hasSlot = environmentName != 'test'
 
 var platformRgName = '${resourcePrefix}-platform-${environmentName}-rg'
 
 resource platformResourceGroup 'Microsoft.Resources/resourceGroups@2021-04-01' = {
   name: platformRgName
-  location: deployment().location
+  location: location
 }
 
 module PlatformDeployment './Tier1/deploy-platform.bicep' = {
   name: 'DeployPlatform'
   scope: platformResourceGroup
   params: {
+    location: location
     resourcePrefix: resourcePrefix
     databaseAdministratorName: databaseAdministratorName
     databaseAdministratorObjectId: databaseAdministratorObjectId
@@ -45,6 +48,5 @@ output databaseServerName string = PlatformDeployment.outputs.databaseServerName
 output logAnalyticsWorkspaceId string = PlatformDeployment.outputs.logAnalyticsWorkspaceId
 output containerEnvironmentId string = PlatformDeployment.outputs.containerEnvironmentId
 output apimHostname string = PlatformDeployment.outputs.apimHostname
-
 output resourcePrefix string = resourcePrefix
 output databaseAdministratorName string = databaseAdministratorName

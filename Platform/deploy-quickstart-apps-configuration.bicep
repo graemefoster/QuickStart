@@ -1,64 +1,48 @@
 targetScope = 'subscription'
 
-@description('Resource name of the platform Sql Server')
-param databaseServerName string
-
-@description('The resource group containing the apps / apis to configure.')
-param resourceGroupName string
-
-@description('The database name the API uses.')
-param databaseName string
-
-@description('The full hostname of the app-service hosting the Web Application')
-param appHostname string
-
-@description('The full hostname of the api-management service fronting the API')
-param apimHostname string
-
-@description('Subscription key to the pets api product')
-@secure()
-param productSubscriptionKey string
-
-@description('The name of the API')
-param apiName string
-
-@description('The fully qualified domain name of the container app hosting the entry micro-service')
-param containerAppFqdn string
-
-@description('The full hostname of the app-service hosting the SPA')
-param spaHostname string
-
-@description('The platform resource name of the KeyVault used by the Web App')
-param appKeyVaultName string
-
 @description('The AAD application Id representing the Web Application')
 param appClientId string
 
 @description('The AAD application Id representing the Web API')
 param apiClientId string
 
-@description('The Managed Identity App Id assigned to the API (used to connect to SQL database)')
-param apiUserAssignedClientId string
-
-@description('The App Insights Key for the Application')
-param apiAppInsightsKey string
-
-@description('The App Insights Key for the API')
-param appAppInsightsKey string
-
-@description('The App Insights Key for the SPA')
-param spaAppInsightsKey string
-
-@description('The environment being configured')
-param environmentName string
-
 @secure()
 @description('AAD Client Secret (required for the Web Application to perform a 3 legged oauth flow)')
 param appClientSecret string
 
+@description('The environment being configured')
+param environmentName string
+
+param location string = deployment().location
+
+var platform = loadJsonContent('./outputs-platform.json')
+var apps = loadJsonContent('./outputs-apps.json')
+
+var databaseServerName = platform.outputs.databaseServerName.value
+var resourceGroupName = apps.outputs.resourceGroupName.value
+var databaseName = apps.outputs.databaseName.value
+var appHostname = apps.outputs.applicationHostname.value
+var apimHostname = platform.outputs.apimHostname.value
+
+var apiName = apps.outputs.apiName.value
+var containerAppFqdn = apps.outputs.containerAppFqdn.value
+var spaHostname = apps.outputs.spaHostname.value
+var appKeyVaultName = apps.outputs.applicationKeyVaultName.value
+
+var apiUserAssignedClientId = apps.outputs.managedIdentityAppId.value
+var apiAppInsightsKey = apps.outputs.apiAppInsightsKey.value
+var appAppInsightsKey = apps.outputs.appAppInsightsKey.value
+var spaAppInsightsKey = apps.outputs.spaAppInsightsKey.value
+
+
 resource resourceGroup 'Microsoft.Resources/resourceGroups@2021-04-01' = {
   name: resourceGroupName
-  location: deployment().location
+  location: location
+}
+
+resource appsKv 'Microsoft.KeyVault/vaults@2021-11-01-preview' existing = {
+  name: apps.outputs.applicationKeyVaultName.value
+  scope: resourceGroup
 }
 
 module PostConfigureApiDeployment './Tier2/configure-api.bicep' = {
@@ -82,7 +66,7 @@ module PostConfigureAppDeployment './Tier2/configure-app.bicep' = {
   scope: resourceGroup
   params: {
     apiHostname: apimHostname
-    productSubscriptionKey: productSubscriptionKey
+    productSubscriptionKey: appsKv.getSecret('productSubscriptionKey')
     appAadClientId: appClientId
     appClientSecret: appClientSecret
     appHostname: appHostname
@@ -99,7 +83,7 @@ module PostConfigureSpaDeployment './Tier2/configure-static-app.bicep' = {
   scope: resourceGroup
   params: {
     apiHostname: apimHostname
-    productSubscriptionKey: productSubscriptionKey
+    productSubscriptionKey: appsKv.getSecret('productSubscriptionKey')
     appAadClientId: appClientId
     spaHostname: spaHostname
     apiAadClientId: apiClientId

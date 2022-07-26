@@ -4,11 +4,10 @@ param databaseAdministratorName string
 param databaseAdministratorObjectId string
 param environmentName string
 param hasSlot bool
+param location string = resourceGroup().location
 
 var apimName = '${resourcePrefix}-${environmentName}-apim'
 var databaseServerName = '${resourcePrefix}-${environmentName}-sqlserver'
-var location = resourceGroup().location
-var containerAppLocation = 'canadacentral'
 
 resource LogAnalyticsWorkspace 'Microsoft.OperationalInsights/workspaces@2021-06-01' = {
   name: '${resourcePrefix}-${environmentName}-loga'
@@ -60,25 +59,20 @@ resource ContainerAppsAppInsights 'Microsoft.Insights/components@2020-02-02-prev
   }
 }
 
-resource ContainerAppsEnvironment 'Microsoft.Web/kubeEnvironments@2021-02-01' = {
+resource ContainerAppsEnvironment 'Microsoft.App/containerApps@2022-03-01' = {
   name: '${resourcePrefix}-${environmentName}-ctrapps'
-  location: containerAppLocation
+  location: location
   properties: {
-    type: 'managed'
-    internalLoadBalancerEnabled: false
-    appLogsConfiguration: {
-      destination: 'log-analytics'
-      logAnalyticsConfiguration: {
-        customerId: LogAnalyticsWorkspace.properties.customerId
-        sharedKey: LogAnalyticsWorkspace.listKeys().primarySharedKey
+    configuration: {
+      activeRevisionsMode: 'Multiple'
+      ingress: {
+        allowInsecure: false
+        external: true
+        transport: 'auto'
       }
-    }
-    containerAppsConfiguration: {
-      daprAIInstrumentationKey: ContainerAppsAppInsights.properties.InstrumentationKey
     }
   }
 }
-
 
 resource SqlDatabaseServer 'Microsoft.Sql/servers@2021-02-01-preview' = {
   name: databaseServerName

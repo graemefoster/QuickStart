@@ -4,6 +4,8 @@ param logAnalyticsWorkspaceId string
 param apiName string
 param appHostname string
 param spaHostname string
+param keyvaultName string
+param location string = resourceGroup().location
 
 var apimServiceName = '${resourcePrefix}-${environmentName}-apim'
 var productName = 'PetsProduct'
@@ -16,7 +18,7 @@ var cors3 =  'https://${spaHostname}-green.azurewebsites.net'
 
 resource ApimApiAppInsights 'Microsoft.Insights/components@2020-02-02' = {
   name: '${apimServiceName}-${apimApiName}-appi'
-  location: resourceGroup().location
+  location: location
   kind: 'Api'
   properties: {
     Application_Type: 'web'
@@ -97,4 +99,10 @@ resource PetsApiSubscription 'Microsoft.ApiManagement/service/subscriptions@2021
   }
 }
 
-output productSubscriptionKey string = PetsApiSubscription.properties.primaryKey
+
+resource ApimProductKeySecret 'Microsoft.KeyVault/vaults/secrets@2021-11-01-preview' = {
+  name: '${keyvaultName}/ApimProductKeySecret'
+  properties: {
+    value: PetsApiSubscription.properties.primaryKey
+  }
+}

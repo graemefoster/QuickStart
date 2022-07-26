@@ -5,7 +5,7 @@ param environmentName string
 
 param location string = deployment().location
 
-var environment = loadJsonContent('./platform.json')
+var environment = loadJsonContent('./outputs-platform.json')
 var resourcePrefix = environment.outputs.resourcePrefix.value
 
 var hasSlot = environmentName != 'test'
@@ -27,6 +27,7 @@ module DatabaseDeployment './Tier2/deploy-api-database.bicep' = {
   name: 'DeployDatabase'
   scope: platformResourceGroup
   params: {
+    location: location
     resourcePrefix: resourcePrefix
     databaseServerName: environment.outputs.databaseServerName.value
     environmentName: environmentName
@@ -38,6 +39,7 @@ module WebApiDeployment './Tier2/deploy-api.bicep' = {
   name: 'DeployApi'
   scope: resourceGroup
   params: {
+    location: location
     resourcePrefix: resourcePrefix
     serverFarmId: environment.outputs.serverFarmId.value
     environmentName: environmentName
@@ -51,6 +53,7 @@ module WebAppDeployment './Tier2/deploy-app.bicep' = {
   name: 'DeployApp'
   scope: resourceGroup
   params: {
+    location: location
     resourcePrefix: resourcePrefix
     serverFarmId: environment.outputs.serverFarmId.value
     environmentName: environmentName
@@ -63,6 +66,7 @@ module StaticAppDeployment './Tier2/deploy-static-app.bicep' = {
   name: 'DeployStaticApp'
   scope: resourceGroup
   params: {
+    location: location
     resourcePrefix: resourcePrefix
     serverFarmId: environment.outputs.serverFarmId.value
     environmentName: environmentName
@@ -88,14 +92,17 @@ module ApimApiDeployment './Tier2/deploy-apim-api.bicep' = {
   name: 'DeployApimApi'
   scope: platformResourceGroup
   params: {
+    location: location
     resourcePrefix: resourcePrefix
     environmentName: environmentName
     logAnalyticsWorkspaceId: environment.outputs.logAnalyticsWorkspaceId.value
     apiName: WebApiDeployment.outputs.apiName
     spaHostname: StaticAppDeployment.outputs.appHostname
     appHostname: WebAppDeployment.outputs.appHostname
+    keyvaultName: WebAppDeployment.outputs.appKeyVaultName
   }
 }
+
 
 output resourceGroupName string = resourceGroup.name
 output applicationHostname string = WebAppDeployment.outputs.appHostname
@@ -110,4 +117,3 @@ output managedIdentityName string = WebApiDeployment.outputs.managedIdentityName
 output apiAppInsightsKey string = WebApiDeployment.outputs.appInsightsKey
 output appAppInsightsKey string = WebAppDeployment.outputs.appInsightsKey
 output spaAppInsightsKey string = StaticAppDeployment.outputs.appInsightsKey
-output productSubscriptionKey string = ApimApiDeployment.outputs.productSubscriptionKey

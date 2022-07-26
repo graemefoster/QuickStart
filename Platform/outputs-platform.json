@@ -1,0 +1,28 @@
+{
+    "outputs" : {
+        "platformResourceGroupName" : {
+            "value" : "asas"
+        },
+        "serverFarmId" : {
+            "value" : ""
+        },
+        "databaseServerName" : {
+            "value" : ""
+        },
+        "logAnalyticsWorkspaceId" : {
+            "value" : ""
+        },
+        "containerEnvironmentId" : {
+            "value" : ""
+        },
+        "apimHostname" : {
+            "value" : ""
+        },
+        "resourcePrefix" : {
+            "value" : ""
+        },
+        "websiteHostName" : {
+            "value" : ""
+        }
+    }
+}

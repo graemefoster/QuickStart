@@ -5,10 +5,9 @@
 # The 2nd configures authorisation for the API.
 
 # Your CI/CD will need permission to create AAD App Registrations else it won't work.
-
-WEBSITE_HOST_NAME=$1
-WEB_API_HOST_NAME=$2
-SPA_HOST_NAME=$3
+WEBSITE_HOST_NAME=$(jq -r ".outputs.applicationHostname.value" < ./outputs-apps.json)
+WEB_API_HOST_NAME=$(jq -r ".outputs.apiName.value" < ./outputs-apps.json)
+SPA_HOST_NAME=$(jq -r ".outputs.spaHostname.value" < ./outputs-apps.json)
 
 # Build the application representing the API.
 read -r -d '' API_ROLES << EOM

@@ -3,6 +3,7 @@ param serverFarmId string
 param environmentName string
 param logAnalyticsWorkspaceId string
 param deploySlot bool
+param location string = resourceGroup().location
 
 var appHostname = '${resourcePrefix}-${uniqueString(resourceGroup().name)}-${environmentName}-webapp'
 var appKeyVaultName = '${resourcePrefix}-app-${environmentName}-kv'
@@ -10,7 +11,7 @@ var secretsUserRoleId = '/subscriptions/${subscription().subscriptionId}/provide
 
 resource AppKeyVault 'Microsoft.KeyVault/vaults@2021-06-01-preview' = {
   name: appKeyVaultName
-  location: resourceGroup().location
+  location: location
   properties: {
     sku: {
       family: 'A'
@@ -51,7 +52,7 @@ resource KeyVaultDiagnostics 'Microsoft.Insights/diagnosticSettings@2021-05-01-p
 
 resource WebApp 'Microsoft.Web/sites@2021-01-15' = {
   name: appHostname
-  location: resourceGroup().location
+  location: location
   identity: {
     type: 'SystemAssigned'
   }
@@ -67,7 +68,7 @@ resource WebApp 'Microsoft.Web/sites@2021-01-15' = {
 
 resource WebAppAppInsights 'Microsoft.Insights/components@2020-02-02' = {
   name: '${appHostname}-appi'
-  location: resourceGroup().location
+  location: location
   kind: 'Web'
   properties: {
     Application_Type: 'web'
@@ -76,7 +77,7 @@ resource WebAppAppInsights 'Microsoft.Insights/components@2020-02-02' = {
 }
 
 resource WebAppAppInsightsHealthCheck 'Microsoft.Insights/webtests@2018-05-01-preview' = {
-  location: resourceGroup().location
+  location: location
   name: 'webapp-ping-test'
   kind: 'ping'
   //Must have tag pointing to App Insights
@@ -130,7 +131,7 @@ resource KeyVaultAuth 'Microsoft.Authorization/roleAssignments@2020-08-01-previe
 resource WebAppGreen 'Microsoft.Web/sites/slots@2021-01-15' = if(deploySlot) {
   parent: WebApp
   name: 'green'
-  location: resourceGroup().location
+  location: location
   identity: {
     type: 'SystemAssigned'
   }

@@ -3,22 +3,23 @@ param serverFarmId string
 param environmentName string
 param logAnalyticsWorkspaceId string
 param deploySlot bool
+param location string = resourceGroup().location
 
 var apiName = '${resourcePrefix}-${uniqueString(resourceGroup().name)}-${environmentName}-api'
 var apiMsiName = '${resourcePrefix}-${uniqueString(resourceGroup().name)}-${environmentName}-msi'
 
 resource ManagedIdentity 'Microsoft.ManagedIdentity/userAssignedIdentities@2018-11-30' = {
-  location:resourceGroup().location
+  location: location
   name: apiMsiName
 }
 
 resource WebApi 'Microsoft.Web/sites@2021-01-15' = {
   name: apiName
-  location: resourceGroup().location
+  location: location
   identity: {
     type: 'UserAssigned'
     userAssignedIdentities: {
-      '${ManagedIdentity.id}' : {}
+      '${ManagedIdentity.id}': {}
     }
   }
   properties: {
@@ -33,7 +34,7 @@ resource WebApi 'Microsoft.Web/sites@2021-01-15' = {
 
 resource WebAppAppInsights 'Microsoft.Insights/components@2020-02-02' = {
   name: '${apiName}-appi'
-  location: resourceGroup().location
+  location: location
   kind: 'Web'
   properties: {
     Application_Type: 'web'
@@ -42,12 +43,12 @@ resource WebAppAppInsights 'Microsoft.Insights/components@2020-02-02' = {
 }
 
 resource WebAppInsightsHealthCheck 'Microsoft.Insights/webtests@2018-05-01-preview' = {
-  location: resourceGroup().location
+  location: location
   name: 'webapi-ping-test'
   kind: 'ping'
   //Must have tag pointing to App Insights
   tags: {
-    'hidden-link:${WebAppAppInsights.id}' : 'Resource'
+    'hidden-link:${WebAppAppInsights.id}': 'Resource'
   }
   properties: {
     Kind: 'ping'
@@ -70,10 +71,10 @@ resource WebAppInsightsHealthCheck 'Microsoft.Insights/webtests@2018-05-01-previ
   }
 }
 
-resource WebApiGreen 'Microsoft.Web/sites/slots@2021-01-15' = if(deploySlot) {
+resource WebApiGreen 'Microsoft.Web/sites/slots@2021-01-15' = if (deploySlot) {
   parent: WebApi
   name: 'green'
-  location: resourceGroup().location
+  location: location
   identity: {
     type: 'SystemAssigned'
   }
@@ -86,7 +87,6 @@ resource WebApiGreen 'Microsoft.Web/sites/slots@2021-01-15' = if(deploySlot) {
     }
   }
 }
-
 
 output apiName string = apiName
 output managedIdentityName string = ManagedIdentity.name
