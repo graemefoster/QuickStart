@@ -210,6 +210,7 @@ resource GreenKeyVaultAuth 'Microsoft.Authorization/roleAssignments@2022-04-01' 
   }
 } 
 
+output appName string = WebApp.name
 output appHostname string = WebApp.properties.hostNames[0]
 output appSlotHostname string = deploySlot ? WebAppGreen.properties.hostNames[0] : ''
 output appKeyVaultName string = appKeyVaultName

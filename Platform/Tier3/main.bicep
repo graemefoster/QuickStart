@@ -1,6 +1,7 @@
 targetScope = 'subscription'
 
 param apimResourceGroupName string
+param appResourceGroupName string
 param apiFqdn string
 param appFqdn string
 param spaFqdn string
@@ -10,10 +11,14 @@ param environmentName string
 param resourcePrefix string
 
 param consumerKeyVaultName string
-param consumerKeyVaultResourceGroupName string
 param consumerSecretName string
 
 param location string = deployment().location
+
+param appName string
+param appClientId string
+
+param apiClientId string
 
 module ApimConfiguration './Apim/main.bicep' = {
   name: '${deployment().name}-apim'
@@ -28,7 +33,17 @@ module ApimConfiguration './Apim/main.bicep' = {
     resourcePrefix: resourcePrefix
     location: location
     consumerKeyVaultName: consumerKeyVaultName
-    consumerKeyVaultResourceGroup: consumerKeyVaultResourceGroupName
+    consumerKeyVaultResourceGroup: appResourceGroupName
     consumerSecretName: consumerSecretName
+  }
+}
+
+module AppConfiguration './App/main.bicep' = {
+  name: '${deployment().name}-app'
+  scope: resourceGroup(appResourceGroupName)
+  params: {
+    appClientId: appClientId
+    apiClientId: apiClientId
+    appName: appName
   }
 }

@@ -101,6 +101,7 @@ module SpaDeployment './spa/main.bicep' = {
   }
 }
 
+output appName string = AppDeployment.outputs.appName
 output appFqdn string = AppDeployment.outputs.appHostname
 output spaFqdn string = SpaDeployment.outputs.appHostname
 output apiFqdn string = ApiDeployment.outputs.appHostname

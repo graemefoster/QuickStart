@@ -2,9 +2,9 @@ targetScope = 'resourceGroup'
 
 param location string = resourceGroup().location
 
-param webAppClientId string
-@secure()
-param webAppClientSecret string
+param appClientId string = '123-123-12312'
+param apiClientId string = '5756-56756-56756'
+
 
 //assume outputs exist.
 resource AppsMetadata 'Microsoft.Resources/deployments@2022-09-01' existing = {
@@ -29,7 +29,11 @@ module config 'Tier3/main.bicep' = {
     apiFqdn: AppsMetadata.properties.outputs.apiFqdn.value
     location: location
     consumerKeyVaultName: AppsMetadata.properties.outputs.appKeyVaultName.value
-    consumerKeyVaultResourceGroupName: AppsMetadata.properties.outputs.appResourceGroupName.value
     consumerSecretName: AppsMetadata.properties.outputs.apiKeySecretName.value
+    apiClientId: apiClientId
+    appClientId: appClientId
+    appResourceGroupName: AppsMetadata.properties.outputs.appResourceGroupName.value
+    appName: AppsMetadata.properties.outputs.appName.value
+    
   }
 }
