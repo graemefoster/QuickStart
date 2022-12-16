@@ -2,8 +2,8 @@ targetScope = 'resourceGroup'
 
 param resourcePrefix string
 param environmentName string
-// param serverFarmId string
-// param logAnalyticsWorkspaceId string
+param serverFarmId string
+param logAnalyticsWorkspaceId string
 // param deploySlot bool
 // param containerAppFqdn string
 // param productSubscriptionKey string
@@ -12,16 +12,9 @@ param environmentName string
 // param appAadClientId string
 param location string = resourceGroup().location
 
-//fetch platform information
-resource PlatformMetadata 'Microsoft.Resources/deployments@2022-09-01' existing = {
-  name: 'quickstart-platform-${resourcePrefix}-${environmentName}'
-  scope: subscription()
-}
 
-var logAnalyticsWorkspaceId = PlatformMetadata.properties.outputs.logAnalyticsWorkspaceId.value
+var subscriptionSecretName = 'ApiSubscriptionKey'
 var deploySlot = environmentName != 'test'
-var serverFarmId = PlatformMetadata.properties.outputs.serverFarmId.value
-
 
 var appHostname = '${resourcePrefix}-${uniqueString(resourceGroup().name)}-${environmentName}-webapp'
 var appKeyVaultName = '${resourcePrefix}-app-${environmentName}-kv'
@@ -102,7 +95,7 @@ var settings = [
   // }
   {
     name: 'ApiSettings__SubscriptionKey'
-    value: '@Microsoft.KeyVault(VaultName=${AppKeyVault.name};SecretName=ApiSubscriptionKey)'
+    value: '@Microsoft.KeyVault(VaultName=${AppKeyVault.name};SecretName=${subscriptionSecretName})'
   }
   // {
   //   name: 'ApiSettings__URL'
@@ -217,6 +210,8 @@ resource GreenKeyVaultAuth 'Microsoft.Authorization/roleAssignments@2022-04-01' 
   }
 } 
 
-output appHostname string = appHostname
+output appHostname string = WebApp.properties.hostNames[0]
+output appSlotHostname string = deploySlot ? WebAppGreen.properties.hostNames[0] : ''
 output appKeyVaultName string = appKeyVaultName
 output appInsightsKey string = reference(WebAppAppInsights.id).InstrumentationKey
+output apiKeySecretName string = subscriptionSecretName

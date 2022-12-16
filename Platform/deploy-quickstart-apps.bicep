@@ -1,41 +1,29 @@
-targetScope = 'subscription'
+targetScope = 'resourceGroup'
 
-param resourcePrefix string
-param environmentName string
-param location string = deployment().location
+param location string = resourceGroup().location
 
 //fetch platform information
 resource PlatformMetadata 'Microsoft.Resources/deployments@2022-09-01' existing = {
-  name: 'quickstart-platform-${resourcePrefix}-${environmentName}'
+  name: 'platform'
 }
 
-resource apiResourceGroup 'Microsoft.Resources/resourceGroups@2022-09-01' = {
-  name: '${resourcePrefix}-api-${environmentName}-rg'
-  location: location
-}
-
-module ApiDeployment './Tier2/api/main.bicep' = {
-  name: '${deployment().name}-api'
-  scope: apiResourceGroup
+module inr './Tier2/main.bicep' = {
+  name: '${deployment().name}-inr'
   params: {
-    environmentName: environmentName
-    resourcePrefix: resourcePrefix
-    platformResourceGroupName: PlatformMetadata.properties.outputs.platformResourceGroupName.value
+    environmentName: PlatformMetadata.properties.outputs.environmentName.value
+    resourcePrefix: PlatformMetadata.properties.outputs.resourcePrefix.value
     location: location
   }
 }
 
-resource appResourceGroup 'Microsoft.Resources/resourceGroups@2022-09-01' = {
-  name: '${resourcePrefix}-app-${environmentName}-rg'
-  location: location
-}
+output appFqdn string = inr.outputs.appFqdn
+output spaFqdn string = inr.outputs.spaFqdn
+output apiFqdn string = inr.outputs.apiFqdn
+output appSlotFqdn string = inr.outputs.appSlotFqdn
+output spaSlotFqdn string = inr.outputs.spaSlotFqdn
+output apiSlotFqdn string = inr.outputs.apiSlotFqdn
+output microserviceFqdn string = inr.outputs.microserviceFqdn
+output appResourceGroupName string = inr.outputs.appResourceGroupName
+output appKeyVaultName string = inr.outputs.appKeyVaultName
+output apiKeySecretName string = inr.outputs.apiKeySecretName
 
-module AppDeployment './Tier2/app/main.bicep' = {
-  name: '${deployment().name}-app'
-  scope: appResourceGroup
-  params: {
-    environmentName: environmentName
-    resourcePrefix: resourcePrefix
-    location: location
-  }
-}

@@ -3,23 +3,16 @@ targetScope = 'resourceGroup'
 param resourcePrefix string
 param environmentName string
 param platformResourceGroupName string
+param logAnalyticsWorkspaceId string
+param serverFarmId string
+param databaseServerName string
 
 param location string = resourceGroup().location
 
 var apiName = '${resourcePrefix}-${uniqueString(resourceGroup().name)}-${environmentName}-api'
 var apiMsiName = '${resourcePrefix}-${uniqueString(resourceGroup().name)}-${environmentName}-msi'
 
-//fetch platform information
-resource PlatformMetadata 'Microsoft.Resources/deployments@2022-09-01' existing = {
-  name: 'quickstart-platform-${resourcePrefix}-${environmentName}'
-  scope: subscription()
-}
-
-var logAnalyticsWorkspaceId = PlatformMetadata.properties.outputs.logAnalyticsWorkspaceId.value
 var deploySlot = environmentName != 'test'
-var serverFarmId = PlatformMetadata.properties.outputs.serverFarmId.value
-var databaseServerName = PlatformMetadata.properties.outputs.databaseServerName.value
-
 
 module database 'database.bicep' = {
   name: '${deployment().name}-db'
@@ -158,7 +151,8 @@ resource WebApiGreen 'Microsoft.Web/sites/slots@2021-01-15' = if (deploySlot) {
   }
 }
 
-output apiName string = apiName
+output appHostname string = WebApi.properties.hostNames[0]
+output appSlotHostname string = deploySlot ? WebApiGreen.properties.hostNames[0] : ''
 output managedIdentityName string = ManagedIdentity.name
 output managedIdentityAppId string = ManagedIdentity.properties.clientId
 output appInsightsKey string = reference(WebAppAppInsights.id).InstrumentationKey
