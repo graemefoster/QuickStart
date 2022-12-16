@@ -50,3 +50,4 @@ output containerEnvironmentId string = PlatformDeployment.outputs.containerEnvir
 output apimHostname string = PlatformDeployment.outputs.apimHostname
 output resourcePrefix string = resourcePrefix
 output databaseAdministratorName string = databaseAdministratorName
+output environmentName string = environmentName

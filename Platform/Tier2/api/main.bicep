@@ -1,22 +1,29 @@
+targetScope = 'resourceGroup'
+
 param resourcePrefix string
-param serverFarmId string
 param environmentName string
-param logAnalyticsWorkspaceId string
-param deploySlot bool
-param platformResourceGroup string
-param databaseServerName string
-param apiAadClientId string
-// param appHostname string
-// param spaHostname string
-param keyVaultName string
+param platformResourceGroupName string
+
 param location string = resourceGroup().location
 
 var apiName = '${resourcePrefix}-${uniqueString(resourceGroup().name)}-${environmentName}-api'
 var apiMsiName = '${resourcePrefix}-${uniqueString(resourceGroup().name)}-${environmentName}-msi'
 
+//fetch platform information
+resource PlatformMetadata 'Microsoft.Resources/deployments@2022-09-01' existing = {
+  name: 'quickstart-platform-${resourcePrefix}-${environmentName}'
+  scope: subscription()
+}
+
+var logAnalyticsWorkspaceId = PlatformMetadata.properties.outputs.logAnalyticsWorkspaceId.value
+var deploySlot = environmentName != 'test'
+var serverFarmId = PlatformMetadata.properties.outputs.serverFarmId.value
+var databaseServerName = PlatformMetadata.properties.outputs.databaseServerName.value
+
+
 module database 'database.bicep' = {
   name: '${deployment().name}-db'
-  scope: resourceGroup(platformResourceGroup)
+  scope: resourceGroup(platformResourceGroupName)
   params: {
     databaseServerName: databaseServerName
     environmentName: environmentName
@@ -45,7 +52,7 @@ resource WebAppAppInsights 'Microsoft.Insights/components@2020-02-02' = {
 var settings = [
   { 
     name: 'WEBSITE_RUN_FROM_PACKAGE'
-    value: 1 
+    value: '1' 
   }
   { name: 'ASPNETCORE_ENVIRONMENT'
     value: 'Production' 
@@ -74,10 +81,10 @@ var settings = [
     name: 'ApiSettings__UserAssignedClientId'
     value: ManagedIdentity.properties.clientId 
   }
-  { 
-    name: 'AzureAD__ClientId'
-    value: apiAadClientId 
-  }
+  // { 
+  //   name: 'AzureAD__ClientId'
+  //   value: apiAadClientId 
+  // }
   { 
     name: 'ApiSettings__ConnectionString'
     value: database.outputs.apiDatabaseConnectionString
