@@ -2,6 +2,10 @@ targetScope = 'resourceGroup'
 
 param location string = resourceGroup().location
 
+param webAppClientId string
+@secure()
+param webAppClientSecret string
+
 //assume outputs exist.
 resource AppsMetadata 'Microsoft.Resources/deployments@2022-09-01' existing = {
   name: 'deploy-quickstart-apps'

@@ -4,11 +4,11 @@ param resourcePrefix string
 param environmentName string
 param serverFarmId string
 param logAnalyticsWorkspaceId string
-// param deploySlot bool
-// param containerAppFqdn string
-// param productSubscriptionKey string
-// param apiHostName string
+param containerAppFqdn string
 // param apiAadClientId string
+param apiHostName string
+// param deploySlot bool
+// param apiHostName string
 // param appAadClientId string
 param location string = resourceGroup().location
 
@@ -83,24 +83,24 @@ var settings = [
   }
   {
     name: 'ASPNETCORE_ENVIRONMENT'
-    value: 'Test'
+    value: environmentName
   }
   {
     name: 'APPINSIGHTS_INSTRUMENTATIONKEY'
     value: WebAppAppInsights.properties.InstrumentationKey
   }
-  // {
-  //   name: 'ApiSettings__MicroServiceUrl'
-  //   value: 'https://${containerAppFqdn}'
-  // }
+  {
+    name: 'ApiSettings__MicroServiceUrl'
+    value: 'https://${containerAppFqdn}'
+  }
   {
     name: 'ApiSettings__SubscriptionKey'
     value: '@Microsoft.KeyVault(VaultName=${AppKeyVault.name};SecretName=${subscriptionSecretName})'
   }
-  // {
-  //   name: 'ApiSettings__URL'
-  //   value: 'https://${apiHostName}'
-  // }
+  {
+    name: 'ApiSettings__URL'
+    value: 'https://${apiHostName}/PetsApi/'
+  }
   // {
   //   name: 'ApiSettings__Scope'
   //   value: 'api://${apiAadClientId}/Pets.Manage'

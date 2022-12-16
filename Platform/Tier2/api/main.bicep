@@ -54,22 +54,6 @@ var settings = [
     name: 'APPINSIGHTS_INSTRUMENTATIONKEY'
     value: WebAppAppInsights.properties.InstrumentationKey 
   }
-  // { 
-  //   name: 'ApiSettings__Cors__0'
-  //   value: 'https://${appHostname}.azurewebsites.net' 
-  // }
-  // { 
-  //   name: 'ApiSettings__Cors__1'
-  //   value: 'https://${appHostname}-green.azurewebsites.net' 
-  // }
-  // { 
-  //   name: 'ApiSettings__Cors__2'
-  //   value: 'https://${spaHostname}.azurewebsites.net' 
-  // }
-  // { 
-  //   name: 'ApiSettings__Cors__3'
-  //   value: 'https://${spaHostname}-green.azurewebsites.net' 
-  // }
   { 
     name: 'ApiSettings__UserAssignedClientId'
     value: ManagedIdentity.properties.clientId 

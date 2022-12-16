@@ -73,6 +73,8 @@ module AppDeployment './app/main.bicep' = {
     location: location
     logAnalyticsWorkspaceId: PlatformMetadata.properties.outputs.logAnalyticsWorkspaceId.value
     serverFarmId: PlatformMetadata.properties.outputs.serverFarmId.value
+    containerAppFqdn:MicroServiceDeployment.outputs.containerAppFqdn
+    apiHostName: PlatformMetadata.properties.outputs.apimHostname.value
   }
 }
 
