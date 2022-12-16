@@ -28,7 +28,7 @@ resource platformResourceGroup 'Microsoft.Resources/resourceGroups@2021-04-01' =
   location: location
 }
 
-module PlatformDeployment './Tier1/deploy-platform.bicep' = {
+module PlatformDeployment './Tier1/main.bicep' = {
   name: 'DeployPlatform'
   scope: platformResourceGroup
   params: {
@@ -40,9 +40,6 @@ module PlatformDeployment './Tier1/deploy-platform.bicep' = {
     hasSlot: hasSlot
     apimPublishedEmail: apimPublisherEmail
   }
-}
-
-module AppsDeployment 'deploy-quickstart-apps.bicep' = {
 }
 
 output platformResourceGroupName string = platformRgName
