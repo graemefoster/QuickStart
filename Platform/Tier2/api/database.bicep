@@ -1,3 +1,5 @@
+targetScope = 'resourceGroup'
+
 param resourcePrefix string
 param databaseServerName string
 param environmentName string

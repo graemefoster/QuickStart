@@ -3,10 +3,14 @@ param serverFarmId string
 param environmentName string
 param deploySlot bool
 param logAnalyticsWorkspaceId string
+param containerAppFqdn string
+param productSubscriptionKey string
+param apiHostname string
+param apiAadClientId string
+param appAadClientId string
 param location string = resourceGroup().location
 
 var appHostname = '${resourcePrefix}-${uniqueString(resourceGroup().name)}-${environmentName}-spa'
-
 
 resource WebAppAppInsights 'Microsoft.Insights/components@2020-02-02' = {
   name: '${appHostname}-appi'
@@ -17,6 +21,33 @@ resource WebAppAppInsights 'Microsoft.Insights/components@2020-02-02' = {
     WorkspaceResourceId: logAnalyticsWorkspaceId
   }
 }
+
+var settings = [
+  {
+    name: 'APPINSIGHTS_INSTRUMENTATIONKEY'
+    value: WebAppAppInsights.properties.InstrumentationKey
+  }
+  {
+    name: 'ApiSettings__MicroServiceUrl'
+    value: 'https://${containerAppFqdn}'
+  }
+  {
+    name: 'ApiSettings__SubscriptionKey'
+    value: productSubscriptionKey
+  }
+  {
+    name: 'ApiSettings__URL'
+    value: 'https://${apiHostname}'
+  }
+  {
+    name: 'ApiSettings__Scope'
+    value: 'api://${apiAadClientId}/Pets.Manage'
+  }
+  {
+    name: 'AzureAD__ClientId'
+    value: appAadClientId
+  }
+]
 
 resource WebApp 'Microsoft.Web/sites@2021-01-15' = {
   name: appHostname
@@ -30,11 +61,12 @@ resource WebApp 'Microsoft.Web/sites@2021-01-15' = {
     siteConfig: {
       minTlsVersion: '1.2'
       nodeVersion: 'node|16-lts'
+      appSettings: settings
     }
   }
 }
 
-resource WebAppGreen 'Microsoft.Web/sites/slots@2021-01-15' = if(deploySlot) {
+resource WebAppGreen 'Microsoft.Web/sites/slots@2021-01-15' = if (deploySlot) {
   parent: WebApp
   name: 'green'
   location: location
@@ -47,6 +79,7 @@ resource WebAppGreen 'Microsoft.Web/sites/slots@2021-01-15' = if(deploySlot) {
     siteConfig: {
       minTlsVersion: '1.2'
       nodeVersion: 'node|16-lts'
+      appSettings: settings
     }
   }
 }

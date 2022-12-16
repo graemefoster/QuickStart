@@ -45,13 +45,6 @@ jobs:
             apimPublisherEmail=${{ secrets.APIM_PUBLISHER_EMAIL }}
           failOnStdErr: false # container-apps produces warning
 
-      - name: Fetch Platform configuration
-        uses: azure/CLI@v1
-        id: 'fetchOutputs'
-        with: 
-          inlineScript: |
-            az deployment sub show --name 'quickstart-test' --query 'properties.outputs' > ./Platform/platform.json
-
       - name: Deploy Test Applications and Databases
         uses: azure/arm-deploy@v1
         id: 'appsDeploy'
@@ -155,6 +148,7 @@ jobs:
             databaseAdministratorName=${{ secrets.DEPLOYMENTPRINCIPAL_NAME }}
             environmentName=prod
             apimPublisherEmail=${{ secrets.APIM_PUBLISHER_EMAIL }}
+            deploymentName=quickstart-${{ secrets.RESOURCE_PREFIX }}
           failOnStdErr: false
 
       - name: Deploy Production Applications and Databases
@@ -166,6 +160,7 @@ jobs:
           template: ./Platform/deploy-quickstart-apps.bicep
           parameters: >
             environmentName=prod
+            platformName=quickstart-${{ secrets.RESOURCE_PREFIX }}
           failOnStdErr: false
 
       - name: Logout of Azure

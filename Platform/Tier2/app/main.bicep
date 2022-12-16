@@ -3,6 +3,11 @@ param serverFarmId string
 param environmentName string
 param logAnalyticsWorkspaceId string
 param deploySlot bool
+param containerAppFqdn string
+// param productSubscriptionKey string
+// param apiHostName string
+param apiAadClientId string
+param appAadClientId string
 param location string = resourceGroup().location
 
 var appHostname = '${resourcePrefix}-${uniqueString(resourceGroup().name)}-${environmentName}-webapp'
@@ -50,6 +55,55 @@ resource KeyVaultDiagnostics 'Microsoft.Insights/diagnosticSettings@2021-05-01-p
   }
 }
 
+resource WebAppAppInsights 'Microsoft.Insights/components@2020-02-02' = {
+  name: '${appHostname}-appi'
+  location: location
+  kind: 'Web'
+  properties: {
+    Application_Type: 'web'
+    WorkspaceResourceId: logAnalyticsWorkspaceId
+  }
+}
+
+var settings = [
+  {
+    name: 'WEBSITE_RUN_FROM_PACKAGE'
+    value: 1
+  }
+  {
+    name: 'ASPNETCORE_ENVIRONMENT'
+    value: 'Test'
+  }
+  {
+    name: 'APPINSIGHTS_INSTRUMENTATIONKEY'
+    value: WebAppAppInsights.properties.InstrumentationKey
+  }
+  {
+    name: 'ApiSettings__MicroServiceUrl'
+    value: 'https://${containerAppFqdn}'
+  }
+  {
+    name: 'ApiSettings__SubscriptionKey'
+    value: '@Microsoft.KeyVault(VaultName=${AppKeyVault.name};SecretName=ApiSubscriptionKey)'
+  }
+  // {
+  //   name: 'ApiSettings__URL'
+  //   value: 'https://${apiHostName}'
+  // }
+  {
+    name: 'ApiSettings__Scope'
+    value: 'api://${apiAadClientId}/Pets.Manage'
+  }
+  {
+    name: 'AzureAD__ClientId'
+    value: appAadClientId
+  }
+  {
+    name: 'AzureAD__ClientSecret'
+    value: '@Microsoft.KeyVault(VaultName=${appKeyVaultName};SecretName=ApplicationClientSecret)'
+  }
+]
+
 resource WebApp 'Microsoft.Web/sites@2021-01-15' = {
   name: appHostname
   location: location
@@ -62,19 +116,11 @@ resource WebApp 'Microsoft.Web/sites@2021-01-15' = {
     siteConfig: {
       minTlsVersion: '1.2'
       netFrameworkVersion: 'v5.0'
+      appSettings: settings
     }
   }
 }
 
-resource WebAppAppInsights 'Microsoft.Insights/components@2020-02-02' = {
-  name: '${appHostname}-appi'
-  location: location
-  kind: 'Web'
-  properties: {
-    Application_Type: 'web'
-    WorkspaceResourceId: logAnalyticsWorkspaceId
-  }
-}
 
 resource WebAppAppInsightsHealthCheck 'Microsoft.Insights/webtests@2018-05-01-preview' = {
   location: location
@@ -141,6 +187,7 @@ resource WebAppGreen 'Microsoft.Web/sites/slots@2021-01-15' = if(deploySlot) {
     siteConfig: {
       minTlsVersion: '1.2'
       netFrameworkVersion: 'v5.0'
+      appSettings: settings
     }
   }
 }

@@ -3,15 +3,86 @@ param serverFarmId string
 param environmentName string
 param logAnalyticsWorkspaceId string
 param deploySlot bool
+param platformResourceGroup string
+param databaseServerName string
+param apiAadClientId string
+// param appHostname string
+// param spaHostname string
+param keyVaultName string
 param location string = resourceGroup().location
 
 var apiName = '${resourcePrefix}-${uniqueString(resourceGroup().name)}-${environmentName}-api'
 var apiMsiName = '${resourcePrefix}-${uniqueString(resourceGroup().name)}-${environmentName}-msi'
 
+module database 'database.bicep' = {
+  name: '${deployment().name}-db'
+  scope: resourceGroup(platformResourceGroup)
+  params: {
+    databaseServerName: databaseServerName
+    environmentName: environmentName
+    resourcePrefix: resourcePrefix
+    logAnalyticsWorkspaceId: logAnalyticsWorkspaceId
+    location: location
+  }
+}
+
 resource ManagedIdentity 'Microsoft.ManagedIdentity/userAssignedIdentities@2018-11-30' = {
   location: location
   name: apiMsiName
 }
+
+
+resource WebAppAppInsights 'Microsoft.Insights/components@2020-02-02' = {
+  name: '${apiName}-appi'
+  location: location
+  kind: 'Web'
+  properties: {
+    Application_Type: 'web'
+    WorkspaceResourceId: logAnalyticsWorkspaceId
+  }
+}
+
+var settings = [
+  { 
+    name: 'WEBSITE_RUN_FROM_PACKAGE'
+    value: 1 
+  }
+  { name: 'ASPNETCORE_ENVIRONMENT'
+    value: 'Production' 
+  }
+  { 
+    name: 'APPINSIGHTS_INSTRUMENTATIONKEY'
+    value: WebAppAppInsights.properties.InstrumentationKey 
+  }
+  // { 
+  //   name: 'ApiSettings__Cors__0'
+  //   value: 'https://${appHostname}.azurewebsites.net' 
+  // }
+  // { 
+  //   name: 'ApiSettings__Cors__1'
+  //   value: 'https://${appHostname}-green.azurewebsites.net' 
+  // }
+  // { 
+  //   name: 'ApiSettings__Cors__2'
+  //   value: 'https://${spaHostname}.azurewebsites.net' 
+  // }
+  // { 
+  //   name: 'ApiSettings__Cors__3'
+  //   value: 'https://${spaHostname}-green.azurewebsites.net' 
+  // }
+  { 
+    name: 'ApiSettings__UserAssignedClientId'
+    value: ManagedIdentity.properties.clientId 
+  }
+  { 
+    name: 'AzureAD__ClientId'
+    value: apiAadClientId 
+  }
+  { 
+    name: 'ApiSettings__ConnectionString'
+    value: database.outputs.apiDatabaseConnectionString
+  }
+]
 
 resource WebApi 'Microsoft.Web/sites@2021-01-15' = {
   name: apiName
@@ -28,17 +99,8 @@ resource WebApi 'Microsoft.Web/sites@2021-01-15' = {
     siteConfig: {
       minTlsVersion: '1.2'
       netFrameworkVersion: 'v5.0'
+      appSettings: settings
     }
-  }
-}
-
-resource WebAppAppInsights 'Microsoft.Insights/components@2020-02-02' = {
-  name: '${apiName}-appi'
-  location: location
-  kind: 'Web'
-  properties: {
-    Application_Type: 'web'
-    WorkspaceResourceId: logAnalyticsWorkspaceId
   }
 }
 
@@ -84,6 +146,7 @@ resource WebApiGreen 'Microsoft.Web/sites/slots@2021-01-15' = if (deploySlot) {
     siteConfig: {
       minTlsVersion: '1.2'
       netFrameworkVersion: 'v5.0'
+      appSettings: settings
     }
   }
 }
