@@ -49,4 +49,4 @@ output containerAppResourceGroup string = inr.outputs.containerAppResourceGroup
 output appResourceGroupName string = inr.outputs.appResourceGroupName
 output appKeyVaultName string = inr.outputs.appKeyVaultName
 output apiKeySecretName string = inr.outputs.apiKeySecretName
-
+output databaseConnectionString string = inr.outputs.databaseConnectionString
