@@ -10,7 +10,7 @@ param platformRgName string
 
 var hasSlot = environmentName != 'test'
 
-module platformRg '../rg.bicep' = {
+module platformRg '../common/rg.bicep' = {
   name: '${deployment().name}-platformrg'
   scope: subscription()
   params: {

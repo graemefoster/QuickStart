@@ -17,9 +17,12 @@ param environmentName string
 @description('Publisher email used for the apim service')
 param apimPublisherEmail string
 
+@description('Pass false to break the components into their own resource groups. Using a single Resource group makes it easier to delete everything')
+param singleResourceGroup bool = true
+
 param location string = deployment().location
 
-var platformRgName = '${resourcePrefix}-platform-${environmentName}-rg'
+var platformRgName = singleResourceGroup ? '${resourcePrefix}-${environmentName}-rg' : '${resourcePrefix}-platform-${environmentName}-rg'
 var platformMetadataName = '${resourcePrefix}-platform-metadata-${environmentName}-rg'
 
 resource platformResourceGroup 'Microsoft.Resources/resourceGroups@2021-04-01' = {
@@ -28,7 +31,7 @@ resource platformResourceGroup 'Microsoft.Resources/resourceGroups@2021-04-01' =
 }
 
 resource platformMetadataResourceGroup 'Microsoft.Resources/resourceGroups@2021-04-01' = {
-  name: platformMetadataName
+  name: singleResourceGroup ? platformRgName : platformMetadataName
   location: location
 }
 
