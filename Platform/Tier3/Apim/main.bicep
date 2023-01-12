@@ -74,7 +74,7 @@ resource Api 'Microsoft.ApiManagement/service/apis@2021-04-01-preview' = {
     name: 'policy'
     properties: {
       format: 'xml'
-      value: '<policies><inbound><cors><allowed-origins><origin>${cors0}</origin><origin>${cors1}</origin><origin>${cors2}</origin><origin>${cors3}</origin></allowed-origins><allowed-methods><method>GET</method><method>POST</method></allowed-methods><allowed-headers><header>*</header></allowed-headers></cors><set-backend-service backend-id=\'${backendName}\' /></inbound><backend><forward-request /></backend><outbound /><on-error /></policies>'
+      value: '<policies><inbound><cors><allowed-origins><origin>${cors0}</origin><origin>${cors1}</origin><origin>${cors2}</origin><origin>${cors3}</origin></allowed-origins><allowed-methods><method>GET</method><method>POST</method></allowed-methods><allowed-headers><header>*</header></allowed-headers></cors><set-backend-service backend-id=\'${ApiBackend.name}\' /></inbound><backend><forward-request /></backend><outbound /><on-error /></policies>'
     }
   }
 
