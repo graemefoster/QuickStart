@@ -16,7 +16,7 @@ jobs:
 
   deploy-platform-test:
     runs-on: ubuntu-latest
-    environment: Test
+    environment: test
     env:
       SEPARATE_AAD_LOGIN: ${{ secrets.AAD_AZURE_CREDENTIALS != null && secrets.AAD_AZURE_CREDENTIALS != '' }}
 
