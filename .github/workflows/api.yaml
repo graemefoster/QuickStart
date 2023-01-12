@@ -93,7 +93,7 @@ jobs:
 
     - name: 'Fetch Api Metadata'
       id: 'fetchApiMetadata'
-      run: 
+      run: |
         echo "apiName=$(az deployment sub show -n "${{ secrets.RESOURCE_PREFIX }}-test-apps" --query "properties.outputs.apiName.value" -o tsv)" >> $GITHUB_OUTPUT
         echo "databaseConnectionString=$(az deployment sub show -n "${{ secrets.RESOURCE_PREFIX }}-test-apps" --query "properties.outputs.databaseConnectionString.value" -o tsv)" >> $GITHUB_OUTPUT
 

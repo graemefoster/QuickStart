@@ -54,7 +54,7 @@ jobs:
 
       - name: 'Fetch ContainerApp Metadata'
         id: 'fetchContainerAppMetadata'
-        run: 
+        run: |
           echo "containerAppName=$(az deployment sub show -n "${{ secrets.RESOURCE_PREFIX }}-test-apps" --query "properties.outputs.containerAppName.value" -o tsv)" >> $GITHUB_OUTPUT
           echo "containerAppResourceGroup=$(az deployment sub show -n "${{ secrets.RESOURCE_PREFIX }}-test-apps" --query "properties.outputs.containerAppResourceGroup.value" -o tsv)" >> $GITHUB_OUTPUT
         
