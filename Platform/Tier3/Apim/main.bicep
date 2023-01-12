@@ -119,7 +119,7 @@ resource PetsApiSubscription 'Microsoft.ApiManagement/service/subscriptions@2021
 }
 
 module appConsumerApiKeySecret 'subscription-secret.bicep' = {
-  name: '${deployment().name}-secret'
+  name: '${deployment().name}-app-secret'
   scope: subscription()
   params: {
     consumerKeyVaultName: appConsumerKeyVaultName
@@ -130,7 +130,7 @@ module appConsumerApiKeySecret 'subscription-secret.bicep' = {
 }
 
 module spaConsumerApiKeySecret 'subscription-secret.bicep' = {
-  name: '${deployment().name}-secret'
+  name: '${deployment().name}-spa-secret'
   scope: subscription()
   params: {
     consumerKeyVaultName: spaConsumerKeyVaultName
