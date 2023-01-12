@@ -17,24 +17,21 @@ param environmentName string
 @description('Publisher email used for the apim service')
 param apimPublisherEmail string
 
+param singleResourceGroup bool = true
+
 param location string = deployment().location
 
-var platformRgName = '${resourcePrefix}-platform-${environmentName}-rg'
-var platformMetadataName = '${resourcePrefix}-platform-metadata-${environmentName}-rg'
+var platformRgName = singleResourceGroup ? '${resourcePrefix}-${environmentName}-rg' :  '${resourcePrefix}-platform-${environmentName}-rg'
+var deploymentName = 'platform-${resourcePrefix}-${environmentName}'
 
 resource platformResourceGroup 'Microsoft.Resources/resourceGroups@2021-04-01' = {
   name: platformRgName
   location: location
 }
 
-resource platformMetadataResourceGroup 'Microsoft.Resources/resourceGroups@2021-04-01' = {
-  name: platformMetadataName
-  location: location
-}
-
 module PlatformDeployment './Tier1/main.bicep' = {
-  name: 'platform'
-  scope: platformMetadataResourceGroup
+  name: deploymentName
+  scope: platformResourceGroup
   params: {
     location: location
     resourcePrefix: resourcePrefix
@@ -43,7 +40,18 @@ module PlatformDeployment './Tier1/main.bicep' = {
     environmentName: environmentName
     apimPublisherEmail: apimPublisherEmail
     platformRgName: platformResourceGroup.name
+    singleResourceGroupDeployment: singleResourceGroup
   }
 }
 
-output platformMetadataResourceGroup string = PlatformDeployment.outputs.platformMetadataResourceGroupName
+output platformResourceGroupName string = platformRgName
+output serverFarmId string = PlatformDeployment.outputs.serverFarmId
+output databaseServerName string = PlatformDeployment.outputs.databaseServerName
+output logAnalyticsWorkspaceId string = PlatformDeployment.outputs.logAnalyticsWorkspaceId
+output containerEnvironmentId string = PlatformDeployment.outputs.containerEnvironmentId
+output apimHostname string = PlatformDeployment.outputs.apimHostname
+output resourcePrefix string = PlatformDeployment.outputs.resourcePrefix
+output databaseAdministratorName string = PlatformDeployment.outputs.databaseAdministratorName
+output environmentName string = PlatformDeployment.outputs.environmentName
+output singleResourceGroupDeployment bool = PlatformDeployment.outputs.singleResourceGroupDeployment
+output uniqueness string = PlatformDeployment.outputs.uniqueness

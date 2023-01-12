@@ -5,7 +5,6 @@ param containerImage string
 param environmentId string
 param location string = resourceGroup().location
 
-
 resource containerApp 'Microsoft.App/containerApps@2022-06-01-preview' = {
   name: containerAppName
   location: location

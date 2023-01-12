@@ -1,18 +1,28 @@
-targetScope = 'resourceGroup'
+targetScope = 'subscription'
 
-param location string = resourceGroup().location
+param location string = deployment().location
+param resourcePrefix string
+param environmentName string
 
-//fetch platform information
+//fetch platform information. Assumption that this is in a well known location
 resource PlatformMetadata 'Microsoft.Resources/deployments@2022-09-01' existing = {
-  name: 'platform'
+  name: '${resourcePrefix}-${environmentName}'
 }
 
 module inr './Tier2/main.bicep' = {
-  name: '${deployment().name}-inr'
+  name: '${deployment().name}-apps'
   params: {
     environmentName: PlatformMetadata.properties.outputs.environmentName.value
     resourcePrefix: PlatformMetadata.properties.outputs.resourcePrefix.value
+    platformResourceGroupName: PlatformMetadata.properties.outputs.platformResourceGroupName.value
+    singleResourceGroupDeployment: PlatformMetadata.properties.outputs.singleResourceGroupDeployment.value
+    apimHostname: PlatformMetadata.properties.outputs.apimHostname.value
+    containerEnvironmentId: PlatformMetadata.properties.outputs.containerEnvironmentId.value
+    databaseServerName: PlatformMetadata.properties.outputs.databaseServerName.value
+    logAnalyticsWorkspaceId: PlatformMetadata.properties.outputs.logAnalyticsWorkspaceId.value
+    serverFarmId: PlatformMetadata.properties.outputs.serverFarmId.value
     location: location
+    uniqueness: PlatformMetadata.properties.outputs.uniqueness.value
   }
 }
 

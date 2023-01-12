@@ -1,16 +1,20 @@
-targetScope = 'resourceGroup'
+targetScope = 'subscription'
 
 param resourcePrefix string
 param environmentName string
-param location string = resourceGroup().location
+param location string
+param platformResourceGroupName string
+param singleResourceGroupDeployment bool
+param databaseServerName string
+param logAnalyticsWorkspaceId string
+param containerEnvironmentId string
+param serverFarmId string
+param apimHostname string
+param uniqueness string
 
-//fetch platform information
-resource PlatformMetadata 'Microsoft.Resources/deployments@2022-09-01' existing = {
-  name: 'platform'
-}
+var apiRgName = '${resourcePrefix}-${environmentName}-api-rg'
 
-var apiRgName = '${resourcePrefix}-api-${environmentName}-rg'
-module apiResourceGroup '../rg.bicep' = {
+module apiResourceGroup '../rg.bicep' = if (!singleResourceGroupDeployment) {
   name: '${deployment().name}-apimrg'
   scope: subscription()
   params: {
@@ -21,20 +25,21 @@ module apiResourceGroup '../rg.bicep' = {
 
 module ApiDeployment './api/main.bicep' = {
   name: '${deployment().name}-api'
-  scope: resourceGroup(apiRgName)
+  scope: resourceGroup(singleResourceGroupDeployment ? platformResourceGroupName : apiRgName)
   params: {
     environmentName: environmentName
     resourcePrefix: resourcePrefix
-    platformResourceGroupName: PlatformMetadata.properties.outputs.platformResourceGroupName.value
-    databaseServerName: PlatformMetadata.properties.outputs.databaseServerName.value
-    logAnalyticsWorkspaceId: PlatformMetadata.properties.outputs.logAnalyticsWorkspaceId.value
-    serverFarmId: PlatformMetadata.properties.outputs.serverFarmId.value
+    platformResourceGroupName: platformResourceGroupName
+    databaseServerName: databaseServerName
+    logAnalyticsWorkspaceId: logAnalyticsWorkspaceId
+    serverFarmId: serverFarmId
     location: location
+    uniqueness: uniqueness
   }
 }
 
-var microserviceRgName = '${resourcePrefix}-microservice-${environmentName}-rg'
-module microserviceResourceGroup '../rg.bicep' = {
+var microserviceRgName = '${resourcePrefix}-${environmentName}-microservice-rg'
+module microserviceResourceGroup '../rg.bicep' = if (!singleResourceGroupDeployment) {
   name: '${deployment().name}-microservicerg'
   scope: subscription()
   params: {
@@ -45,17 +50,17 @@ module microserviceResourceGroup '../rg.bicep' = {
 
 module MicroServiceDeployment './microservice/main.bicep' = {
   name: '${deployment().name}-microservice'
-  scope: resourceGroup(microserviceRgName)
+  scope: resourceGroup(singleResourceGroupDeployment ? platformResourceGroupName : microserviceRgName)
   params: {
     location: location
-    environmentId: PlatformMetadata.properties.outputs.containerEnvironmentId.value
+    environmentId: containerEnvironmentId
     containerAppName: 'pet-ownership'
     containerImage: 'ghcr.io/graemefoster/sample-microservice:latest'
   }
 }
 
-var appRgName = '${resourcePrefix}-app-${environmentName}-rg'
-module appResourceGroup '../rg.bicep' = {
+var appRgName = '${resourcePrefix}-${environmentName}-app-rg'
+module appResourceGroup '../rg.bicep' = if (!singleResourceGroupDeployment) {
   name: '${deployment().name}-apprg'
   scope: subscription()
   params: {
@@ -66,20 +71,21 @@ module appResourceGroup '../rg.bicep' = {
 
 module AppDeployment './app/main.bicep' = {
   name: '${deployment().name}-app'
-  scope: resourceGroup(appRgName)
+  scope: resourceGroup(singleResourceGroupDeployment ? platformResourceGroupName : appRgName)
   params: {
     environmentName: environmentName
     resourcePrefix: resourcePrefix
     location: location
-    logAnalyticsWorkspaceId: PlatformMetadata.properties.outputs.logAnalyticsWorkspaceId.value
-    serverFarmId: PlatformMetadata.properties.outputs.serverFarmId.value
-    containerAppFqdn:MicroServiceDeployment.outputs.containerAppFqdn
-    apiHostName: PlatformMetadata.properties.outputs.apimHostname.value
+    logAnalyticsWorkspaceId: logAnalyticsWorkspaceId
+    serverFarmId: serverFarmId
+    containerAppFqdn: MicroServiceDeployment.outputs.containerAppFqdn
+    apiHostName: apimHostname
+    uniqueness: uniqueness
   }
 }
 
-var spaRgName = '${resourcePrefix}-spa-${environmentName}-rg'
-module spaResourceGroup '../rg.bicep' = {
+var spaRgName = '${resourcePrefix}-${environmentName}-spa-rg'
+module spaResourceGroup '../rg.bicep' = if (!singleResourceGroupDeployment) {
   name: '${deployment().name}-sparg'
   scope: subscription()
   params: {
@@ -90,14 +96,14 @@ module spaResourceGroup '../rg.bicep' = {
 
 module SpaDeployment './spa/main.bicep' = {
   name: '${deployment().name}-spa'
-  scope: resourceGroup(appRgName)
+  scope: resourceGroup(singleResourceGroupDeployment ? platformResourceGroupName : spaRgName)
   params: {
     environmentName: environmentName
     resourcePrefix: resourcePrefix
     location: location
-    logAnalyticsWorkspaceId: PlatformMetadata.properties.outputs.logAnalyticsWorkspaceId.value
-    serverFarmId: PlatformMetadata.properties.outputs.serverFarmId.value
-
+    logAnalyticsWorkspaceId: logAnalyticsWorkspaceId
+    serverFarmId: serverFarmId
+    uniqueness: uniqueness
   }
 }
 
@@ -110,6 +116,6 @@ output spaSlotFqdn string = SpaDeployment.outputs.appSlotHostname
 output apiSlotFqdn string = ApiDeployment.outputs.appSlotHostname
 output microserviceFqdn string = MicroServiceDeployment.outputs.containerAppFqdn
 
-output appResourceGroupName string = appRgName
+output appResourceGroupName string = singleResourceGroupDeployment ? platformResourceGroupName : appRgName
 output appKeyVaultName string = AppDeployment.outputs.appKeyVaultName
 output apiKeySecretName string = AppDeployment.outputs.apiKeySecretName

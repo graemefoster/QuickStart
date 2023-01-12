@@ -1,3 +1,5 @@
+targetScope = 'resourceGroup'
+
 param resourcePrefix string
 param serverFarmId string
 param environmentName string
@@ -8,8 +10,9 @@ param logAnalyticsWorkspaceId string
 // param apiAadClientId string
 // param appAadClientId string
 param location string = resourceGroup().location
+param uniqueness string
 
-var appHostname = '${resourcePrefix}-${uniqueString(resourceGroup().name)}-${environmentName}-spa'
+var appHostname = '${resourcePrefix}-${uniqueness}-${environmentName}-spa'
 var deploySlot = environmentName != 'test'
 
 resource WebAppAppInsights 'Microsoft.Insights/components@2020-02-02' = {

@@ -11,12 +11,12 @@ param apiHostName string
 // param apiHostName string
 // param appAadClientId string
 param location string = resourceGroup().location
-
+param uniqueness string
 
 var subscriptionSecretName = 'ApiSubscriptionKey'
 var deploySlot = environmentName != 'test'
 
-var appHostname = '${resourcePrefix}-${uniqueString(resourceGroup().name)}-${environmentName}-webapp'
+var appHostname = '${resourcePrefix}-${uniqueness}-${environmentName}-webapp'
 var appKeyVaultName = '${resourcePrefix}-app-${environmentName}-kv'
 
 @description('This is the built-in Key Vault Administrator role. See https://docs.microsoft.com/azure/role-based-access-control/built-in-roles#key-vault-administrator')

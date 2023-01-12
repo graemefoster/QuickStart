@@ -6,11 +6,12 @@ param platformResourceGroupName string
 param logAnalyticsWorkspaceId string
 param serverFarmId string
 param databaseServerName string
+param uniqueness string
 
 param location string = resourceGroup().location
 
-var apiName = '${resourcePrefix}-${uniqueString(resourceGroup().name)}-${environmentName}-api'
-var apiMsiName = '${resourcePrefix}-${uniqueString(resourceGroup().name)}-${environmentName}-msi'
+var apiName = '${resourcePrefix}-${uniqueness}-${environmentName}-api'
+var apiMsiName = '${resourcePrefix}-${uniqueness}-${environmentName}-msi'
 
 var deploySlot = environmentName != 'test'
 

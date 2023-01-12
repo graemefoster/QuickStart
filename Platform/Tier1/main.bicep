@@ -7,20 +7,14 @@ param environmentName string
 param apimPublisherEmail string
 param location string = resourceGroup().location
 param platformRgName string
+param singleResourceGroupDeployment bool
 
 var hasSlot = environmentName != 'test'
 
-module platformRg '../rg.bicep' = {
-  name: '${deployment().name}-platformrg'
-  scope: subscription()
-  params: {
-    resourceGroupName: platformRgName
-    location: location
-  }
-}
+var uniqueness = uniqueString(resourceGroup().name)
 
 module PlatformDeployment './inner.bicep' = {
-  name: 'DeployPlatform'
+  name: '${deployment().name}-inner'
   scope: resourceGroup(platformRgName)
   params: {
     location: location
@@ -34,7 +28,6 @@ module PlatformDeployment './inner.bicep' = {
 }
 
 output platformResourceGroupName string = platformRgName
-output platformMetadataResourceGroupName string = resourceGroup().name
 output serverFarmId string = PlatformDeployment.outputs.serverFarmId
 output databaseServerName string = PlatformDeployment.outputs.databaseServerName
 output logAnalyticsWorkspaceId string = PlatformDeployment.outputs.logAnalyticsWorkspaceId
@@ -43,3 +36,5 @@ output apimHostname string = PlatformDeployment.outputs.apimHostname
 output resourcePrefix string = resourcePrefix
 output databaseAdministratorName string = databaseAdministratorName
 output environmentName string = environmentName
+output singleResourceGroupDeployment bool = singleResourceGroupDeployment
+output uniqueness string =uniqueness
