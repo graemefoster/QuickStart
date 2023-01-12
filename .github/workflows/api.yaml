@@ -74,19 +74,19 @@ jobs:
         creds: ${{ secrets.AZURE_CREDENTIALS }}
 
     - name: 'Download package'
-      uses: actions/download-artifact@v2
+      uses: actions/download-artifact@v3
       with:
         name: api
         path: api
 
     - name: 'Download database script'
-      uses: actions/download-artifact@v2
+      uses: actions/download-artifact@v3
       with:
         name: database-script
         path: database-script
 
     - name: 'Download database deployer'
-      uses: actions/download-artifact@v2
+      uses: actions/download-artifact@v3
       with:
         name: database-deployer
         path: database-deployer
@@ -123,18 +123,18 @@ jobs:
       with:
         creds: ${{ secrets.AZURE_CREDENTIALS }}
     - name: 'Download package'
-      uses: actions/download-artifact@v2
+      uses: actions/download-artifact@v3
       with:
         name: api
         path: api
     - name: 'Download database script'
-      uses: actions/download-artifact@v2
+      uses: actions/download-artifact@v3
       with:
         name: database-script
         path: database-script
 
     - name: 'Download database deployer'
-      uses: actions/download-artifact@v2
+      uses: actions/download-artifact@v3
       with:
         name: database-deployer
         path: database-deployer
