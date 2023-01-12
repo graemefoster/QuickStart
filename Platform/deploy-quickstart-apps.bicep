@@ -50,3 +50,5 @@ output appResourceGroupName string = inr.outputs.appResourceGroupName
 output appKeyVaultName string = inr.outputs.appKeyVaultName
 output apiKeySecretName string = inr.outputs.apiKeySecretName
 output databaseConnectionString string = inr.outputs.databaseConnectionString
+output managedIdentityAppId string = inr.outputs.managedIdentityAppId
+output managedIdentityName string = inr.outputs.managedIdentityName

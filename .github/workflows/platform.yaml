@@ -97,24 +97,24 @@ jobs:
         with:
           scope: 'subscription'
           region: 'australiaeast'
-          template: ./Platform/deploy-quickstart-apim
+          template: ./Platform/deploy-quickstart-apim.bicep
           deploymentName: '${{ secrets.RESOURCE_PREFIX }}-test-apim'
           parameters: >
             resourcePrefix=${{ secrets.RESOURCE_PREFIX }} 
             environmentName=test
           failOnStdErr: true
 
-      # - name: Setup dotnet
-      #   uses: actions/setup-dotnet@v3
-      #   with:
-      #     dotnet-version: '7.0.x'
-      # - run: dotnet restore ./SqlAadMigrationDeployer/SqlAadMigrationDeployer.csproj
+      - name: Setup dotnet
+        uses: actions/setup-dotnet@v3
+        with:
+          dotnet-version: '7.0.x'
+      - run: dotnet restore ./SqlAadMigrationDeployer/SqlAadMigrationDeployer.csproj
 
-      # - name: Build Database Migrator
-      #   run: dotnet build ./SqlAadMigrationDeployer/SqlAadMigrationDeployer.csproj --configuration Release --no-restore
+      - name: Build Database Migrator
+        run: dotnet build ./SqlAadMigrationDeployer/SqlAadMigrationDeployer.csproj --configuration Release --no-restore
 
-      # - name: Grant access to database to Test Api
-      #   run: dotnet run --project ./SqlAadMigrationDeployer/SqlAadMigrationDeployer.csproj add-managed-identity "${{ steps.appsDeploy.outputs.databaseConnectionString }}" "${{ steps.appsDeploy.outputs.managedIdentityName }}" "${{ steps.appsDeploy.outputs.managedIdentityAppId }}" "db_owner"
+      - name: Grant access to database to Test Api
+        run: dotnet run --project ./SqlAadMigrationDeployer/SqlAadMigrationDeployer.csproj add-managed-identity "${{ steps.appsDeploy.outputs.databaseConnectionString }}" "${{ steps.appsDeploy.outputs.managedIdentityName }}" "${{ steps.appsDeploy.outputs.managedIdentityAppId }}" "db_owner"
 
       - name: Logout of Azure
         run: |
