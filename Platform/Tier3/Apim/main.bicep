@@ -54,6 +54,10 @@ resource ApiAppInsights 'Microsoft.ApiManagement/service/loggers@2021-04-01-prev
 var backendName = '${apimApiName}backend'
 resource ApiBackend 'Microsoft.ApiManagement/service/backends@2022-04-01-preview' = {
   name: '${apimServiceName}/${backendName}'
+  properties: {
+    protocol: 'https'
+    url: 'https://${apiFqdn}/pets'
+  }
 }
 
 resource Api 'Microsoft.ApiManagement/service/apis@2021-04-01-preview' = {
