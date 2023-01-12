@@ -5,7 +5,6 @@ param serverFarmId string
 param environmentName string
 param logAnalyticsWorkspaceId string
 param containerAppFqdn string
-param productSubscriptionKey string
 param apiHostname string
 param apiAadClientId string
 param appAadClientId string
@@ -13,7 +12,51 @@ param location string = resourceGroup().location
 param uniqueness string
 
 var appHostname = '${resourcePrefix}-${uniqueness}-${environmentName}-spa'
+var appKeyVaultName = '${resourcePrefix}-spa-${environmentName}-kv'
 var deploySlot = environmentName != 'test'
+var subscriptionSecretName = 'ApiSubscriptionKey'
+
+resource AppKeyVault 'Microsoft.KeyVault/vaults@2021-06-01-preview' = {
+  name: appKeyVaultName
+  location: location
+  properties: {
+    sku: {
+      family: 'A'
+      name: 'standard'
+    }
+    tenantId: subscription().tenantId
+    enableRbacAuthorization: true
+  }
+}
+
+resource KeyVaultDiagnostics 'Microsoft.Insights/diagnosticSettings@2021-05-01-preview' = {
+  name: 'aspDiagnostics'
+  scope: AppKeyVault
+  properties: {
+    workspaceId: logAnalyticsWorkspaceId
+    metrics: [
+      {
+        category: 'AllMetrics'
+        enabled: true
+        retentionPolicy: {
+          days: 3
+          enabled: true
+        }
+      }
+    ]
+    logs: [
+      {
+        categoryGroup: 'allLogs'
+        enabled: true
+        retentionPolicy: {
+          days: 3
+          enabled: true
+        }
+      }
+    ]
+  }
+}
+
 
 resource WebAppAppInsights 'Microsoft.Insights/components@2020-02-02' = {
   name: '${appHostname}-appi'
@@ -36,7 +79,7 @@ var settings = [
   }
   {
     name: 'ApiSettings__SubscriptionKey'
-    value: productSubscriptionKey
+    value: '@Microsoft.KeyVault(VaultName=${AppKeyVault.name};SecretName=${subscriptionSecretName})'
   }
   {
     name: 'ApiSettings__URL'

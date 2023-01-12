@@ -116,7 +116,6 @@ module SpaDeployment './spa/main.bicep' = {
     apiHostname: apimHostname
     appAadClientId: appClientId
     containerAppFqdn: MicroServiceDeployment.outputs.containerAppFqdn
-    productSubscriptionKey: '???'
   }
 }
 
