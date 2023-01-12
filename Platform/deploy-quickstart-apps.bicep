@@ -35,6 +35,8 @@ module inr './Tier2/main.bicep' = {
 }
 
 output appName string = inr.outputs.appName
+output apiName string = inr.outputs.apiName
+output spaName string = inr.outputs.spaName
 output appFqdn string = inr.outputs.appFqdn
 output spaFqdn string = inr.outputs.spaFqdn
 output apiFqdn string = inr.outputs.apiFqdn

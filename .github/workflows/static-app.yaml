@@ -50,9 +50,13 @@ jobs:
           name: app
           path: app
 
+      - name: 'Fetch Spa Metadata'
+        id: 'fetchSpaMetadata'
+        run: echo "spaName=$(az deployment sub show -n "${{ secrets.RESOURCE_PREFIX }}-test-apps" --query "properties.outputs.spaName.value" -o tsv)" >> $GITHUB_OUTPUT
+
       - uses: azure/webapps-deploy@v2
         with:
-          app-name: ${{ secrets.AZURE_SPA_NAME }}
+          app-name: ${{ steps.fetchSpaMetadata.outputs.spaName }}
           package: "./app/"
       - name: logout
         run: |

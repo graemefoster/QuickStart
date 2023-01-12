@@ -116,12 +116,17 @@ module SpaDeployment './spa/main.bicep' = {
 }
 
 output appName string = AppDeployment.outputs.appName
+output apiName string = ApiDeployment.outputs.appName
+output spaName string = SpaDeployment.outputs.appName
+
 output appFqdn string = AppDeployment.outputs.appHostname
 output spaFqdn string = SpaDeployment.outputs.appHostname
 output apiFqdn string = ApiDeployment.outputs.appHostname
+
 output appSlotFqdn string = AppDeployment.outputs.appSlotHostname
 output spaSlotFqdn string = SpaDeployment.outputs.appSlotHostname
 output apiSlotFqdn string = ApiDeployment.outputs.appSlotHostname
+
 output microserviceFqdn string = MicroServiceDeployment.outputs.containerAppFqdn
 
 output appResourceGroupName string = singleResourceGroupDeployment ? platformResourceGroupName : appRgName

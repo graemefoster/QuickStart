@@ -50,11 +50,11 @@ jobs:
 
       - name: 'Fetch Apps Metadata'
         id: 'fetchAppMetadata'
-        run: echo "appname=$(az deployment sub show -n "${{ secrets.RESOURCE_PREFIX }}-test-apps" --query "properties.outputs.appName.value" -o tsv)" >> $GITHUB_OUTPUT
+        run: echo "appName=$(az deployment sub show -n "${{ secrets.RESOURCE_PREFIX }}-test-apps" --query "properties.outputs.appName.value" -o tsv)" >> $GITHUB_OUTPUT
 
       - uses: azure/webapps-deploy@v2
         with: 
-          app-name: ${{ steps.fetchAppMetadata.outputs.appname }}
+          app-name: ${{ steps.fetchAppMetadata.outputs.appName }}
           package: './app/'
       - name: logout
         run: |

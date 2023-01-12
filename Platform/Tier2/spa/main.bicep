@@ -87,6 +87,7 @@ resource WebAppGreen 'Microsoft.Web/sites/slots@2021-01-15' = if (deploySlot) {
   }
 }
 
+output appName string = WebApp.name
 output appHostname string = WebApp.properties.hostNames[0]
 output appSlotHostname string = deploySlot ? WebAppGreen.properties.hostNames[0] : ''
 output appInsightsKey string = reference(WebAppAppInsights.id).InstrumentationKey
