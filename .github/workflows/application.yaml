@@ -41,6 +41,7 @@ jobs:
       - uses: azure/login@v1
         with:
           creds: ${{ secrets.AZURE_CREDENTIALS }}
+
       - name: 'Run Azure webapp deploy action using publish profile credentials'
         uses: actions/download-artifact@v2
         with:
