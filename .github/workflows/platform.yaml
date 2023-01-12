@@ -45,17 +45,6 @@ jobs:
             apimPublisherEmail=${{ secrets.APIM_PUBLISHER_EMAIL }}
           failOnStdErr: false # container-apps produces warning
 
-      - name: Deploy Test Applications and Databases
-        uses: azure/arm-deploy@v1
-        id: 'appsDeploy'
-        with:
-          scope: 'subscription'
-          region: 'australiaeast'
-          template: ./Platform/deploy-quickstart-apps.bicep
-          parameters: >
-            environmentName=test
-          failOnStdErr: false
-
       - name: Logout of Azure
         if: ${{ env.SEPARATE_AAD_LOGIN }}
         run: |
@@ -71,9 +60,9 @@ jobs:
         id: setup-test-aad
         run: >
           ./Platform/setup-aad.sh
-          ${{ steps.appsDeploy.outputs.applicationHostname }} 
-          ${{ steps.appsDeploy.outputs.apiHostname }}
-          ${{ steps.appsDeploy.outputs.spaHostname }}
+          ${{ secrets.RESOURCE_PREFIX }} 
+          test
+          ${{ steps.platformDeploy.outputs.uniqueness }}
 
       - name: Logout of Azure
         if: ${{ env.SEPARATE_AAD_LOGIN }}
@@ -86,31 +75,43 @@ jobs:
         with:
           creds: ${{secrets.AZURE_CREDENTIALS}} 
 
-      - name: Configure Test Applications
+      - name: Deploy Test Applications and Databases
         uses: azure/arm-deploy@v1
-        id: 'testConfigurationDeploy'
+        id: 'appsDeploy'
         with:
           scope: 'subscription'
           region: 'australiaeast'
-          template: ./Platform/deploy-quickstart-apps-configuration.bicep
+          template: ./Platform/deploy-quickstart-apps.bicep
           parameters: >
-            appClientId=${{ steps.setup-test-aad.outputs.applicationClientId }}
-            apiClientId=${{ steps.setup-test-aad.outputs.apiClientId }}
-            appClientSecret=${{ steps.setup-test-aad.outputs.applicationClientSecret }}
+            resourcePrefix=${{ secrets.RESOURCE_PREFIX }} 
             environmentName=test
-          failOnStdErr: true
+          failOnStdErr: false
 
-      - name: Setup dotnet
-        uses: actions/setup-dotnet@v1
-        with:
-          dotnet-version: '5.0.x'
-      - run: dotnet restore ./SqlAadMigrationDeployer/SqlAadMigrationDeployer.csproj
+      # - name: Configure Test Applications
+      #   uses: azure/arm-deploy@v1
+      #   id: 'testConfigurationDeploy'
+      #   with:
+      #     scope: 'subscription'
+      #     region: 'australiaeast'
+      #     template: ./Platform/deploy-quickstart-apps-configuration.bicep
+      #     parameters: >
+      #       appClientId=${{ steps.setup-test-aad.outputs.applicationClientId }}
+      #       apiClientId=${{ steps.setup-test-aad.outputs.apiClientId }}
+      #       appClientSecret=${{ steps.setup-test-aad.outputs.applicationClientSecret }}
+      #       environmentName=test
+      #     failOnStdErr: true
 
-      - name: Build Database Migrator
-        run: dotnet build ./SqlAadMigrationDeployer/SqlAadMigrationDeployer.csproj --configuration Release --no-restore
+      # - name: Setup dotnet
+      #   uses: actions/setup-dotnet@v1
+      #   with:
+      #     dotnet-version: '5.0.x'
+      # - run: dotnet restore ./SqlAadMigrationDeployer/SqlAadMigrationDeployer.csproj
 
-      - name: Grant access to database to Test Api
-        run: dotnet run --project ./SqlAadMigrationDeployer/SqlAadMigrationDeployer.csproj add-managed-identity "${{ steps.appsDeploy.outputs.databaseConnectionString }}" "${{ steps.appsDeploy.outputs.managedIdentityName }}" "${{ steps.appsDeploy.outputs.managedIdentityAppId }}" "db_owner"
+      # - name: Build Database Migrator
+      #   run: dotnet build ./SqlAadMigrationDeployer/SqlAadMigrationDeployer.csproj --configuration Release --no-restore
+
+      # - name: Grant access to database to Test Api
+      #   run: dotnet run --project ./SqlAadMigrationDeployer/SqlAadMigrationDeployer.csproj add-managed-identity "${{ steps.appsDeploy.outputs.databaseConnectionString }}" "${{ steps.appsDeploy.outputs.managedIdentityName }}" "${{ steps.appsDeploy.outputs.managedIdentityAppId }}" "db_owner"
 
       - name: Logout of Azure
         run: |
