@@ -103,9 +103,9 @@ jobs:
           failOnStdErr: true
 
       # - name: Setup dotnet
-      #   uses: actions/setup-dotnet@v1
+      #   uses: actions/setup-dotnet@v3
       #   with:
-      #     dotnet-version: '5.0.x'
+      #     dotnet-version: '7.0.x'
       # - run: dotnet restore ./SqlAadMigrationDeployer/SqlAadMigrationDeployer.csproj
 
       # - name: Build Database Migrator
@@ -210,9 +210,9 @@ jobs:
           failOnStdErr: true
 
       - name: Setup dotnet
-        uses: actions/setup-dotnet@v1
+        uses: actions/setup-dotnet@v3
         with:
-          dotnet-version: '5.0.x'
+          dotnet-version: '7.0.x'
       - run: dotnet restore ./SqlAadMigrationDeployer/SqlAadMigrationDeployer.csproj
 
       - name: Build Database Migrator

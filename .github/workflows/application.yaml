@@ -22,9 +22,9 @@ jobs:
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
     - uses: actions/checkout@v2
-    - uses: actions/setup-dotnet@v1
+    - uses: actions/setup-dotnet@v3
       with:
-        dotnet-version: '5.0.x'
+        dotnet-version: '7.0.x'
     - run: dotnet restore
     - run: dotnet build ./Application/WebApp/\SimpleMvcApp/\SimpleMvcApp.csproj --configuration Release --no-restore
     - run: dotnet publish ./Application/WebApp/\SimpleMvcApp/\SimpleMvcApp.csproj -c Release -o '${{ env.AZURE_WEBAPP_PACKAGE_PATH }}/published-app'

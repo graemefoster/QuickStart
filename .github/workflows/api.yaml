@@ -23,9 +23,9 @@ jobs:
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
     - uses: actions/checkout@v2
-    - uses: actions/setup-dotnet@v1
+    - uses: actions/setup-dotnet@v3
       with:
-        dotnet-version: '5.0.x'
+        dotnet-version: '7.0.x'
     - run: dotnet restore
     - run: dotnet build ./SqlAadMigrationDeployer/SqlAadMigrationDeployer.csproj --configuration Release --no-restore
     - run: dotnet publish ./SqlAadMigrationDeployer/SqlAadMigrationDeployer.csproj -c Release -o '${{ env.PACKAGE_PATH }}/database-deployer'
@@ -41,9 +41,9 @@ jobs:
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
     - uses: actions/checkout@v2
-    - uses: actions/setup-dotnet@v1
+    - uses: actions/setup-dotnet@v3
       with:
-        dotnet-version: '5.0.x'
+        dotnet-version: '7.0.x'
     - run: dotnet restore
     - run: dotnet build ./Application/Api/SimpleApiWithDatabase/SimpleApiWithDatabase.csproj --configuration Release --no-restore
     - run: dotnet test ./Application/Api/ApiTests/ApiTests.csproj --no-restore
@@ -66,9 +66,9 @@ jobs:
     runs-on: ubuntu-latest
     environment: Test
     steps:
-    - uses: actions/setup-dotnet@v1
+    - uses: actions/setup-dotnet@v3
       with:
-        dotnet-version: '5.0.x'
+        dotnet-version: '7.0.x'
     - uses: azure/login@v1
       with:
         creds: ${{ secrets.AZURE_CREDENTIALS }}
@@ -108,9 +108,9 @@ jobs:
     environment: Production
     if: github.ref == 'refs/heads/main'
     steps:
-    - uses: actions/setup-dotnet@v1
+    - uses: actions/setup-dotnet@v3
       with:
-        dotnet-version: '5.0.x'
+        dotnet-version: '7.0.x'
     - uses: azure/login@v1
       with:
         creds: ${{ secrets.AZURE_CREDENTIALS }}

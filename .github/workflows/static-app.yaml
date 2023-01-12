@@ -2,7 +2,6 @@ name: SPA
 
 env:
   AZURE_WEBAPP_PACKAGE_PATH: "./packages" # set this to the path to your web app project, defaults to the repository root
-  NODE_VERSION: '16.x'
 on:
   push:
     branches: [main]
@@ -22,11 +21,6 @@ jobs:
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
       - uses: actions/checkout@v2
-
-      - name: Use Node.js ${{ env.NODE_VERSION }}
-        uses: actions/setup-node@v1
-        with:
-          node-version: ${{ env.NODE_VERSION }}
 
       - name: npm install, build, and test
         working-directory: ./Application/StaticApp/sample-react-app
