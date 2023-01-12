@@ -36,7 +36,7 @@ jobs:
           scope: 'subscription'
           region: 'australiaeast'
           template: ./Platform/deploy-quickstart-platform.bicep
-          deploymentName: 'quickstart-test'
+          deploymentName: '${{ secrets.RESOURCE_PREFIX }}-test'
           parameters: >
             resourcePrefix=${{ secrets.RESOURCE_PREFIX }} 
             databaseAdministratorObjectId=${{ secrets.DEPLOYMENTPRINCIPAL_ID }} 
