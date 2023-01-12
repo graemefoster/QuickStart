@@ -108,27 +108,30 @@ EXEC sp_addrolemember '{role}', '{applicationName}'
             var nextPiece = new StringBuilder();
             foreach (var line in batchedSql.Split(Environment.NewLine))
             {
-                if (terminators.Any(x => line.Equals(x, StringComparison.InvariantCultureIgnoreCase)))
+                var trimmed = line.Trim();
+                if (terminators.Any(x => trimmed.Equals(x, StringComparison.InvariantCultureIgnoreCase)))
                 {
                     //ignore - we deal with transactions separately
                 }
-                else if (line.Equals("GO"))
+                else if (trimmed.Equals("GO"))
                 {
                     //terminator line. Return the sql if we have any
                     if (nextPiece.Length != 0)
                     {
+                        Console.WriteLine($"Executing: {nextPiece.ToString()}");
                         yield return ReplaceVariables(nextPiece.ToString());
                         nextPiece = new StringBuilder();
                     }
                 }
                 else
                 {
-                    nextPiece.AppendLine(line);
+                    nextPiece.AppendLine(trimmed);
                 }
             }
 
             if (nextPiece.Length != 0)
             {
+                Console.WriteLine($"Executing: {nextPiece.ToString()}");
                 yield return ReplaceVariables(nextPiece.ToString());
             }
         }
