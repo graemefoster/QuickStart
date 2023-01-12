@@ -26,9 +26,9 @@ module ApimConfiguration './Apim/main.bicep' = {
     logAnalyticsWorkspaceId: logAnalyticsWorkspaceId
     apiFqdn: apiFqdn
     appFqdn: appFqdn
-    appSlotFqdn: appSlotFqdn
+    appSlotFqdn: empty(appSlotFqdn) ? appFqdn : appSlotFqdn
     spaFqdn: spaFqdn
-    spaSlotFqdn: spaSlotFqdn
+    spaSlotFqdn: empty(spaSlotFqdn) ? spaFqdn : spaSlotFqdn
     environmentName: environmentName
     resourcePrefix: resourcePrefix
     location: location
