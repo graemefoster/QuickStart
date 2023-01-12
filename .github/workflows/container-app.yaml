@@ -57,6 +57,8 @@ jobs:
         run: 
           echo "containerAppName=$(az deployment sub show -n "${{ secrets.RESOURCE_PREFIX }}-test-apps" --query "properties.outputs.containerAppName.value" -o tsv)" >> $GITHUB_OUTPUT
           echo "containerAppResourceGroup=$(az deployment sub show -n "${{ secrets.RESOURCE_PREFIX }}-test-apps" --query "properties.outputs.containerAppResourceGroup.value" -o tsv)" >> $GITHUB_OUTPUT
+        
+      - run: az config set extension.use_dynamic_install=yes_without_prompt
 
       - name: "Deploy new revision to test"
         # Uses the az cli to update the latest revision of the container-app. This will direct all traffic to the new revision
