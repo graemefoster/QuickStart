@@ -51,67 +51,68 @@ jobs:
       - uses: azure/login@v1
         with:
           creds: ${{ secrets.AZURE_CREDENTIALS }}
-      - name: "Add az containerapp extension"
-        run: az extension add --source https://workerappscliextension.blob.core.windows.net/azure-cli-extension/containerapp-0.2.0-py2.py3-none-any.whl -y
-      - name: "Dpeloy new revision to test"
+
+      - name: 'Fetch ContainerApp Metadata'
+        id: 'fetchContainerAppMetadata'
+        run: 
+          echo "containerAppName=$(az deployment sub show -n "${{ secrets.RESOURCE_PREFIX }}-test-apps" --query "properties.outputs.containerAppName.value" -o tsv)" >> $GITHUB_OUTPUT
+          echo "containerAppResourceGroup=$(az deployment sub show -n "${{ secrets.RESOURCE_PREFIX }}-test-apps" --query "properties.outputs.containerAppResourceGroup.value" -o tsv)" >> $GITHUB_OUTPUT
+
+      - name: "Deploy new revision to test"
         # Uses the az cli to update the latest revision of the container-app. This will direct all traffic to the new revision
         run: |
           az containerapp update \
-            --name 'microservice-test' \
-            --resource-group '${{ secrets.RESOURCE_PREFIX }}-test-rg' \
+            --name '${{ steps.fetchContainerAppMetadata.outputs.containerAppName }}' \
+            --resource-group '${{ steps.fetchContainerAppMetadata.outputs.containerAppResourceGroup }}' \
             --image "ghcr.io/${{ github.actor }}/sample-microservice:${{github.run_number}}"
 
-  deploy-to-production-green:
-    needs: deploy-to-test
-    runs-on: ubuntu-latest
-    if: github.ref == 'refs/heads/main'
-    environment: Production
-    steps:
-      - uses: azure/login@v1
-        with:
-          creds: ${{ secrets.AZURE_CREDENTIALS }}
-      - name: "Add az containerapp extension"
-        run: az extension add --source https://workerappscliextension.blob.core.windows.net/azure-cli-extension/containerapp-0.2.0-py2.py3-none-any.whl -y
-      - name: "Deploy new revision to production green slot"
-        id: "deploy-new-revision"
-        # Uses the az cli to update the latest revision of the container-app. 
-        # We need the name of the current revision so we can use it for the blue/green swap after happy testing
-        run: |
-          REVISION_NAME=$(az containerapp show --name 'microservice-prod' --resource-group '${{ secrets.RESOURCE_PREFIX }}-prod-rg' --query 'latestRevisionName' -o tsv | tr -d '\r')
-          echo "Latest revision in containerapp is ${REVISION_NAME}"
-          NEW_REVISION_FQDN=$(az containerapp update \
-            --name 'microservice-prod' \
-            --resource-group '${{ secrets.RESOURCE_PREFIX }}-prod-rg' \
-            --image "ghcr.io/${{ github.actor }}/sample-microservice:${{github.run_number}}" \
-            --traffic-weight "latest=0,${REVISION_NAME}=100" \
-            --query "latestRevisionFqdn" -o tsv | tr -d '\r')
+  # deploy-to-production-green:
+  #   needs: deploy-to-test
+  #   runs-on: ubuntu-latest
+  #   if: github.ref == 'refs/heads/main'
+  #   environment: Production
+  #   steps:
+  #     - uses: azure/login@v1
+  #       with:
+  #         creds: ${{ secrets.AZURE_CREDENTIALS }}
+  #     - name: "Deploy new revision to production green slot"
+  #       id: "deploy-new-revision"
+  #       # Uses the az cli to update the latest revision of the container-app. 
+  #       # We need the name of the current revision so we can use it for the blue/green swap after happy testing
+  #       run: |
+  #         REVISION_NAME=$(az containerapp show --name 'microservice-prod' --resource-group '${{ secrets.RESOURCE_PREFIX }}-prod-rg' --query 'latestRevisionName' -o tsv | tr -d '\r')
+  #         echo "Latest revision in containerapp is ${REVISION_NAME}"
+  #         NEW_REVISION_FQDN=$(az containerapp update \
+  #           --name 'microservice-prod' \
+  #           --resource-group '${{ secrets.RESOURCE_PREFIX }}-prod-rg' \
+  #           --image "ghcr.io/${{ github.actor }}/sample-microservice:${{github.run_number}}" \
+  #           --traffic-weight "latest=0,${REVISION_NAME}=100" \
+  #           --query "latestRevisionFqdn" -o tsv | tr -d '\r')
 
-          echo "::set-output name=newRevisionFqdn::${NEW_REVISION_FQDN}"
-          echo "::set-output name=previousRevisionName::${REVISION_NAME}"
-          echo "##vso[task.setvariable variable=newRevisionFqdn;isOutput=true]${NEW_REVISION_FQDN}"
-          echo "##vso[task.setvariable variable=previousRevisionName;isOutput=true]${REVISION_NAME}"
-          echo "New revision can be tested at https://${NEW_REVISION_FQDN}"
+  #         echo "::set-output name=newRevisionFqdn::${NEW_REVISION_FQDN}"
+  #         echo "::set-output name=previousRevisionName::${REVISION_NAME}"
+  #         echo "##vso[task.setvariable variable=newRevisionFqdn;isOutput=true]${NEW_REVISION_FQDN}"
+  #         echo "##vso[task.setvariable variable=previousRevisionName;isOutput=true]${REVISION_NAME}"
+  #         echo "New revision can be tested at https://${NEW_REVISION_FQDN}"
 
-    outputs:
-      previousRevisionName: ${{ steps.deploy-new-revision.outputs.previousRevisionName }}
+  #   outputs:
+  #     previousRevisionName: ${{ steps.deploy-new-revision.outputs.previousRevisionName }}
 
-  deploy-to-production:
-    needs:
-      - deploy-to-production-green
-    runs-on: ubuntu-latest
-    if: github.ref == 'refs/heads/main'
-    environment: Production
-    steps:
-      - uses: azure/login@v1
-        with:
-          creds: ${{ secrets.AZURE_CREDENTIALS }}
-      - name: "Add az containerapp extension"
-        run: az extension add --source https://workerappscliextension.blob.core.windows.net/azure-cli-extension/containerapp-0.2.0-py2.py3-none-any.whl -y
-      - name: "Activate new revision"
-        # Change the weights so the new revision takes all the traffic and the previous none (a class blue/green switch)
-        run: |
-          az containerapp update \
-            --name 'microservice-prod' \
-            --resource-group '${{ secrets.RESOURCE_PREFIX }}-prod-rg' \
-            --traffic-weight "latest=100,${{ needs.deploy-to-production-green.outputs.previousRevisionName }}=0"          
+  # deploy-to-production:
+  #   needs:
+  #     - deploy-to-production-green
+  #   runs-on: ubuntu-latest
+  #   if: github.ref == 'refs/heads/main'
+  #   environment: Production
+  #   steps:
+  #     - uses: azure/login@v1
+  #       with:
+  #         creds: ${{ secrets.AZURE_CREDENTIALS }}
+  #     - name: "Activate new revision"
+  #       # Change the weights so the new revision takes all the traffic and the previous none (a class blue/green switch)
+  #       run: |
+  #         az containerapp update \
+  #           --name 'microservice-prod' \
+  #           --resource-group '${{ secrets.RESOURCE_PREFIX }}-prod-rg' \
+  #           --traffic-weight "latest=100,${{ needs.deploy-to-production-green.outputs.previousRevisionName }}=0"          
       

@@ -128,6 +128,8 @@ output spaSlotFqdn string = SpaDeployment.outputs.appSlotHostname
 output apiSlotFqdn string = ApiDeployment.outputs.appSlotHostname
 
 output microserviceFqdn string = MicroServiceDeployment.outputs.containerAppFqdn
+output containerAppName string = MicroServiceDeployment.outputs.containerAppFqdn
+output containerAppResourceGroup string = MicroServiceDeployment.outputs.containerAppFqdn
 
 output appResourceGroupName string = singleResourceGroupDeployment ? platformResourceGroupName : appRgName
 output appKeyVaultName string = AppDeployment.outputs.appKeyVaultName
