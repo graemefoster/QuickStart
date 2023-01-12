@@ -56,23 +56,9 @@ Next, let's move on to configuring the pipelines.
 
 Follow the instructions here [Github Actions Setup](./docs/actions-setup.md) to get started in Actions.
 
-## Azure Devops
-
-Follow the instructions here [Azure Devops Setup](./docs/az-devops-setup.md) to get started in Azure Devops.
-
 # Known issues
 
 ## Github Action Pipelines
-
-### Github Action Secret Detection
-
-My original intent was to deploy the platform as a set of Github Action jobs, each with a few steps. I hit some issues with Github's 'secret' detection logic which stopped me in my tracks.
-
-TLDR; A job can write an output variable to make it available to other jobs. If Github Actions thinks it detects a secret then it blocks that output (and the output is essentially empty).
-
-I had an output which contained something that Github had seen in a secret.... Technically the 'secret' wasn't secret, but Github Actions does not let you store plain-text project level variables. 
-
-I didn't want to write too much code to get around this so decided to keep all the steps in a single 'deploy-platform' job.
 
 ## Azure Active Directory
 
@@ -81,7 +67,6 @@ The sample defines two roles, Admin and User for authorisation. Both roles were 
 
 ### Audience in token
 Microsoft.Identity.Web can handle an audience in a token following the naming convention ``` api://<client-id> ``` . If you have a different audience remember to tell the library what to expect.
-
 
 ## Azure SQL AAD Authorisation
 

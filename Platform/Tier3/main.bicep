@@ -15,11 +15,6 @@ param consumerSecretName string
 
 param location string = deployment().location
 
-param appName string
-param appClientId string
-
-param apiClientId string
-
 module ApimConfiguration './Apim/main.bicep' = {
   name: '${deployment().name}-apim'
   scope: resourceGroup(apimResourceGroupName)
@@ -35,15 +30,5 @@ module ApimConfiguration './Apim/main.bicep' = {
     consumerKeyVaultName: consumerKeyVaultName
     consumerKeyVaultResourceGroup: appResourceGroupName
     consumerSecretName: consumerSecretName
-  }
-}
-
-module AppConfiguration './App/main.bicep' = {
-  name: '${deployment().name}-app'
-  scope: resourceGroup(appResourceGroupName)
-  params: {
-    appClientId: appClientId
-    apiClientId: apiClientId
-    appName: appName
   }
 }
