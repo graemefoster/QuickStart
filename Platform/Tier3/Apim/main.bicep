@@ -55,7 +55,7 @@ var backendName = '${apimApiName}backend'
 resource ApiBackend 'Microsoft.ApiManagement/service/backends@2022-04-01-preview' = {
   name: '${apimServiceName}/${backendName}'
   properties: {
-    protocol: 'https'
+    protocol: 'http'
     url: 'https://${apiFqdn}/pets'
   }
 }
