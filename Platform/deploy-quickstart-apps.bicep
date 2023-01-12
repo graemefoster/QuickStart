@@ -3,6 +3,11 @@ targetScope = 'subscription'
 param location string = deployment().location
 param resourcePrefix string
 param environmentName string
+param appClientId string
+param apiClientId string
+
+@secure()
+param appClientSecret string
 
 //fetch platform information. Assumption that this is in a well known location
 resource PlatformMetadata 'Microsoft.Resources/deployments@2022-09-01' existing = {
@@ -23,6 +28,9 @@ module inr './Tier2/main.bicep' = {
     serverFarmId: PlatformMetadata.properties.outputs.serverFarmId.value
     location: location
     uniqueness: PlatformMetadata.properties.outputs.uniqueness.value
+    appClientId: appClientId
+    apiClientId: apiClientId
+    appClientSecret: appClientSecret
   }
 }
 

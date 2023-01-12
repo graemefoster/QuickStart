@@ -85,6 +85,9 @@ jobs:
           parameters: >
             resourcePrefix=${{ secrets.RESOURCE_PREFIX }} 
             environmentName=test
+            appClientId=${{ steps.setup-test-aad.outputs.applicationClientId }}
+            apiClientId=${{ steps.setup-test-aad.outputs.apiClientId }}
+            appClientSecret=${{ steps.setup-test-aad.outputs.applicationClientSecret }}
           failOnStdErr: false
 
       # - name: Configure Test Applications

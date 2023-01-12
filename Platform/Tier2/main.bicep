@@ -11,6 +11,11 @@ param containerEnvironmentId string
 param serverFarmId string
 param apimHostname string
 param uniqueness string
+param appClientId string
+param apiClientId string
+
+@secure()
+param appClientSecret string
 
 var apiRgName = '${resourcePrefix}-${environmentName}-api-rg'
 
@@ -81,6 +86,9 @@ module AppDeployment './app/main.bicep' = {
     containerAppFqdn: MicroServiceDeployment.outputs.containerAppFqdn
     apiHostName: apimHostname
     uniqueness: uniqueness
+    apiAadClientId: apiClientId
+    appAadClientId: appClientId
+    appClientSecret: appClientSecret
   }
 }
 

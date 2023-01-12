@@ -5,13 +5,14 @@ param environmentName string
 param serverFarmId string
 param logAnalyticsWorkspaceId string
 param containerAppFqdn string
-// param apiAadClientId string
+param apiAadClientId string
 param apiHostName string
-// param deploySlot bool
-// param apiHostName string
-// param appAadClientId string
+param appAadClientId string
 param location string = resourceGroup().location
 param uniqueness string
+
+@secure()
+param appClientSecret string
 
 var subscriptionSecretName = 'ApiSubscriptionKey'
 var deploySlot = environmentName != 'test'
@@ -35,6 +36,13 @@ resource AppKeyVault 'Microsoft.KeyVault/vaults@2021-06-01-preview' = {
     }
     tenantId: subscription().tenantId
     enableRbacAuthorization: true
+  }
+
+  resource secret 'secrets' = {
+    name: 'ApplicationClientSecret'
+    properties: {
+      value: appClientSecret
+    }
   }
 }
 
@@ -101,14 +109,14 @@ var settings = [
     name: 'ApiSettings__URL'
     value: 'https://${apiHostName}/PetsApi/'
   }
-  // {
-  //   name: 'ApiSettings__Scope'
-  //   value: 'api://${apiAadClientId}/Pets.Manage'
-  // }
-  // {
-  //   name: 'AzureAD__ClientId'
-  //   value: appAadClientId
-  // }
+  {
+    name: 'ApiSettings__Scope'
+    value: 'api://${apiAadClientId}/Pets.Manage'
+  }
+  {
+    name: 'AzureAD__ClientId'
+    value: appAadClientId
+  }
   {
     name: 'AzureAD__ClientSecret'
     value: '@Microsoft.KeyVault(VaultName=${appKeyVaultName};SecretName=ApplicationClientSecret)'
