@@ -10,9 +10,12 @@ param spaFqdn string
 param appSlotFqdn string
 param spaSlotFqdn string
 
-param consumerKeyVaultResourceGroup string
-param consumerKeyVaultName string
-param consumerSecretName string
+param appConsumerKeyVaultResourceGroup string
+param appConsumerKeyVaultName string
+param appConsumerSecretName string
+param spaConsumerKeyVaultResourceGroup string
+param spaConsumerKeyVaultName string
+param spaConsumerSecretName string
 
 param location string = resourceGroup().location
 
@@ -122,13 +125,24 @@ resource PetsApiSubscription 'Microsoft.ApiManagement/service/subscriptions@2021
   }
 }
 
-module consumerApiKeySecret 'subscription-secret.bicep' = {
+module appConsumerApiKeySecret 'subscription-secret.bicep' = {
   name: '${deployment().name}-secret'
   scope: subscription()
   params: {
-    consumerKeyVaultName: consumerKeyVaultName
-    consumerKeyVaultResourceGroupName: consumerKeyVaultResourceGroup
-    secretName: consumerSecretName
+    consumerKeyVaultName: appConsumerKeyVaultName
+    consumerKeyVaultResourceGroupName: appConsumerKeyVaultResourceGroup
+    secretName: appConsumerSecretName
+    subscriptionPrimaryKey: PetsApiSubscription.listSecrets().primaryKey
+  }
+}
+
+module spaConsumerApiKeySecret 'subscription-secret.bicep' = {
+  name: '${deployment().name}-secret'
+  scope: subscription()
+  params: {
+    consumerKeyVaultName: spaConsumerKeyVaultName
+    consumerKeyVaultResourceGroupName: spaConsumerKeyVaultResourceGroup
+    secretName: spaConsumerSecretName
     subscriptionPrimaryKey: PetsApiSubscription.listSecrets().primaryKey
   }
 }

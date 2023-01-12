@@ -2,6 +2,7 @@ targetScope = 'subscription'
 
 param apimResourceGroupName string
 param appResourceGroupName string
+param spaResourceGroupName string
 param apiFqdn string
 param appFqdn string
 param spaFqdn string
@@ -10,8 +11,10 @@ param spaSlotFqdn string
 param environmentName string
 param resourcePrefix string
 
-param consumerKeyVaultName string
-param consumerSecretName string
+param appConsumerKeyVaultName string
+param appConsumerSecretName string
+param spaConsumerKeyVaultName string
+param spaConsumerSecretName string
 
 param location string = deployment().location
 
@@ -27,8 +30,11 @@ module ApimConfiguration './Apim/main.bicep' = {
     environmentName: environmentName
     resourcePrefix: resourcePrefix
     location: location
-    consumerKeyVaultName: consumerKeyVaultName
-    consumerKeyVaultResourceGroup: appResourceGroupName
-    consumerSecretName: consumerSecretName
+    appConsumerKeyVaultResourceGroup: appResourceGroupName
+    appConsumerKeyVaultName: appConsumerKeyVaultName
+    appConsumerSecretName: appConsumerSecretName
+    spaConsumerKeyVaultResourceGroup: spaResourceGroupName
+    spaConsumerKeyVaultName: spaConsumerKeyVaultName
+    spaConsumerSecretName: spaConsumerSecretName
   }
 }

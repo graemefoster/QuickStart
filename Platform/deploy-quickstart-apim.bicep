@@ -27,8 +27,13 @@ module config 'Tier3/main.bicep' = {
     spaSlotFqdn: AppsMetadata.properties.outputs.spaSlotFqdn.value
     apiFqdn: AppsMetadata.properties.outputs.apiFqdn.value
     location: location
-    consumerKeyVaultName: AppsMetadata.properties.outputs.appKeyVaultName.value
-    consumerSecretName: AppsMetadata.properties.outputs.apiKeySecretName.value
+
+    appConsumerKeyVaultName: AppsMetadata.properties.outputs.appKeyVaultName.value
+    appConsumerSecretName: AppsMetadata.properties.outputs.appApiKeySecretName.value
     appResourceGroupName: AppsMetadata.properties.outputs.appResourceGroupName.value
+
+    spaConsumerKeyVaultName: AppsMetadata.properties.outputs.spaKeyVaultName.value
+    spaConsumerSecretName: AppsMetadata.properties.outputs.spaApiKeySecretName.value
+    spaResourceGroupName: AppsMetadata.properties.outputs.spaResourceGroupName.value
   }
 }

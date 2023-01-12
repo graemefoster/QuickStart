@@ -134,3 +134,5 @@ output appName string = WebApp.name
 output appHostname string = WebApp.properties.hostNames[0]
 output appSlotHostname string = deploySlot ? WebAppGreen.properties.hostNames[0] : ''
 output appInsightsKey string = reference(WebAppAppInsights.id).InstrumentationKey
+output appKeyVaultName string = appKeyVaultName
+output apiKeySecretName string = subscriptionSecretName
