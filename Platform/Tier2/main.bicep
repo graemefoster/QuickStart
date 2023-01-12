@@ -112,6 +112,11 @@ module SpaDeployment './spa/main.bicep' = {
     logAnalyticsWorkspaceId: logAnalyticsWorkspaceId
     serverFarmId: serverFarmId
     uniqueness: uniqueness
+    apiAadClientId: apiClientId
+    apiHostname: apimHostname
+    appAadClientId: appClientId
+    containerAppFqdn: MicroServiceDeployment.outputs.containerAppFqdn
+    productSubscriptionKey: '???'
   }
 }
 

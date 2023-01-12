@@ -4,11 +4,11 @@ param resourcePrefix string
 param serverFarmId string
 param environmentName string
 param logAnalyticsWorkspaceId string
-// param containerAppFqdn string
-// param productSubscriptionKey string
-// param apiHostname string
-// param apiAadClientId string
-// param appAadClientId string
+param containerAppFqdn string
+param productSubscriptionKey string
+param apiHostname string
+param apiAadClientId string
+param appAadClientId string
 param location string = resourceGroup().location
 param uniqueness string
 
@@ -30,26 +30,26 @@ var settings = [
     name: 'APPINSIGHTS_INSTRUMENTATIONKEY'
     value: WebAppAppInsights.properties.InstrumentationKey
   }
-  // {
-  //   name: 'ApiSettings__MicroServiceUrl'
-  //   value: 'https://${containerAppFqdn}'
-  // }
-  // {
-  //   name: 'ApiSettings__SubscriptionKey'
-  //   value: productSubscriptionKey
-  // }
-  // {
-  //   name: 'ApiSettings__URL'
-  //   value: 'https://${apiHostname}'
-  // }
-  // {
-  //   name: 'ApiSettings__Scope'
-  //   value: 'api://${apiAadClientId}/Pets.Manage'
-  // }
-  // {
-  //   name: 'AzureAD__ClientId'
-  //   value: appAadClientId
-  // }
+  {
+    name: 'ApiSettings__MicroServiceUrl'
+    value: 'https://${containerAppFqdn}'
+  }
+  {
+    name: 'ApiSettings__SubscriptionKey'
+    value: productSubscriptionKey
+  }
+  {
+    name: 'ApiSettings__URL'
+    value: 'https://${apiHostname}'
+  }
+  {
+    name: 'ApiSettings__Scope'
+    value: 'api://${apiAadClientId}/Pets.Manage'
+  }
+  {
+    name: 'AzureAD__ClientId'
+    value: appAadClientId
+  }
 ]
 
 resource WebApp 'Microsoft.Web/sites@2021-01-15' = {
