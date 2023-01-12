@@ -134,3 +134,5 @@ output containerAppResourceGroup string = MicroServiceDeployment.outputs.contain
 output appResourceGroupName string = singleResourceGroupDeployment ? platformResourceGroupName : appRgName
 output appKeyVaultName string = AppDeployment.outputs.appKeyVaultName
 output apiKeySecretName string = AppDeployment.outputs.apiKeySecretName
+
+output databaseConnectionString string = ApiDeployment.outputs.databaseConnectionString

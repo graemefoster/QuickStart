@@ -93,10 +93,12 @@ jobs:
 
     - name: 'Fetch Api Metadata'
       id: 'fetchApiMetadata'
-      run: echo "apiName=$(az deployment sub show -n "${{ secrets.RESOURCE_PREFIX }}-test-apps" --query "properties.outputs.apiName.value" -o tsv)" >> $GITHUB_OUTPUT
+      run: 
+        echo "apiName=$(az deployment sub show -n "${{ secrets.RESOURCE_PREFIX }}-test-apps" --query "properties.outputs.apiName.value" -o tsv)" >> $GITHUB_OUTPUT
+        echo "databaseConnectionString=$(az deployment sub show -n "${{ secrets.RESOURCE_PREFIX }}-test-apps" --query "properties.outputs.databaseConnectionString.value" -o tsv)" >> $GITHUB_OUTPUT
 
     - name: 'Update Database'
-      run: dotnet ./database-deployer/SqlAadMigrationDeployer.dll migrate "${{ secrets.AZURE_SQL_CONNECTION_STRING }}" "./database-script/build-database.sql"
+      run: dotnet ./database-deployer/SqlAadMigrationDeployer.dll migrate "${{ steps.fetchApiMetadata.outputs.databaseConnectionString }}" "./database-script/build-database.sql"
 
     - uses: azure/webapps-deploy@v2
       with: 

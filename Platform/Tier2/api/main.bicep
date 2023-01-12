@@ -142,3 +142,4 @@ output appSlotHostname string = deploySlot ? WebApiGreen.properties.hostNames[0]
 output managedIdentityName string = ManagedIdentity.name
 output managedIdentityAppId string = ManagedIdentity.properties.clientId
 output appInsightsKey string = reference(WebAppAppInsights.id).InstrumentationKey
+output databaseConnectionString string = database.outputs.apiDatabaseConnectionString
