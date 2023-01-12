@@ -15,6 +15,7 @@ param appConsumerKeyVaultName string
 param appConsumerSecretName string
 param spaConsumerKeyVaultName string
 param spaConsumerSecretName string
+param logAnalyticsWorkspaceId string
 
 param location string = deployment().location
 
@@ -22,6 +23,7 @@ module ApimConfiguration './Apim/main.bicep' = {
   name: '${deployment().name}-apim'
   scope: resourceGroup(apimResourceGroupName)
   params: {
+    logAnalyticsWorkspaceId: logAnalyticsWorkspaceId
     apiFqdn: apiFqdn
     appFqdn: appFqdn
     appSlotFqdn: appSlotFqdn

@@ -11,7 +11,7 @@ param appClientSecret string
 
 //fetch platform information. Assumption that this is in a well known location
 resource PlatformMetadata 'Microsoft.Resources/deployments@2022-09-01' existing = {
-  name: '${resourcePrefix}-${environmentName}'
+  name: '${resourcePrefix}-${environmentName}-platform'
 }
 
 module inr './Tier2/main.bicep' = {

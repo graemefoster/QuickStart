@@ -4,6 +4,7 @@ param resourcePrefix string
 param environmentName string
 
 param apiFqdn string
+param logAnalyticsWorkspaceId string
 
 param appFqdn string
 param spaFqdn string
@@ -13,20 +14,12 @@ param spaSlotFqdn string
 param appConsumerKeyVaultResourceGroup string
 param appConsumerKeyVaultName string
 param appConsumerSecretName string
+
 param spaConsumerKeyVaultResourceGroup string
 param spaConsumerKeyVaultName string
 param spaConsumerSecretName string
 
 param location string = resourceGroup().location
-
-//fetch platform information
-resource PlatformMetadata 'Microsoft.Resources/deployments@2022-09-01' existing = {
-  name: 'quickstart-platform-${resourcePrefix}-${environmentName}'
-  scope: subscription()
-}
-
-var logAnalyticsWorkspaceId = PlatformMetadata.properties.outputs.logAnalyticsWorkspaceId.value
-
 
 var apimServiceName = '${resourcePrefix}-${environmentName}-apim'
 var productName = 'PetsProduct'
