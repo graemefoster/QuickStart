@@ -1,6 +1,6 @@
-targetScope = 'resourceGroup'
+targetScope = 'subscription'
 
-param location string = resourceGroup().location
+param location string = deployment().location
 
 param resourcePrefix string
 param environmentName string
