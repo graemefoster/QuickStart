@@ -22,7 +22,7 @@ jobs:
 
     steps:
       - name: Fetch source code
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
 
       - name: Login to Azure (Azure resources)
         uses: azure/login@v1
@@ -132,7 +132,7 @@ jobs:
 
   #   steps:
   #     - name: Fetch source code
-  #       uses: actions/checkout@v2
+  #       uses: actions/checkout@v3
 
   #     - name: Login to Azure (Azure resources)
   #       uses: azure/login@v1
