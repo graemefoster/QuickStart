@@ -28,7 +28,7 @@ jobs:
     - run: dotnet restore
     - run: dotnet build ./Application/WebApp/\SimpleMvcApp/\SimpleMvcApp.csproj --configuration Release --no-restore
     - run: dotnet publish ./Application/WebApp/\SimpleMvcApp/\SimpleMvcApp.csproj -c Release -o '${{ env.AZURE_WEBAPP_PACKAGE_PATH }}/published-app'
-    - uses: actions/upload-artifact@v2
+    - uses: actions/upload-artifact@v3
       with:
         name: app
         path: '${{ env.AZURE_WEBAPP_PACKAGE_PATH }}/published-app/**'

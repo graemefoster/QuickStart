@@ -29,7 +29,7 @@ jobs:
     - run: dotnet restore
     - run: dotnet build ./SqlAadMigrationDeployer/SqlAadMigrationDeployer.csproj --configuration Release --no-restore
     - run: dotnet publish ./SqlAadMigrationDeployer/SqlAadMigrationDeployer.csproj -c Release -o '${{ env.PACKAGE_PATH }}/database-deployer'
-    - uses: actions/upload-artifact@v2
+    - uses: actions/upload-artifact@v3
       name: 'Upload Database Deployer package'
       with:
         name: database-deployer
@@ -48,12 +48,12 @@ jobs:
     - run: dotnet build ./Application/Api/SimpleApiWithDatabase/SimpleApiWithDatabase.csproj --configuration Release --no-restore
     - run: dotnet test ./Application/Api/ApiTests/ApiTests.csproj --no-restore
     - run: dotnet publish ./Application/Api/SimpleApiWithDatabase/SimpleApiWithDatabase.csproj -c Release -o '${{ env.PACKAGE_PATH }}/published-api'
-    - uses: actions/upload-artifact@v2
+    - uses: actions/upload-artifact@v3
       name: 'Upload Api package'
       with:
         name: api
         path: '${{ env.PACKAGE_PATH }}/published-api/**'
-    - uses: actions/upload-artifact@v2
+    - uses: actions/upload-artifact@v3
       name: 'Upload Database script'
       with:
         name: database-script
