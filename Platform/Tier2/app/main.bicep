@@ -1,16 +1,36 @@
-param resourcePrefix string
-param serverFarmId string
-param environmentName string
-param logAnalyticsWorkspaceId string
-param deploySlot bool
+targetScope = 'resourceGroup'
 
-var appHostname = '${resourcePrefix}-${uniqueString(resourceGroup().name)}-${environmentName}-webapp'
+param resourcePrefix string
+param environmentName string
+param serverFarmId string
+param logAnalyticsWorkspaceId string
+param containerAppFqdn string
+param apiAadClientId string
+param apiHostName string
+param appAadClientId string
+param aadTenantId string
+
+param location string = resourceGroup().location
+param uniqueness string
+
+@secure()
+param appClientSecret string
+
+var subscriptionSecretName = 'ApiSubscriptionKey'
+var deploySlot = environmentName != 'test'
+
+var appHostname = '${resourcePrefix}-${uniqueness}-${environmentName}-webapp'
 var appKeyVaultName = '${resourcePrefix}-app-${environmentName}-kv'
-var secretsUserRoleId = '/subscriptions/${subscription().subscriptionId}/providers/Microsoft.Authorization/roleDefinitions/4633458b-17de-408a-b874-0445c86b69e6'
+
+@description('This is the built-in Key Vault Administrator role. See https://docs.microsoft.com/azure/role-based-access-control/built-in-roles#key-vault-administrator')
+resource keyVaultSecretsUserRoleDefinition 'Microsoft.Authorization/roleDefinitions@2018-01-01-preview' existing = {
+  scope: subscription()
+  name: '4633458b-17de-408a-b874-0445c86b69e6'
+}
 
 resource AppKeyVault 'Microsoft.KeyVault/vaults@2021-06-01-preview' = {
   name: appKeyVaultName
-  location: resourceGroup().location
+  location: location
   properties: {
     sku: {
       family: 'A'
@@ -18,6 +38,13 @@ resource AppKeyVault 'Microsoft.KeyVault/vaults@2021-06-01-preview' = {
     }
     tenantId: subscription().tenantId
     enableRbacAuthorization: true
+  }
+
+  resource secret 'secrets' = {
+    name: 'ApplicationClientSecret'
+    properties: {
+      value: appClientSecret
+    }
   }
 }
 
@@ -49,9 +76,78 @@ resource KeyVaultDiagnostics 'Microsoft.Insights/diagnosticSettings@2021-05-01-p
   }
 }
 
+resource WebAppAppInsights 'Microsoft.Insights/components@2020-02-02' = {
+  name: '${appHostname}-appi'
+  location: location
+  kind: 'Web'
+  properties: {
+    Application_Type: 'web'
+    WorkspaceResourceId: logAnalyticsWorkspaceId
+  }
+}
+
+var settings = [
+  {
+    name: 'WEBSITE_RUN_FROM_PACKAGE'
+    value: '1'
+  }
+  {
+    name: 'ASPNETCORE_ENVIRONMENT'
+    value: environmentName
+  }
+  {
+    name: 'APPLICATIONINSIGHTS_CONNECTION_STRING'
+    value: WebAppAppInsights.properties.ConnectionString
+  }
+  {
+    name: 'ApplicationInsightsAgent_EXTENSION_VERSION'
+    value: '~2'
+  }
+  {
+    name: 'XDT_MicrosoftApplicationInsights_Mode'
+    value: 'recommended'
+  }
+  {
+    name: 'InstrumentationEngine_EXTENSION_VERSION'
+    value: '~1'
+  }
+  {
+    name: 'XDT_MicrosoftApplicationInsights_BaseExtensions'
+    value: '~1'
+  }
+  {
+    name: 'ApiSettings__MicroServiceUrl'
+    value: 'https://${containerAppFqdn}'
+  }
+  {
+    name: 'ApiSettings__SubscriptionKey'
+    value: '@Microsoft.KeyVault(VaultName=${AppKeyVault.name};SecretName=${subscriptionSecretName})'
+  }
+  {
+    name: 'ApiSettings__URL'
+    value: 'https://${apiHostName}'
+  }
+  {
+    name: 'ApiSettings__Scope'
+    value: 'api://${apiAadClientId}/Pets.Manage'
+  }
+  {
+    name: 'AzureAD__ClientId'
+    value: appAadClientId
+  }
+  {
+    name: 'AzureAD__TenantId'
+    value: aadTenantId
+  }
+  {
+    name: 'AzureAD__ClientSecret'
+    value: '@Microsoft.KeyVault(VaultName=${appKeyVaultName};SecretName=ApplicationClientSecret)'
+  }
+]
+
 resource WebApp 'Microsoft.Web/sites@2021-01-15' = {
   name: appHostname
-  location: resourceGroup().location
+  location: location
   identity: {
     type: 'SystemAssigned'
   }
@@ -60,23 +156,15 @@ resource WebApp 'Microsoft.Web/sites@2021-01-15' = {
     serverFarmId: serverFarmId
     siteConfig: {
       minTlsVersion: '1.2'
-      netFrameworkVersion: 'v5.0'
+      netFrameworkVersion: 'v7.0'
+      appSettings: settings
     }
   }
 }
 
-resource WebAppAppInsights 'Microsoft.Insights/components@2020-02-02' = {
-  name: '${appHostname}-appi'
-  location: resourceGroup().location
-  kind: 'Web'
-  properties: {
-    Application_Type: 'web'
-    WorkspaceResourceId: logAnalyticsWorkspaceId
-  }
-}
 
 resource WebAppAppInsightsHealthCheck 'Microsoft.Insights/webtests@2018-05-01-preview' = {
-  location: resourceGroup().location
+  location: location
   name: 'webapp-ping-test'
   kind: 'ping'
   //Must have tag pointing to App Insights
@@ -114,23 +202,20 @@ resource WebAppAppInsightsHealthCheck 'Microsoft.Insights/webtests@2018-05-01-pr
   }
 }
 
-
-
-resource KeyVaultAuth 'Microsoft.Authorization/roleAssignments@2020-08-01-preview' = {
+resource KeyVaultAuth 'Microsoft.Authorization/roleAssignments@2022-04-01' = {
   name: guid('${appHostname}-read-${appKeyVaultName}')
   scope: AppKeyVault
   properties: {
-    roleDefinitionId: secretsUserRoleId
+    roleDefinitionId: keyVaultSecretsUserRoleDefinition.id
     principalId: WebApp.identity.principalId
     principalType: 'ServicePrincipal'
   }
 }
 
-
 resource WebAppGreen 'Microsoft.Web/sites/slots@2021-01-15' = if(deploySlot) {
   parent: WebApp
   name: 'green'
-  location: resourceGroup().location
+  location: location
   identity: {
     type: 'SystemAssigned'
   }
@@ -139,21 +224,25 @@ resource WebAppGreen 'Microsoft.Web/sites/slots@2021-01-15' = if(deploySlot) {
     serverFarmId: serverFarmId
     siteConfig: {
       minTlsVersion: '1.2'
-      netFrameworkVersion: 'v5.0'
+      netFrameworkVersion: 'v7.0'
+      appSettings: settings
     }
   }
 }
 
-resource GreenKeyVaultAuth 'Microsoft.Authorization/roleAssignments@2020-08-01-preview' = if(deploySlot) {
+resource GreenKeyVaultAuth 'Microsoft.Authorization/roleAssignments@2022-04-01' = if(deploySlot) {
   name: guid('${appHostname}.green-read-${appKeyVaultName}')
   scope: AppKeyVault
   properties: {
-    roleDefinitionId: secretsUserRoleId
+    roleDefinitionId: keyVaultSecretsUserRoleDefinition.id
     principalId: (deploySlot == true) ? WebAppGreen.identity.principalId : 'Not deploying'
     principalType: 'ServicePrincipal'
   }
 } 
 
-output appHostname string = appHostname
-output appKeyVaultName string = appKeyVaultName
+output appName string = WebApp.name
+output appHostname string = WebApp.properties.hostNames[0]
+output appSlotHostname string = deploySlot ? WebAppGreen.properties.hostNames[0] : ''
 output appInsightsKey string = reference(WebAppAppInsights.id).InstrumentationKey
+output appKeyVaultName string = appKeyVaultName
+output apiKeySecretName string = subscriptionSecretName

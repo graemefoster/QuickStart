@@ -8,7 +8,6 @@ using SimpleMvcApp.Services;
 namespace SimpleMvcApp.Features.ListPets
 {
     [Route("/pets/list")]
-    [AuthorizeForScopes(Scopes = new[]  { "api://grfqs2-api-eslspgfu2icoq-test/Pets.Manage"})]
     public class ListPetsController : Controller
     {
         private readonly ILogger<NewPetController> _logger;

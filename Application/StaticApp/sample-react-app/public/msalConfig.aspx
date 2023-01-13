@@ -12,7 +12,9 @@
         }
     },
     "apiConfig": {
+        "AppInsightsKey" : "<%= Environment.GetEnvironmentVariable("APPINSIGHTS_INSTRUMENTATIONKEY") %>",
         "MicroServiceUrl" : "<%= Environment.GetEnvironmentVariable("ApiSettings__MicroServiceUrl") %>/",
+        "SubscriptionKey" : "<%= Environment.GetEnvironmentVariable("ApiSettings__SubscriptionKey") %>",
         "BaseUrl": "<%= Environment.GetEnvironmentVariable("ApiSettings__URL") %>/",
         "Scopes": [
             "<%= Environment.GetEnvironmentVariable("ApiSettings__Scope") %>"

@@ -17,7 +17,7 @@ git remote add origin <new-repository-url>
 git push origin 
 ```
 
-## Step 4 - Create 'Test' Environment secrets
+## Step 4 - Create 'test' Environment secrets
 
 | Secret | Purpose | Other information | 
 | --- | --- | --- |

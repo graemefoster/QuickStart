@@ -1,14 +1,15 @@
+targetScope = 'resourceGroup'
+
 param resourcePrefix string
 param apimPublishedEmail string
 param databaseAdministratorName string
 param databaseAdministratorObjectId string
 param environmentName string
 param hasSlot bool
+param location string = resourceGroup().location
 
 var apimName = '${resourcePrefix}-${environmentName}-apim'
 var databaseServerName = '${resourcePrefix}-${environmentName}-sqlserver'
-var location = resourceGroup().location
-var containerAppLocation = 'canadacentral'
 
 resource LogAnalyticsWorkspace 'Microsoft.OperationalInsights/workspaces@2021-06-01' = {
   name: '${resourcePrefix}-${environmentName}-loga'
@@ -57,15 +58,14 @@ resource ContainerAppsAppInsights 'Microsoft.Insights/components@2020-02-02-prev
     Application_Type: 'web'
     Flow_Type: 'Bluefield'
     Request_Source: 'rest'
+    WorkspaceResourceId: LogAnalyticsWorkspace.id
   }
 }
 
-resource ContainerAppsEnvironment 'Microsoft.Web/kubeEnvironments@2021-02-01' = {
+resource ContainerAppsEnvironment 'Microsoft.App/managedEnvironments@2022-06-01-preview' = {
   name: '${resourcePrefix}-${environmentName}-ctrapps'
-  location: containerAppLocation
+  location: location
   properties: {
-    type: 'managed'
-    internalLoadBalancerEnabled: false
     appLogsConfiguration: {
       destination: 'log-analytics'
       logAnalyticsConfiguration: {
@@ -73,12 +73,8 @@ resource ContainerAppsEnvironment 'Microsoft.Web/kubeEnvironments@2021-02-01' = 
         sharedKey: LogAnalyticsWorkspace.listKeys().primarySharedKey
       }
     }
-    containerAppsConfiguration: {
-      daprAIInstrumentationKey: ContainerAppsAppInsights.properties.InstrumentationKey
     }
-  }
 }
-
 
 resource SqlDatabaseServer 'Microsoft.Sql/servers@2021-02-01-preview' = {
   name: databaseServerName
@@ -122,4 +118,5 @@ output serverFarmId string = QuickStartServerFarm.id
 output databaseServerName string = databaseServerName
 output logAnalyticsWorkspaceId string = LogAnalyticsWorkspace.id
 output containerEnvironmentId string = ContainerAppsEnvironment.id
+output apimHostname string = Apim.properties.hostnameConfigurations[0].hostName
 output apimId string = Apim.id

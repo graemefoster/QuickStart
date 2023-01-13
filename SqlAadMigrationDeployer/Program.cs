@@ -5,8 +5,6 @@ using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
-using Azure.Core;
-using Azure.Identity;
 using Microsoft.Data.SqlClient;
 
 namespace SqlAadMigrationDeployer
@@ -19,14 +17,9 @@ namespace SqlAadMigrationDeployer
 
             var sqlConnection = args[1];
 
-            var cred = new DefaultAzureCredential();
-            var token = await cred.GetTokenAsync(new TokenRequestContext(new[]
-                { "https://database.windows.net/" }));
-
             var printOutput = new StringBuilder();
 
             await using var connection = new SqlConnection(sqlConnection);
-            connection.AccessToken = token.Token;
             connection.InfoMessage += (sender, eventArgs) => { printOutput.AppendLine(eventArgs.ToString()); };
             await connection.OpenAsync();
 
@@ -108,27 +101,30 @@ EXEC sp_addrolemember '{role}', '{applicationName}'
             var nextPiece = new StringBuilder();
             foreach (var line in batchedSql.Split(Environment.NewLine))
             {
-                if (terminators.Any(x => line.Equals(x, StringComparison.InvariantCultureIgnoreCase)))
+                var trimmed = line.Trim();
+                if (terminators.Any(x => trimmed.Equals(x, StringComparison.InvariantCultureIgnoreCase)))
                 {
                     //ignore - we deal with transactions separately
                 }
-                else if (line.Equals("GO"))
+                else if (trimmed.Equals("GO"))
                 {
                     //terminator line. Return the sql if we have any
                     if (nextPiece.Length != 0)
                     {
+                        Console.WriteLine($"Executing: {nextPiece.ToString()}");
                         yield return ReplaceVariables(nextPiece.ToString());
                         nextPiece = new StringBuilder();
                     }
                 }
                 else
                 {
-                    nextPiece.AppendLine(line);
+                    nextPiece.AppendLine(trimmed);
                 }
             }
 
             if (nextPiece.Length != 0)
             {
+                Console.WriteLine($"Executing: {nextPiece.ToString()}");
                 yield return ReplaceVariables(nextPiece.ToString());
             }
         }

@@ -1,15 +1,17 @@
 import { useMsal } from "@azure/msal-react";
 import { spaConfig } from "../authConfig";
-import { MicroServiceCall } from "./MicroServiceCall";
+import MicroServiceCall from "./MicroServiceCall";
 import { useState, useEffect } from "react";
 import { Container, Table } from "react-bootstrap";
+import { withAITracking } from '@microsoft/applicationinsights-react-js';
+import { reactPlugin } from '../appInsights';
 
 type Pet = {
   id: string;
   name: string;
 };
 
-export const ListPets = () => {
+const ListPets = () => {
   const { instance, accounts } = useMsal();
   const [fetchPets, setFetchPets] = useState<Boolean>(true);
   const [petList, setPetList] = useState<Pet[]>([]);
@@ -28,6 +30,7 @@ export const ListPets = () => {
           return fetch(`${config.apiConfig.BaseUrl}pets`, {
             headers: {
               Authorization: `Bearer ${response.accessToken}`,
+              'Ocp-Apim-Subscription-Key' : config.apiConfig.SubscriptionKey
             },
           });
         })
@@ -59,3 +62,5 @@ export const ListPets = () => {
     </Container>
   );
 };
+
+export default withAITracking(reactPlugin, ListPets)

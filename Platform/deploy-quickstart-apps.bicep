@@ -1,109 +1,59 @@
 targetScope = 'subscription'
 
-@description('A prefix to add to all resources to keep them unique')
-@minLength(3)
-@maxLength(6)
+param location string = deployment().location
 param resourcePrefix string
-
-@description('The resource group that platform components were deployed to. Template assume s Sql Server is in here, and databases must be deployed to the same resource group.')
-param platformResourceGroupName string
-
-@description('Resource Id of the App Service Plan hosting the apis / apps')
-param serverFarmId string
-
-@description('Resource Id of the Platform Log Analytics Workspace')
-param logAnalyticsWorkspaceId string
-
-@description('Resource name of the platform Sql Server')
-param databaseServerName string
-
-@description('Used to construct app / api / keyvault names. Suggestions include test, prod, nonprod')
 param environmentName string
+param appClientId string
+param apiClientId string
+param aadTenantId string
 
-@description('Resource Id of the Container Environment')
-param containerEnvironmentId string
+@secure()
+param appClientSecret string
 
-var hasSlot = environmentName != 'test'
-
-resource platformResourceGroup 'Microsoft.Resources/resourceGroups@2021-04-01' = {
-  name: platformResourceGroupName
-  location: deployment().location
+//fetch platform information. Assumption that this is in a well known location
+resource PlatformMetadata 'Microsoft.Resources/deployments@2022-09-01' existing = {
+  name: '${resourcePrefix}-${environmentName}-platform'
 }
 
-resource resourceGroup 'Microsoft.Resources/resourceGroups@2021-04-01' = {
-  name: '${resourcePrefix}-${environmentName}-rg'
-  location: deployment().location
-}
-
-// Databases need to live in the same resource group as the server. We could push the server into the API RG
-// but its quite common to use a sql server pool, and have many databases for different apis / apps contained in it.
-// For this Quickstart the approach taken is to keep the server in the platform, and put the databases with it.
-module DatabaseDeployment './Tier2/deploy-api-database.bicep' = {
-  name: 'DeployDatabase'
-  scope: platformResourceGroup
+module inr './Tier2/main.bicep' = {
+  name: '${deployment().name}-apps'
   params: {
-    resourcePrefix: resourcePrefix
-    databaseServerName: databaseServerName
-    environmentName: environmentName
-    logAnalyticsWorkspaceId: logAnalyticsWorkspaceId
+    environmentName: PlatformMetadata.properties.outputs.environmentName.value
+    resourcePrefix: PlatformMetadata.properties.outputs.resourcePrefix.value
+    platformResourceGroupName: PlatformMetadata.properties.outputs.platformResourceGroupName.value
+    singleResourceGroupDeployment: PlatformMetadata.properties.outputs.singleResourceGroupDeployment.value
+    apimHostname: PlatformMetadata.properties.outputs.apimHostname.value
+    containerEnvironmentId: PlatformMetadata.properties.outputs.containerEnvironmentId.value
+    databaseServerName: PlatformMetadata.properties.outputs.databaseServerName.value
+    logAnalyticsWorkspaceId: PlatformMetadata.properties.outputs.logAnalyticsWorkspaceId.value
+    serverFarmId: PlatformMetadata.properties.outputs.serverFarmId.value
+    location: location
+    uniqueness: PlatformMetadata.properties.outputs.uniqueness.value
+    appClientId: appClientId
+    apiClientId: apiClientId
+    appClientSecret: appClientSecret
+    aadTenantId: aadTenantId
   }
 }
 
-module WebApiDeployment './Tier2/deploy-api.bicep' = {
-  name: 'DeployApi'
-  scope: resourceGroup
-  params: {
-    resourcePrefix: resourcePrefix
-    serverFarmId: serverFarmId
-    environmentName : environmentName
-    logAnalyticsWorkspaceId: logAnalyticsWorkspaceId
-    deploySlot: hasSlot
-  }
-}
-
-module WebAppDeployment './Tier2/deploy-app.bicep' = {
-  name: 'DeployApp'
-  scope: resourceGroup
-  params: {
-    resourcePrefix: resourcePrefix
-    serverFarmId: serverFarmId
-    environmentName: environmentName
-    logAnalyticsWorkspaceId: logAnalyticsWorkspaceId
-    deploySlot: hasSlot
-  }
-}
-
-module StaticAppDeployment './Tier2/deploy-static-app.bicep' = {
-  name: 'DeployStaticApp'
-  scope: resourceGroup
-  params: {
-    resourcePrefix: resourcePrefix
-    serverFarmId: serverFarmId
-    environmentName: environmentName
-    deploySlot: hasSlot
-  }
-}
-
-module ContainerAppDeployment './Tier2/deploy-container-app.bicep' = {
-  name: 'DeployContainerApp'
-  scope: resourceGroup
-  params: {
-    containerAppName: 'microservice-${environmentName}'
-    //not ideal but I don't have a built image at this point so need something to get it moving
-    containerImage: 'ghcr.io/graemefoster/sample-microservice:latest'
-    environmentId: containerEnvironmentId
-  }
-}
-
-output resourceGroupName string = resourceGroup.name
-output applicationHostname string = WebAppDeployment.outputs.appHostname
-output apiHostname string = WebApiDeployment.outputs.apiHostname
-output spaHostname string = StaticAppDeployment.outputs.appHostname
-output containerAppFqdn string = ContainerAppDeployment.outputs.containerAppFqdn
-output applicationKeyVaultName string = WebAppDeployment.outputs.appKeyVaultName
-output databaseName string = DatabaseDeployment.outputs.apiDatabaseName
-output databaseConnectionString string = DatabaseDeployment.outputs.apiDatabaseConnectionString
-output managedIdentityAppId string = WebApiDeployment.outputs.managedIdentityAppId
-output managedIdentityName string = WebApiDeployment.outputs.managedIdentityName
-output apiAppInsightsKey string = WebApiDeployment.outputs.appInsightsKey
-output appAppInsightsKey string = WebAppDeployment.outputs.appInsightsKey
+output appName string = inr.outputs.appName
+output apiName string = inr.outputs.apiName
+output spaName string = inr.outputs.spaName
+output appFqdn string = inr.outputs.appFqdn
+output spaFqdn string = inr.outputs.spaFqdn
+output apiFqdn string = inr.outputs.apiFqdn
+output appSlotFqdn string = inr.outputs.appSlotFqdn
+output spaSlotFqdn string = inr.outputs.spaSlotFqdn
+output apiSlotFqdn string = inr.outputs.apiSlotFqdn
+output microserviceFqdn string = inr.outputs.microserviceFqdn
+output containerAppName string = inr.outputs.containerAppName
+output containerAppResourceGroup string = inr.outputs.containerAppResourceGroup
+output appResourceGroupName string = inr.outputs.appResourceGroupName
+output appKeyVaultName string = inr.outputs.appKeyVaultName
+output appApiKeySecretName string = inr.outputs.appApiKeySecretName
+output spaResourceGroupName string = inr.outputs.spaResourceGroupName
+output spaKeyVaultName string = inr.outputs.spaKeyVaultName
+output spaApiKeySecretName string = inr.outputs.spaApiKeySecretName
+output databaseConnectionString string = inr.outputs.databaseConnectionString
+output managedIdentityAppId string = inr.outputs.managedIdentityAppId
+output managedIdentityName string = inr.outputs.managedIdentityName

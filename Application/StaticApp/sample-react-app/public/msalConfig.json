@@ -11,8 +11,10 @@
         }
     },
     "apiConfig": {
+        "AppInsightsKey" : "",
         "MicroServiceUrl": "http://localhost:3000/",
         "BaseUrl": "https://api.sampleapp.localtest.me:4431/",
+        "SubscriptionKey" : "",
         "Scopes": [
             "api://30c96387-e02f-49e3-878c-17c2cbf34a35/Pets.Manage"
         ]

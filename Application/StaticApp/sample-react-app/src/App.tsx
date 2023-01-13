@@ -5,7 +5,7 @@ import {
 import { SignInButton } from "./components/SignInButton";
 import { Nav, Navbar, Container } from "react-bootstrap";
 import { BrowserRouter as Router, Switch, Route, Link } from "react-router-dom";
-import { ListPets } from "./components/ListPets"
+import ListPets from "./components/ListPets"
 
 function App() {
   

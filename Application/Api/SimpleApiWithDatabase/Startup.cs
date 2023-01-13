@@ -6,7 +6,6 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Microsoft.Identity.Web;
 using Microsoft.OpenApi.Models;
@@ -41,11 +40,12 @@ namespace SimpleApiWithDatabase
 
             services.AddCors(options =>
             {
-                Console.WriteLine($"Adding Cors for origins: {string.Join(',', interimSettings.Cors)}.");
+                var cors = interimSettings.Cors ?? Array.Empty<string>();
+                Console.WriteLine($"Adding Cors for origins: {string.Join(',',cors)}.");
                 options.AddPolicy(name: AllowSpecificOrigins,
                     builder =>
                     {
-                        foreach (var origin in interimSettings.Cors)
+                        foreach (var origin in cors)
                         {
                             builder = builder.WithOrigins(origin);
                         }
@@ -67,14 +67,6 @@ namespace SimpleApiWithDatabase
                 {
                     Console.WriteLine($"Connection string detected. {settings.ConnectionString}");
                     bldr.UseSqlServer(settings.ConnectionString);
-                }
-
-                if (!Env.IsDevelopment())
-                {
-                    Console.WriteLine("Not Development Environment. Adding Aad Token interceptor for Database Context");
-                    bldr.AddInterceptors(new GetAadTokenInterceptor(
-                        sp.GetService<ILogger<GetAadTokenInterceptor>>(),
-                        sp.GetService<IOptions<ApiSettings>>()));
                 }
             });
 

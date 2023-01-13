@@ -1,19 +1,25 @@
-﻿<!DOCTYPE html>
+﻿@using Microsoft.AspNetCore.Hosting
+@inject IWebHostEnvironment hostEnvironment
+<!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="utf-8"/>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-    <title>@ViewData["Title"] - Simple Pets</title>
-    <link rel="stylesheet" href="~/css/site.css"/>
-</head>
-<body>
-<div>
-    <main role="main">
-        @RenderBody()
-    </main>
-</div>
 
-<script src="~/js/site.js" asp-append-version="true"></script>
-@await RenderSectionAsync("Scripts", required: false)
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - Simple Pets</title>
+    @Html.Raw(JavaScriptSnippet.FullScript)
+    <link rel="stylesheet" href="~/css/site.css" />
+</head>
+
+<body>
+    <div>
+        <main role="main">
+            @RenderBody()
+        </main>
+    </div>
+
+    <script src="~/js/site.js" asp-append-version="true"></script>
+    @await RenderSectionAsync("Scripts", required: false)
 </body>
+
 </html>
