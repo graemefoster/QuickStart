@@ -132,7 +132,7 @@ resource WebApp 'Microsoft.Web/sites@2021-01-15' = {
     serverFarmId: serverFarmId
     siteConfig: {
       minTlsVersion: '1.2'
-      nodeVersion: 'node|16-lts'
+      nodeVersion: 'node|18-lts'
       appSettings: settings
     }
   }
