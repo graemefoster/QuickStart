@@ -60,7 +60,7 @@ var settings = [
   }
   {
     name: 'APPLICATIONINSIGHTS_CONNECTION_STRING'
-    value: WebAppAppInsights.properties.InstrumentationKey
+    value: WebAppAppInsights.properties.ConnectionString
   }
   {
     name: 'ApplicationInsightsAgent_EXTENSION_VERSION'
