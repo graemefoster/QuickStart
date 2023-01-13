@@ -8,12 +8,19 @@ param serverFarmId string
 param databaseServerName string
 param uniqueness string
 param apiAadClientId string
+param appFqdn string
+param spaFqdn string
+param appSlotFqdn string
+param spaSlotFqdn string
 
 param location string = resourceGroup().location
 
 var apiName = '${resourcePrefix}-${uniqueness}-${environmentName}-api'
 var apiMsiName = '${resourcePrefix}-${uniqueness}-${environmentName}-msi'
-
+var cors0 = 'https://${appFqdn}'
+var cors1 = 'https://${appSlotFqdn}'
+var cors2 =  'https://${spaFqdn}'
+var cors3 =  'https://${spaSlotFqdn}'
 var deploySlot = environmentName != 'test'
 
 module database 'database.bicep' = {
@@ -33,7 +40,6 @@ resource ManagedIdentity 'Microsoft.ManagedIdentity/userAssignedIdentities@2018-
   name: apiMsiName
 }
 
-
 resource WebAppAppInsights 'Microsoft.Insights/components@2020-02-02' = {
   name: '${apiName}-appi'
   location: location
@@ -45,28 +51,40 @@ resource WebAppAppInsights 'Microsoft.Insights/components@2020-02-02' = {
 }
 
 var settings = [
-  { 
+  {
     name: 'WEBSITE_RUN_FROM_PACKAGE'
-    value: '1' 
+    value: '1'
   }
   { name: 'ASPNETCORE_ENVIRONMENT'
-    value: 'Production' 
+    value: 'Production'
   }
-  { 
+  {
     name: 'APPINSIGHTS_INSTRUMENTATIONKEY'
-    value: WebAppAppInsights.properties.InstrumentationKey 
+    value: WebAppAppInsights.properties.InstrumentationKey
   }
-  { 
+  {
     name: 'ApiSettings__UserAssignedClientId'
-    value: ManagedIdentity.properties.clientId 
+    value: ManagedIdentity.properties.clientId
   }
-  { 
+  {
     name: 'AzureAD__ClientId'
-    value: apiAadClientId 
+    value: apiAadClientId
   }
-  { 
+  {
     name: 'ApiSettings__ConnectionString'
     value: '${database.outputs.apiDatabaseConnectionString};User Id=${ManagedIdentity.properties.clientId}'
+  }
+  { name: 'ApiSettings__Cors__0'
+    value: cors0
+  }
+  { name: 'ApiSettings__Cors__1'
+    value: cors1
+  }
+  { name: 'ApiSettings__Cors__2'
+    value: cors2
+  }
+  { name: 'ApiSettings__Cors__3'
+    value: cors3
   }
 ]
 

@@ -20,31 +20,6 @@ param appClientSecret string
 
 var apiRgName = '${resourcePrefix}-${environmentName}-api-rg'
 
-module apiResourceGroup '../rg.bicep' = if (!singleResourceGroupDeployment) {
-  name: '${deployment().name}-apimrg'
-  scope: subscription()
-  params: {
-    resourceGroupName: apiRgName
-    location: location
-  }
-}
-
-module ApiDeployment './api/main.bicep' = {
-  name: '${deployment().name}-api'
-  scope: resourceGroup(singleResourceGroupDeployment ? platformResourceGroupName : apiRgName)
-  params: {
-    environmentName: environmentName
-    resourcePrefix: resourcePrefix
-    platformResourceGroupName: platformResourceGroupName
-    databaseServerName: databaseServerName
-    logAnalyticsWorkspaceId: logAnalyticsWorkspaceId
-    serverFarmId: serverFarmId
-    location: location
-    uniqueness: uniqueness
-    apiAadClientId: apiClientId
-  }
-}
-
 var microserviceRgName = '${resourcePrefix}-${environmentName}-microservice-rg'
 module microserviceResourceGroup '../rg.bicep' = if (!singleResourceGroupDeployment) {
   name: '${deployment().name}-microservicerg'
@@ -122,6 +97,37 @@ module SpaDeployment './spa/main.bicep' = {
     containerAppFqdn: MicroServiceDeployment.outputs.containerAppFqdn
   }
 }
+
+
+module apiResourceGroup '../rg.bicep' = if (!singleResourceGroupDeployment) {
+  name: '${deployment().name}-apimrg'
+  scope: subscription()
+  params: {
+    resourceGroupName: apiRgName
+    location: location
+  }
+}
+
+module ApiDeployment './api/main.bicep' = {
+  name: '${deployment().name}-api'
+  scope: resourceGroup(singleResourceGroupDeployment ? platformResourceGroupName : apiRgName)
+  params: {
+    environmentName: environmentName
+    resourcePrefix: resourcePrefix
+    platformResourceGroupName: platformResourceGroupName
+    databaseServerName: databaseServerName
+    logAnalyticsWorkspaceId: logAnalyticsWorkspaceId
+    serverFarmId: serverFarmId
+    location: location
+    uniqueness: uniqueness
+    apiAadClientId: apiClientId
+    appFqdn: AppDeployment.outputs.appHostname
+    appSlotFqdn: empty(AppDeployment.outputs.appSlotHostname) ? AppDeployment.outputs.appHostname : AppDeployment.outputs.appSlotHostname
+    spaFqdn: SpaDeployment.outputs.appHostname
+    spaSlotFqdn: empty(SpaDeployment.outputs.appSlotHostname) ? SpaDeployment.outputs.appHostname : SpaDeployment.outputs.appSlotHostname
+  }
+}
+
 
 output appName string = AppDeployment.outputs.appName
 output apiName string = ApiDeployment.outputs.appName
