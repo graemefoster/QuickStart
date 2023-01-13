@@ -66,7 +66,7 @@ var settings = [
   }
   { 
     name: 'ApiSettings__ConnectionString'
-    value: database.outputs.apiDatabaseConnectionString
+    value: '${database.outputs.apiDatabaseConnectionString};User Id=${ManagedIdentity.properties.clientId}'
   }
 ]
 
