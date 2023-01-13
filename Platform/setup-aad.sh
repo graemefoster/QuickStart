@@ -148,6 +148,7 @@ WEBSITE_CLIENT_SECRET=$(az ad app credential reset --id $AAD_WEBSITE_APPLICATION
 
 #TODO write direct to KeyVault?
 echo "applicationClientSecret=${WEBSITE_CLIENT_SECRET}" >> $GITHUB_OUTPUT
+echo "aadTenantId=$(az account show --query 'tenantId' --output tsv)" >> $GITHUB_OUTPUT
 
 # #Az Devops
 # echo "##vso[task.setvariable variable=applicationClientId;isOutput=true]${AAD_WEBSITE_APPLICATION_ID}"

@@ -8,6 +8,7 @@ param containerAppFqdn string
 param apiHostname string
 param apiAadClientId string
 param appAadClientId string
+param aadTenantId string
 param location string = resourceGroup().location
 param uniqueness string
 
@@ -92,6 +93,10 @@ var settings = [
   {
     name: 'AzureAD__ClientId'
     value: appAadClientId
+  }
+  {
+    name: 'AzureAD__TenantId'
+    value: aadTenantId
   }
 ]
 

@@ -5,6 +5,7 @@ param resourcePrefix string
 param environmentName string
 param appClientId string
 param apiClientId string
+param aadTenantId string
 
 @secure()
 param appClientSecret string
@@ -31,6 +32,7 @@ module inr './Tier2/main.bicep' = {
     appClientId: appClientId
     apiClientId: apiClientId
     appClientSecret: appClientSecret
+    aadTenantId: aadTenantId
   }
 }
 

@@ -88,6 +88,7 @@ jobs:
             environmentName=test
             appClientId=${{ steps.setup-test-aad.outputs.applicationClientId }}
             apiClientId=${{ steps.setup-test-aad.outputs.apiClientId }}
+            aadTenantId=${{ steps.setup-test-aad.outputs.aadTenantId }}
             appClientSecret=${{ steps.setup-test-aad.outputs.applicationClientSecret }}
           failOnStdErr: false
 

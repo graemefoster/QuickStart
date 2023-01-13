@@ -13,6 +13,7 @@ param apimHostname string
 param uniqueness string
 param appClientId string
 param apiClientId string
+param aadTenantId string
 
 @secure()
 param appClientSecret string
@@ -88,6 +89,7 @@ module AppDeployment './app/main.bicep' = {
     uniqueness: uniqueness
     apiAadClientId: apiClientId
     appAadClientId: appClientId
+    aadTenantId: aadTenantId
     appClientSecret: appClientSecret
   }
 }
@@ -115,6 +117,7 @@ module SpaDeployment './spa/main.bicep' = {
     apiAadClientId: apiClientId
     apiHostname: apimHostname
     appAadClientId: appClientId
+    aadTenantId: aadTenantId
     containerAppFqdn: MicroServiceDeployment.outputs.containerAppFqdn
   }
 }
