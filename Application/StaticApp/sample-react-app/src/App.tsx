@@ -4,7 +4,7 @@ import {
 } from "@azure/msal-react";
 import { SignInButton } from "./components/SignInButton";
 import { Nav, Navbar, Container } from "react-bootstrap";
-import { BrowserRouter as Router, Switch, Route, Link } from "react-router-dom";
+import { BrowserRouter as Router, Routes, Route, Link } from "react-router-dom";
 import ListPets from "./components/ListPets"
 
 function App() {
@@ -33,8 +33,8 @@ function App() {
             </Container>
           </Navbar>
           <div>
-            <Switch>
-              <Route exact path="/">
+            <Routes>
+              <Route path="/">
                 <h2>Welcome to Pet World!</h2>
               </Route>
               <Route path="/list">
@@ -43,7 +43,7 @@ function App() {
               <Route path="/new">
                 <h2>New pet</h2>
               </Route>
-            </Switch>
+            </Routes>
           </div>
         </Router>
       </AuthenticatedTemplate>

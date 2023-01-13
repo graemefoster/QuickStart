@@ -1,5 +1,4 @@
 import React from "react";
-import ReactDOM from "react-dom";
 import "./index.css";
 import App from "./App";
 import { PublicClientApplication } from "@azure/msal-browser";
@@ -7,6 +6,7 @@ import { MsalProvider } from "@azure/msal-react";
 import reportWebVitals from "./reportWebVitals";
 import { spaConfig } from "./authConfig";
 import "bootstrap/dist/css/bootstrap.css";
+import { createRoot } from 'react-dom/client';
 
 /**
  * Initialize a PublicClientApplication instance which is provided to the MsalProvider component
@@ -14,14 +14,15 @@ import "bootstrap/dist/css/bootstrap.css";
  */
 spaConfig.then((config) => {
   const msalInstance = new PublicClientApplication(config.msalConfig);
-  ReactDOM.render(
+  const container = document.getElementById('root')!;
+  const root = createRoot(container);
+
+  root.render(
     <React.StrictMode>
       <MsalProvider instance={msalInstance}>
         <App />
       </MsalProvider>
-    </React.StrictMode>,
-    document.getElementById("root")
-  );
+    </React.StrictMode>);
 
   // If you want to start measuring performance in your app, pass a function
   // to log results (for example: reportWebVitals(console.log))
