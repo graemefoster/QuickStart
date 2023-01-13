@@ -10,8 +10,12 @@ ENVIRONMENT_NAME=$2
 UNIQUENESS=$3
 
 WEBSITE_HOST_NAME="$RESOURCE_PREFIX-$UNIQUENESS-$ENVIRONMENT_NAME-webapp.azurewebsites.net"
+WEBSITE_SLOT_HOST_NAME="$RESOURCE_PREFIX-$UNIQUENESS-$ENVIRONMENT_NAME-webapp0-green.azurewebsites.net"
+
 WEB_API_HOST_NAME="$RESOURCE_PREFIX-$UNIQUENESS-$ENVIRONMENT_NAME-api.azurewebsites.net"
+
 SPA_HOST_NAME="$RESOURCE_PREFIX-$UNIQUENESS-$ENVIRONMENT_NAME-spa.azurewebsites.net"
+SPA_SLOT_HOST_NAME="$RESOURCE_PREFIX-$UNIQUENESS-$ENVIRONMENT_NAME-spa-green.azurewebsites.net"
 
 # Build the application representing the API.
 read -r -d '' API_ROLES << EOM
@@ -110,7 +114,7 @@ echo "Calling REST Api to update redirects for web and public client"
 read -r -d '' CLIENT_SPA_REDIRECTS << EOM
 {
     "spa" : {
-        "redirectUris" : [ "https://${SPA_HOST_NAME}.azurewebsites.net/", "https://${SPA_HOST_NAME}-green.azurewebsites.net/" ]
+        "redirectUris" : [ "https://${SPA_HOST_NAME}/", "https://${SPA_SLOT_HOST_NAME}/" ]
     }
 }
 EOM
@@ -125,7 +129,7 @@ echo "Patched SPA redirects"
 read -r -d '' CLIENT_WEB_REDIRECTS << EOM
 {
     "web" : {
-        "redirectUris" : [ "https://${WEBSITE_HOST_NAME}.azurewebsites.net/signin-oidc", "https://${WEBSITE_HOST_NAME}-green.azurewebsites.net/signin-oidc" ]
+        "redirectUris" : [ "https://${WEBSITE_HOST_NAME}/signin-oidc", "https://${WEBSITE_SLOT_HOST_NAME}/signin-oidc" ]
     }
 }
 EOM
