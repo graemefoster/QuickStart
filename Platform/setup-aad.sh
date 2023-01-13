@@ -147,6 +147,7 @@ echo "Created service principal to represent APP in directory"
 WEBSITE_CLIENT_SECRET=$(az ad app credential reset --id $AAD_WEBSITE_APPLICATION_ID --query "password" -o tsv)
 
 #TODO write direct to KeyVault?
+echo "::add-mask::${WEBSITE_CLIENT_SECRET}"
 echo "applicationClientSecret=${WEBSITE_CLIENT_SECRET}" >> $GITHUB_OUTPUT
 echo "aadTenantId=$(az account show --query 'tenantId' --output tsv)" >> $GITHUB_OUTPUT
 
