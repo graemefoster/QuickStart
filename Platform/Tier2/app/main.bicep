@@ -96,8 +96,24 @@ var settings = [
     value: environmentName
   }
   {
-    name: 'APPINSIGHTS_INSTRUMENTATIONKEY'
-    value: WebAppAppInsights.properties.InstrumentationKey
+    name: 'APPLICATIONINSIGHTS_CONNECTION_STRING'
+    value: WebAppAppInsights.properties.ConnectionString
+  }
+  {
+    name: 'ApplicationInsightsAgent_EXTENSION_VERSION'
+    value: '~2'
+  }
+  {
+    name: 'XDT_MicrosoftApplicationInsights_Mode'
+    value: 'recommended'
+  }
+  {
+    name: 'InstrumentationEngine_EXTENSION_VERSION'
+    value: '~1'
+  }
+  {
+    name: 'XDT_MicrosoftApplicationInsights_BaseExtensions'
+    value: '~1'
   }
   {
     name: 'ApiSettings__MicroServiceUrl'

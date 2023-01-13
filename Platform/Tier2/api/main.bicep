@@ -59,8 +59,24 @@ var settings = [
     value: 'Production'
   }
   {
-    name: 'APPINSIGHTS_INSTRUMENTATIONKEY'
+    name: 'APPLICATIONINSIGHTS_CONNECTION_STRING'
     value: WebAppAppInsights.properties.InstrumentationKey
+  }
+  {
+    name: 'ApplicationInsightsAgent_EXTENSION_VERSION'
+    value: '~2'
+  }
+  {
+    name: 'XDT_MicrosoftApplicationInsights_Mode'
+    value: 'recommended'
+  }
+  {
+    name: 'InstrumentationEngine_EXTENSION_VERSION'
+    value: '~1'
+  }
+  {
+    name: 'XDT_MicrosoftApplicationInsights_BaseExtensions'
+    value: '~1'
   }
   {
     name: 'ApiSettings__UserAssignedClientId'
