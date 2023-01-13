@@ -41,7 +41,7 @@ EOM
 AAD_API_APPLICATION_ID=$(az ad app create --display-name "$WEB_API_HOST_NAME" --app-roles "$API_ROLES" --query "appId" -o tsv | tr -d '\r')
 _=$(az ad app update --id $AAD_API_APPLICATION_ID --identifier-uris "api://${AAD_API_APPLICATION_ID}")
 echo "Created / retrieved API Application Id ${AAD_API_APPLICATION_ID}"
-echo "name=apiClientId=${AAD_API_APPLICATION_ID}" >> $GITHUB_OUTPUT
+echo "apiClientId=${AAD_API_APPLICATION_ID}" >> $GITHUB_OUTPUT
 
 
 ###Remove api permissions: disable default exposed scope first (https://learn.microsoft.com/en-us/azure/healthcare-apis/register-application-cli-rest)
@@ -103,7 +103,7 @@ AAD_WEBSITE_APPLICATION_ID=$(az ad app create --display-name $WEBSITE_HOST_NAME 
 _=$(az ad app update --id $AAD_WEBSITE_APPLICATION_ID --identifier-uris "api://${AAD_WEBSITE_APPLICATION_ID}")
 AAD_WEBSITE_OBJECT_ID=$(az ad app show --id $AAD_WEBSITE_APPLICATION_ID --query "id" -o tsv | tr -d '\r')
 echo "Created / retrieved Web Application Id ${AAD_WEBSITE_APPLICATION_ID}. ObjectId ${AAD_WEBSITE_OBJECT_ID}"
-echo "name=applicationClientId=${AAD_WEBSITE_APPLICATION_ID}" >> $GITHUB_OUTPUT
+echo "applicationClientId=${AAD_WEBSITE_APPLICATION_ID}" >> $GITHUB_OUTPUT
 
 #https://github.com/Azure/azure-cli/issues/9501
 echo "Calling REST Api to update redirects for web and public client"
@@ -147,7 +147,7 @@ echo "Created service principal to represent APP in directory"
 WEBSITE_CLIENT_SECRET=$(az ad app credential reset --id $AAD_WEBSITE_APPLICATION_ID --query "password" -o tsv)
 
 #TODO write direct to KeyVault?
-echo "name=applicationClientSecret=${WEBSITE_CLIENT_SECRET}" >> $GITHUB_OUTPUT
+echo "applicationClientSecret=${WEBSITE_CLIENT_SECRET}" >> $GITHUB_OUTPUT
 
 # #Az Devops
 # echo "##vso[task.setvariable variable=applicationClientId;isOutput=true]${AAD_WEBSITE_APPLICATION_ID}"
