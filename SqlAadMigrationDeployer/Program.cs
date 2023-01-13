@@ -5,8 +5,6 @@ using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
-using Azure.Core;
-using Azure.Identity;
 using Microsoft.Data.SqlClient;
 
 namespace SqlAadMigrationDeployer
@@ -19,14 +17,9 @@ namespace SqlAadMigrationDeployer
 
             var sqlConnection = args[1];
 
-            var cred = new DefaultAzureCredential();
-            var token = await cred.GetTokenAsync(new TokenRequestContext(new[]
-                { "https://database.windows.net/" }));
-
             var printOutput = new StringBuilder();
 
             await using var connection = new SqlConnection(sqlConnection);
-            connection.AccessToken = token.Token;
             connection.InfoMessage += (sender, eventArgs) => { printOutput.AppendLine(eventArgs.ToString()); };
             await connection.OpenAsync();
 

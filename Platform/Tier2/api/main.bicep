@@ -7,6 +7,7 @@ param logAnalyticsWorkspaceId string
 param serverFarmId string
 param databaseServerName string
 param uniqueness string
+param apiAadClientId string
 
 param location string = resourceGroup().location
 
@@ -59,10 +60,10 @@ var settings = [
     name: 'ApiSettings__UserAssignedClientId'
     value: ManagedIdentity.properties.clientId 
   }
-  // { 
-  //   name: 'AzureAD__ClientId'
-  //   value: apiAadClientId 
-  // }
+  { 
+    name: 'AzureAD__ClientId'
+    value: apiAadClientId 
+  }
   { 
     name: 'ApiSettings__ConnectionString'
     value: database.outputs.apiDatabaseConnectionString

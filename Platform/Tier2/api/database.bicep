@@ -47,4 +47,4 @@ resource DatabaseDiagnostics 'Microsoft.Insights/diagnosticSettings@2021-05-01-p
 }
 
 output apiDatabaseName string = databaseName
-output apiDatabaseConnectionString string = 'Server=tcp:${databaseServerName}${environment().suffixes.sqlServerHostname},1433;Initial Catalog=${databaseName};MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30'
+output apiDatabaseConnectionString string = 'Server=tcp:${databaseServerName}${environment().suffixes.sqlServerHostname},1433;Database=${databaseName};MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30; Authentication=Active Directory Default'
