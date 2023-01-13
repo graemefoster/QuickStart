@@ -125,7 +125,7 @@ var settings = [
   }
   {
     name: 'ApiSettings__URL'
-    value: 'https://${apiHostName}/PetsApi/'
+    value: 'https://${apiHostName}'
   }
   {
     name: 'ApiSettings__Scope'
