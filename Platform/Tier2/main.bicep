@@ -41,6 +41,7 @@ module ApiDeployment './api/main.bicep' = {
     serverFarmId: serverFarmId
     location: location
     uniqueness: uniqueness
+    apiAadClientId: apiClientId
   }
 }
 
