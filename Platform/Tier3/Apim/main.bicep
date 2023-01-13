@@ -91,6 +91,15 @@ resource Api 'Microsoft.ApiManagement/service/apis@2021-04-01-preview' = {
     }
   }
 
+  resource NewPetApiOperation 'operations@2021-04-01-preview' = {
+    name: 'NewPets'
+    properties: {
+      displayName: 'New Pet'
+      method: 'POST'
+      urlTemplate: '/'
+    }
+  }
+
   resource ApiAppInsightsLogging 'diagnostics@2021-04-01-preview' = {
     name: 'applicationinsights'
     properties: {
