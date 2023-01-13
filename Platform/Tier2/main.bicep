@@ -121,6 +121,7 @@ module ApiDeployment './api/main.bicep' = {
     location: location
     uniqueness: uniqueness
     apiAadClientId: apiClientId
+    aadTenantId: aadTenantId
     appFqdn: AppDeployment.outputs.appHostname
     appSlotFqdn: empty(AppDeployment.outputs.appSlotHostname) ? AppDeployment.outputs.appHostname : AppDeployment.outputs.appSlotHostname
     spaFqdn: SpaDeployment.outputs.appHostname

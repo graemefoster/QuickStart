@@ -8,6 +8,7 @@ param serverFarmId string
 param databaseServerName string
 param uniqueness string
 param apiAadClientId string
+param aadTenantId string
 param appFqdn string
 param spaFqdn string
 param appSlotFqdn string
@@ -85,6 +86,10 @@ var settings = [
   {
     name: 'AzureAD__ClientId'
     value: apiAadClientId
+  }
+  {
+    name: 'AzureAD__TenantId'
+    value: aadTenantId
   }
   {
     name: 'ApiSettings__ConnectionString'
