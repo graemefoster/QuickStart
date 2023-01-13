@@ -3,7 +3,7 @@
     "msalConfig": {
         "auth": {
             "clientId": "<%= Environment.GetEnvironmentVariable("AzureAD__ClientId") %>",
-            "authority": "https://login.microsoftonline.com/<%= Environment.GetEnvironmentVariable("AzureAD_TenantId") %>",
+            "authority": "https://login.microsoftonline.com/<%= Environment.GetEnvironmentVariable("AzureAD__TenantId") %>",
             "redirectUri": "https://<%= Request.Url.Host %>/"
         },
         "cache": {
