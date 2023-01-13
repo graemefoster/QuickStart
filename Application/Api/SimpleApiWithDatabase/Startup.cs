@@ -40,11 +40,12 @@ namespace SimpleApiWithDatabase
 
             services.AddCors(options =>
             {
-                Console.WriteLine($"Adding Cors for origins: {string.Join(',', interimSettings.Cors)}.");
+                var cors = interimSettings.Cors ?? Array.Empty<string>();
+                Console.WriteLine($"Adding Cors for origins: {string.Join(',',cors)}.");
                 options.AddPolicy(name: AllowSpecificOrigins,
                     builder =>
                     {
-                        foreach (var origin in interimSettings.Cors)
+                        foreach (var origin in cors)
                         {
                             builder = builder.WithOrigins(origin);
                         }
