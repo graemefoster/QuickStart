@@ -17,6 +17,12 @@ var appKeyVaultName = '${resourcePrefix}-spa-${environmentName}-kv'
 var deploySlot = environmentName != 'test'
 var subscriptionSecretName = 'ApiSubscriptionKey'
 
+@description('This is the built-in Key Vault Administrator role. See https://docs.microsoft.com/azure/role-based-access-control/built-in-roles#key-vault-administrator')
+resource keyVaultSecretsUserRoleDefinition 'Microsoft.Authorization/roleDefinitions@2018-01-01-preview' existing = {
+  scope: subscription()
+  name: '4633458b-17de-408a-b874-0445c86b69e6'
+}
+
 resource AppKeyVault 'Microsoft.KeyVault/vaults@2021-06-01-preview' = {
   name: appKeyVaultName
   location: location
@@ -57,7 +63,6 @@ resource KeyVaultDiagnostics 'Microsoft.Insights/diagnosticSettings@2021-05-01-p
     ]
   }
 }
-
 
 resource WebAppAppInsights 'Microsoft.Insights/components@2020-02-02' = {
   name: '${appHostname}-appi'
@@ -148,6 +153,26 @@ resource WebAppGreen 'Microsoft.Web/sites/slots@2021-01-15' = if (deploySlot) {
       nodeVersion: 'node|16-lts'
       appSettings: settings
     }
+  }
+}
+
+resource KeyVaultAuth 'Microsoft.Authorization/roleAssignments@2022-04-01' = {
+  name: guid('${appHostname}-read-${appKeyVaultName}')
+  scope: AppKeyVault
+  properties: {
+    roleDefinitionId: keyVaultSecretsUserRoleDefinition.id
+    principalId: WebApp.identity.principalId
+    principalType: 'ServicePrincipal'
+  }
+}
+
+resource GreenKeyVaultAuth 'Microsoft.Authorization/roleAssignments@2022-04-01' = if (deploySlot) {
+  name: guid('${appHostname}.green-read-${appKeyVaultName}')
+  scope: AppKeyVault
+  properties: {
+    roleDefinitionId: keyVaultSecretsUserRoleDefinition.id
+    principalId: (deploySlot == true) ? WebAppGreen.identity.principalId : 'Not deploying'
+    principalType: 'ServicePrincipal'
   }
 }
 
