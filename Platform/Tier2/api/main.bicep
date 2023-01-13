@@ -84,7 +84,7 @@ resource WebApi 'Microsoft.Web/sites@2021-01-15' = {
     serverFarmId: serverFarmId
     siteConfig: {
       minTlsVersion: '1.2'
-      netFrameworkVersion: 'v5.0'
+      netFrameworkVersion: 'v7.0'
       appSettings: settings
     }
   }
@@ -131,7 +131,7 @@ resource WebApiGreen 'Microsoft.Web/sites/slots@2021-01-15' = if (deploySlot) {
     serverFarmId: serverFarmId
     siteConfig: {
       minTlsVersion: '1.2'
-      netFrameworkVersion: 'v5.0'
+      netFrameworkVersion: 'v7.0'
       appSettings: settings
     }
   }
