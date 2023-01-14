@@ -125,7 +125,7 @@ jobs:
       - uses: actions/upload-artifact@v3
         with:
           name: azure-diagram
-          path: './azurediagram.jpeg'
+          path: './azurediagram.png'
 
       - name: Setup dotnet
         uses: actions/setup-dotnet@v3
