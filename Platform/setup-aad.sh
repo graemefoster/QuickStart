@@ -111,13 +111,21 @@ echo "applicationClientId=${AAD_WEBSITE_APPLICATION_ID}" >> $GITHUB_OUTPUT
 
 #https://github.com/Azure/azure-cli/issues/9501
 echo "Calling REST Api to update redirects for web and public client"
+if [ "$ENVIRONMENT_NAME" = "Development" ]; then
+    LOCAL_REDIRECT=", \"http://localhost:3000\""
+else
+    LOCAL_REDIRECT=""
+fi
+
 read -r -d '' CLIENT_SPA_REDIRECTS << EOM
 {
     "spa" : {
-        "redirectUris" : [ "https://${SPA_HOST_NAME}/", "https://${SPA_SLOT_HOST_NAME}/" ]
+        "redirectUris" : [ "https://${SPA_HOST_NAME}/", "https://${SPA_SLOT_HOST_NAME}/" $LOCAL_REDIRECT ]
     }
 }
 EOM
+
+echo $CLIENT_SPA_REDIRECTS
 
 az rest --method PATCH \
     --uri "https://graph.microsoft.com/v1.0/applications/${AAD_WEBSITE_OBJECT_ID}" \
@@ -126,10 +134,16 @@ az rest --method PATCH \
 
 echo "Patched SPA redirects"
 
+if [ "$ENVIRONMENT_NAME" = "Development" ]; then
+    LOCAL_REDIRECT=", \"https://sampleapp.localtest.me:4430/signin-oidc\""
+else
+    LOCAL_REDIRECT=""
+fi
+
 read -r -d '' CLIENT_WEB_REDIRECTS << EOM
 {
     "web" : {
-        "redirectUris" : [ "https://${WEBSITE_HOST_NAME}/signin-oidc", "https://${WEBSITE_SLOT_HOST_NAME}/signin-oidc" ]
+        "redirectUris" : [ "https://${WEBSITE_HOST_NAME}/signin-oidc", "https://${WEBSITE_SLOT_HOST_NAME}/signin-oidc" $LOCAL_REDIRECT ]
     }
 }
 EOM

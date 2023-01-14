@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Diagnostics;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
 
 namespace SimpleMvcApp.Features.Home
@@ -10,6 +11,7 @@ namespace SimpleMvcApp.Features.Home
             return RedirectToAction("Index", "ListPets");
         }
 
+        [AllowAnonymous]
         public IActionResult Error()
         {
             var exceptionHandlerPathFeature = HttpContext.Features.Get<IExceptionHandlerPathFeature>();

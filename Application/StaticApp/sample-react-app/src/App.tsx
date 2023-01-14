@@ -1,10 +1,10 @@
 import {
   AuthenticatedTemplate,
-  UnauthenticatedTemplate
+  UnauthenticatedTemplate,
 } from "@azure/msal-react";
 import { SignInButton } from "./components/SignInButton";
 import { Nav, Navbar, Container } from "react-bootstrap";
-import { BrowserRouter as Router, Switch, Route, Link } from "react-router-dom";
+import { BrowserRouter as Router, Routes, Route, Link } from "react-router-dom";
 import ListPets from "./components/ListPets"
 
 function App() {
@@ -33,17 +33,11 @@ function App() {
             </Container>
           </Navbar>
           <div>
-            <Switch>
-              <Route exact path="/">
-                <h2>Welcome to Pet World!</h2>
-              </Route>
-              <Route path="/list">
-                <ListPets />
-              </Route>
-              <Route path="/new">
-                <h2>New pet</h2>
-              </Route>
-            </Switch>
+            <Routes>
+              <Route path="/" element={<h2> Welcome to Pet World!</h2>} />
+              <Route path="/list" element={<ListPets />} />
+              <Route path="/new" element={<h2>New pet</h2>} />
+            </Routes>
           </div>
         </Router>
       </AuthenticatedTemplate>
