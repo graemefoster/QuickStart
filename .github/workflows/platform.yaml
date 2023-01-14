@@ -118,7 +118,7 @@ jobs:
         with:
           subscriptionId: ${{ steps.diagram-prerequisistes.outputs.subscriptionId }}
           resourceGroup: "${{ secrets.RESOURCE_PREFIX }}*"
-          outputFileName: "azurediagram.drawio"
+          outputFileName: "azurediagram.drawio.png"
           accessToken: ${{ steps.diagram-prerequisistes.outputs.token }}
 
       - uses: actions/upload-artifact@v3
