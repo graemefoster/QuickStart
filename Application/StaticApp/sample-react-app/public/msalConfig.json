@@ -3,7 +3,7 @@
             "auth": {
                 "clientId": "2d7a0f82-da7c-454b-ac7c-8bc0662549ba",
                 "authority": "https://login.microsoftonline.com/a77c67fe-34bf-43d1-9652-7150e6c155c3",
-                "redirectUri": "https://qs003-e24faxqx4awr4-test-spa.azurewebsites.net/"
+                "redirectUri": "http://localhost:3000"
             },
             "cache": {
                 "cacheLocation": "sessionStorage",

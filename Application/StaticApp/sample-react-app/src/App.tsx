@@ -1,6 +1,6 @@
 import {
   AuthenticatedTemplate,
-  UnauthenticatedTemplate
+  UnauthenticatedTemplate,
 } from "@azure/msal-react";
 import { SignInButton } from "./components/SignInButton";
 import { Nav, Navbar, Container } from "react-bootstrap";
@@ -34,15 +34,9 @@ function App() {
           </Navbar>
           <div>
             <Routes>
-              <Route path="/">
-                <h2>Welcome to Pet World!</h2>
-              </Route>
-              <Route path="/list">
-                <ListPets />
-              </Route>
-              <Route path="/new">
-                <h2>New pet</h2>
-              </Route>
+              <Route path="/" element={<h2> Welcome to Pet World!</h2>} />
+              <Route path="/list" element={<ListPets />} />
+              <Route path="/new" element={<h2>New pet</h2>} />
             </Routes>
           </div>
         </Router>
