@@ -1,22 +1,21 @@
-{
-    "msalConfig": {
-        "auth": {
-            "clientId": "8f566f8d-2de9-404e-b802-d5bff33c6d27",
-            "authority": "https://login.microsoftonline.com/49f24cca-11a6-424d-b2e2-0650053986cc",
-            "redirectUri": "http://localhost:3000/"
+    {
+        "msalConfig": {
+            "auth": {
+                "clientId": "2d7a0f82-da7c-454b-ac7c-8bc0662549ba",
+                "authority": "https://login.microsoftonline.com/a77c67fe-34bf-43d1-9652-7150e6c155c3",
+                "redirectUri": "https://qs003-e24faxqx4awr4-test-spa.azurewebsites.net/"
+            },
+            "cache": {
+                "cacheLocation": "sessionStorage",
+                "storeAuthStateInCookie": false
+            }
         },
-        "cache": {
-            "cacheLocation": "sessionStorage",
-            "storeAuthStateInCookie": false
+        "apiConfig": {
+            "AppInsightsKey": "a25b0e4c-bb85-42fe-bd35-79f3e17db0c2",
+            "MicroServiceUrl": "http://localhost:3000/",
+            "BaseUrl": "https://api.sampleapp.localtest.me:4431/",
+            "Scopes": [
+                "api://d0247628-4256-46f4-ae73-7f5eb0bfb18c/Pets.Manage"
+            ]
         }
-    },
-    "apiConfig": {
-        "AppInsightsKey" : "",
-        "MicroServiceUrl": "http://localhost:3000/",
-        "BaseUrl": "https://api.sampleapp.localtest.me:4431/",
-        "SubscriptionKey" : "",
-        "Scopes": [
-            "api://30c96387-e02f-49e3-878c-17c2cbf34a35/Pets.Manage"
-        ]
     }
-}
