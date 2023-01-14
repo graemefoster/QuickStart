@@ -118,8 +118,14 @@ jobs:
         with:
           subscriptionId: ${{ steps.diagram-prerequisistes.outputs.subscriptionId }}
           resourceGroup: "${{ secrets.RESOURCE_PREFIX }}*"
-          outputFileName: "azurediagram.drawio"
+          outputFileName: "azurediagram.png"
+          outputPng: true
           accessToken: ${{ steps.diagram-prerequisistes.outputs.token }}
+
+      - uses: actions/upload-artifact@v3
+        with:
+          name: azure-diagram
+          path: './azurediagram.jpeg'
 
       - name: Setup dotnet
         uses: actions/setup-dotnet@v3
