@@ -1,3 +1,5 @@
+name: Build Single Environment 
+
 on:
   workflow_call:
     inputs:
@@ -7,15 +9,15 @@ on:
       environment:
         required: true
         type: string
-      secrets:
-        AZURE_CREDENTIALS:
-          required: true
-        DEPLOYMENTPRINCIPAL_ID:
-          required: true
-        DEPLOYMENTPRINCIPAL_NAME:
-          required: true
-        APIM_PUBLISHER_EMAIL:
-          required: true
+    secrets:
+      AZURE_CREDENTIALS:
+        required: true
+      DEPLOYMENTPRINCIPAL_ID:
+        required: true
+      DEPLOYMENTPRINCIPAL_NAME:
+        required: true
+      APIM_PUBLISHER_EMAIL:
+        required: true
 
 jobs:
 
