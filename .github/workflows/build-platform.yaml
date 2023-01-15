@@ -3,9 +3,6 @@ name: Build Single Environment
 on:
   workflow_call:
     inputs:
-      resource-prefix:
-        required: true
-        type: string
       environment:
         required: true
         type: string
@@ -17,6 +14,8 @@ on:
       DEPLOYMENTPRINCIPAL_NAME:
         required: true
       APIM_PUBLISHER_EMAIL:
+        required: true
+      RESOURCE_PREFIX:
         required: true
 
 jobs:
@@ -41,50 +40,50 @@ jobs:
           scope: 'subscription'
           region: 'australiaeast'
           template: ./Platform/deploy-quickstart-platform.bicep
-          deploymentName: '${{ secrets.RESOURCE_PREFIX }}-test-platform'
+          deploymentName: '${{ secrets.RESOURCE_PREFIX }}-${{ inputs.environment }}-platform'
           parameters: >
-            resourcePrefix=${{ inputs.resource-prefix }} 
+            resourcePrefix=${{ secrets.RESOURCE_PREFIX }} 
             databaseAdministratorObjectId=${{ secrets.DEPLOYMENTPRINCIPAL_ID }} 
             databaseAdministratorName=${{ secrets.DEPLOYMENTPRINCIPAL_NAME }}
             environmentName=${{ inputs.environment }}
             apimPublisherEmail=${{ secrets.APIM_PUBLISHER_EMAIL }}
           failOnStdErr: false # container-apps produces warning
 
-      - name: Create AAD Applications for test web-app / web-api
-        id: setup-test-aad
+      - name: Create AAD Applications for ${{ inputs.environment }} web-app / web-api
+        id: setup-aad
         run: >
           ./Platform/setup-aad.sh
-          ${{ inputs.resource-prefix }} 
-          test
+          ${{ secrets.RESOURCE_PREFIX }} 
+          ${{ inputs.environment }}
           ${{ steps.platformDeploy.outputs.uniqueness }}
 
-      - name: Deploy Test Applications and Databases
+      - name: Deploy Applications and Databases
         uses: azure/arm-deploy@v1
         id: 'appsDeploy'
         with:
           scope: 'subscription'
           region: 'australiaeast'
           template: ./Platform/deploy-quickstart-apps.bicep
-          deploymentName: '${{ inputs.resource-prefix }}-test-apps'
+          deploymentName: '${{ secrets.RESOURCE_PREFIX }}-${{ inputs.environment }}-apps'
           parameters: >
-            resourcePrefix=${{ inputs.resource-prefix }} 
-            environmentName=test
-            appClientId=${{ steps.setup-test-aad.outputs.applicationClientId }}
-            apiClientId=${{ steps.setup-test-aad.outputs.apiClientId }}
-            aadTenantId=${{ steps.setup-test-aad.outputs.aadTenantId }}
-            appClientSecret=${{ steps.setup-test-aad.outputs.applicationClientSecret }}
+            resourcePrefix=${{ secrets.RESOURCE_PREFIX }} 
+            environmentName=${{ inputs.environment }}
+            appClientId=${{ steps.setup-aad.outputs.applicationClientId }}
+            apiClientId=${{ steps.setup-aad.outputs.apiClientId }}
+            aadTenantId=${{ steps.setup-aad.outputs.aadTenantId }}
+            appClientSecret=${{ steps.setup-aad.outputs.applicationClientSecret }}
           failOnStdErr: false
 
       - name: Deploy Api into APIm
         uses: azure/arm-deploy@v1
-        id: 'testConfigurationDeploy'
+        id: 'configurationDeploy'
         with:
           scope: 'subscription'
           region: 'australiaeast'
           template: ./Platform/deploy-quickstart-apim.bicep
-          deploymentName: '${{ inputs.resource-prefix }}-test-apim'
+          deploymentName: '${{ secrets.RESOURCE_PREFIX }}-${{ inputs.environment }}-apim'
           parameters: >
-            resourcePrefix=${{ inputs.resource-prefix }} 
+            resourcePrefix=${{ secrets.RESOURCE_PREFIX }} 
             environmentName=${{ inputs.environment }}
           failOnStdErr: true
 
@@ -100,7 +99,7 @@ jobs:
         uses: graemefoster/azurediagramsgithubactionsdocker@v0.1.7
         with:
           subscriptionId: ${{ steps.diagram-prerequisistes.outputs.subscriptionId }}
-          resourceGroup: "${{ inputs.resource-prefix }}-test*"
+          resourceGroup: "${{ secrets.RESOURCE_PREFIX }}-${{ inputs.environment }}*"
           outputFileName: "azurediagram.drawio"
           accessToken: ${{ steps.diagram-prerequisistes.outputs.token }}
           showRuntime: true
@@ -122,7 +121,7 @@ jobs:
       - name: Build Database Assistant
         run: dotnet build ./SqlAadMigrationDeployer/SqlAadMigrationDeployer.csproj --configuration Release --no-restore
 
-      - name: Grant access to database to Test Api
+      - name: Grant access to database to Api
         run: dotnet run --project ./SqlAadMigrationDeployer/SqlAadMigrationDeployer.csproj add-managed-identity "${{ steps.appsDeploy.outputs.databaseConnectionString }}" "${{ steps.appsDeploy.outputs.managedIdentityName }}" "${{ steps.appsDeploy.outputs.managedIdentityAppId }}" "db_owner"
 
       - name: Logout of Azure

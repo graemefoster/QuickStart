@@ -17,13 +17,13 @@ jobs:
   deploy-platform-test:
     uses: ./.github/workflows/build-platform.yaml
     with:
-      resource-prefix: ${{ secrets.RESOURCE_PREFIX }}
       environment: test
     secrets:
       AZURE_CREDENTIALS: ${{ secrets.AZURE_CREDENTIALS }}
       DEPLOYMENTPRINCIPAL_ID: ${{ secrets.DEPLOYMENTPRINCIPAL_ID }} 
       DEPLOYMENTPRINCIPAL_NAME: ${{ secrets.DEPLOYMENTPRINCIPAL_NAME }}
       APIM_PUBLISHER_EMAIL: ${{ secrets.APIM_PUBLISHER_EMAIL }}
+      RESOURCE_PREFIX: ${{ secrets.RESOURCE_PREFIX }}
 
   # deploy-platform-prod:
   #   runs-on: ubuntu-latest
