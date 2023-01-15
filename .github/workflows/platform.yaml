@@ -105,6 +105,27 @@ jobs:
             environmentName=test
           failOnStdErr: true
 
+      - name: "Get access token to generate diagram"
+        id: diagram-prerequisistes
+        run: |
+          token=$(az account get-access-token --query accessToken -o tsv --query "accessToken")
+          echo "::add-mask::$token" 
+          echo "token=$token" >> $GITHUB_OUTPUT
+          echo "subscriptionId=$(az account show --query "id" --output tsv)" >> $GITHUB_OUTPUT
+
+      - name: Generate Digram
+        uses: graemefoster/azurediagramsgithubactionsdocker@v0.1.5
+        with:
+          subscriptionId: ${{ steps.diagram-prerequisistes.outputs.subscriptionId }}
+          resourceGroup: "${{ secrets.RESOURCE_PREFIX }}*"
+          outputFileName: "azurediagram.drawio"
+          accessToken: ${{ steps.diagram-prerequisistes.outputs.token }}
+
+      - uses: actions/upload-artifact@v3
+        with:
+          name: azure-diagram
+          path: './azurediagram.drawio.png'
+
       - name: Setup dotnet
         uses: actions/setup-dotnet@v3
         with:
