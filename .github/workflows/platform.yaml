@@ -114,18 +114,17 @@ jobs:
           echo "subscriptionId=$(az account show --query "id" --output tsv)" >> $GITHUB_OUTPUT
 
       - name: Generate Digram
-        uses: graemefoster/azurediagramsgithubactionsdocker@v0.1.3
+        uses: graemefoster/azurediagramsgithubactionsdocker@v0.1.5
         with:
           subscriptionId: ${{ steps.diagram-prerequisistes.outputs.subscriptionId }}
           resourceGroup: "${{ secrets.RESOURCE_PREFIX }}*"
-          outputFileName: "azurediagram.png"
-          outputPng: true
+          outputFileName: "azurediagram.drawio"
           accessToken: ${{ steps.diagram-prerequisistes.outputs.token }}
 
       - uses: actions/upload-artifact@v3
         with:
           name: azure-diagram
-          path: './azurediagram.png'
+          path: './azurediagram.drawio.png'
 
       - name: Setup dotnet
         uses: actions/setup-dotnet@v3
