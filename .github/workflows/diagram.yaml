@@ -1,0 +1,50 @@
+name: Platform
+
+on:
+  push:
+    branches: [ main ]
+    paths:
+      - 'Platform/**'
+  pull_request:
+    paths:
+      - 'Platform/**'
+    branches:
+      - main
+  workflow_dispatch:
+
+jobs:
+
+  generate-diagram:
+    runs-on: ubuntu-latest
+    environment: test
+
+    steps:
+      - name: Login to Azure (Azure resources)
+        uses: azure/login@v1
+        with:
+          creds: ${{secrets.AZURE_CREDENTIALS}} 
+
+      - name: "Get access token to generate diagram"
+        id: diagram-prerequisistes
+        run: |
+          token=$(az account get-access-token --query accessToken -o tsv --query "accessToken")
+          echo "::add-mask::$token" 
+          echo "token=$token" >> $GITHUB_OUTPUT
+          echo "subscriptionId=$(az account show --query "id" --output tsv)" >> $GITHUB_OUTPUT
+
+      - name: Generate Digram
+        uses: graemefoster/azurediagramsgithubactionsdocker@v0.1.5
+        with:
+          subscriptionId: ${{ steps.diagram-prerequisistes.outputs.subscriptionId }}
+          resourceGroup: "${{ secrets.RESOURCE_PREFIX }}*"
+          outputFileName: "azurediagram.drawio"
+          accessToken: ${{ steps.diagram-prerequisistes.outputs.token }}
+
+      - uses: actions/upload-artifact@v3
+        with:
+          name: azure-diagram
+          path: './azurediagram.drawio.png'
+
+      - name: Logout of Azure
+        run: |
+          az logout
