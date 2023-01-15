@@ -15,7 +15,7 @@ on:
 jobs:
 
   deploy-platform-test:
-    uses: ./.github/workflows/reusable/platform.yaml
+    uses: ./.github/workflows/build-platform.yaml
     with:
       resource-prefix: ${{ secrets.RESOURCE_PREFIX }}
       environment: test
