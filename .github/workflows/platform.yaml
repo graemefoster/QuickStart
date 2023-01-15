@@ -120,6 +120,10 @@ jobs:
           resourceGroup: "${{ secrets.RESOURCE_PREFIX }}-test*"
           outputFileName: "azurediagram.drawio"
           accessToken: ${{ steps.diagram-prerequisistes.outputs.token }}
+          showRuntime: true
+          showInferred: true
+          showIdentity: true
+          showDiagnostics: true
 
       - uses: actions/upload-artifact@v3
         with:
