@@ -1,5 +1,3 @@
-name: Platform
-
 on:
   workflow_call:
     inputs:
