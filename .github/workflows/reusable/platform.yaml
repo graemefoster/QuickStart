@@ -1,0 +1,131 @@
+name: Platform
+
+on:
+  workflow_call:
+    inputs:
+      resource-prefix:
+        required: true
+        type: string
+      environment:
+        required: true
+        type: string
+      secrets:
+        AZURE_CREDENTIALS:
+          required: true
+        DEPLOYMENTPRINCIPAL_ID:
+          required: true
+        DEPLOYMENTPRINCIPAL_NAME:
+          required: true
+        APIM_PUBLISHER_EMAIL:
+          required: true
+
+jobs:
+
+  deploy-platform:
+    runs-on: ubuntu-latest
+    environment: ${{ inputs.environment }}
+
+    steps:
+      - name: Fetch source code
+        uses: actions/checkout@v3
+
+      - name: Login to Azure (Azure resources)
+        uses: azure/login@v1
+        with:
+          creds: ${{secrets.AZURE_CREDENTIALS}} 
+
+      - name: Deploy Platform
+        uses: azure/arm-deploy@v1
+        id: 'platformDeploy'
+        with:
+          scope: 'subscription'
+          region: 'australiaeast'
+          template: ./Platform/deploy-quickstart-platform.bicep
+          deploymentName: '${{ secrets.RESOURCE_PREFIX }}-test-platform'
+          parameters: >
+            resourcePrefix=${{ inputs.resource-prefix }} 
+            databaseAdministratorObjectId=${{ secrets.DEPLOYMENTPRINCIPAL_ID }} 
+            databaseAdministratorName=${{ secrets.DEPLOYMENTPRINCIPAL_NAME }}
+            environmentName=${{ inputs.environment }}
+            apimPublisherEmail=${{ secrets.APIM_PUBLISHER_EMAIL }}
+          failOnStdErr: false # container-apps produces warning
+
+      - name: Create AAD Applications for test web-app / web-api
+        id: setup-test-aad
+        run: >
+          ./Platform/setup-aad.sh
+          ${{ inputs.resource-prefix }} 
+          test
+          ${{ steps.platformDeploy.outputs.uniqueness }}
+
+      - name: Deploy Test Applications and Databases
+        uses: azure/arm-deploy@v1
+        id: 'appsDeploy'
+        with:
+          scope: 'subscription'
+          region: 'australiaeast'
+          template: ./Platform/deploy-quickstart-apps.bicep
+          deploymentName: '${{ inputs.resource-prefix }}-test-apps'
+          parameters: >
+            resourcePrefix=${{ inputs.resource-prefix }} 
+            environmentName=test
+            appClientId=${{ steps.setup-test-aad.outputs.applicationClientId }}
+            apiClientId=${{ steps.setup-test-aad.outputs.apiClientId }}
+            aadTenantId=${{ steps.setup-test-aad.outputs.aadTenantId }}
+            appClientSecret=${{ steps.setup-test-aad.outputs.applicationClientSecret }}
+          failOnStdErr: false
+
+      - name: Deploy Api into APIm
+        uses: azure/arm-deploy@v1
+        id: 'testConfigurationDeploy'
+        with:
+          scope: 'subscription'
+          region: 'australiaeast'
+          template: ./Platform/deploy-quickstart-apim.bicep
+          deploymentName: '${{ inputs.resource-prefix }}-test-apim'
+          parameters: >
+            resourcePrefix=${{ inputs.resource-prefix }} 
+            environmentName=${{ inputs.environment }}
+          failOnStdErr: true
+
+      - name: "Get access token to generate diagram"
+        id: diagram-prerequisistes
+        run: |
+          token=$(az account get-access-token --query accessToken -o tsv --query "accessToken")
+          echo "::add-mask::$token" 
+          echo "token=$token" >> $GITHUB_OUTPUT
+          echo "subscriptionId=$(az account show --query "id" --output tsv)" >> $GITHUB_OUTPUT
+
+      - name: Generate Digram
+        uses: graemefoster/azurediagramsgithubactionsdocker@v0.1.7
+        with:
+          subscriptionId: ${{ steps.diagram-prerequisistes.outputs.subscriptionId }}
+          resourceGroup: "${{ inputs.resource-prefix }}-test*"
+          outputFileName: "azurediagram.drawio"
+          accessToken: ${{ steps.diagram-prerequisistes.outputs.token }}
+          showRuntime: true
+          showInferred: true
+          showIdentity: true
+          showDiagnostics: true
+
+      - uses: actions/upload-artifact@v3
+        with:
+          name: azure-diagram
+          path: './azurediagram.drawio.png'
+
+      - name: Setup dotnet
+        uses: actions/setup-dotnet@v3
+        with:
+          dotnet-version: '7.0.x'
+      - run: dotnet restore ./SqlAadMigrationDeployer/SqlAadMigrationDeployer.csproj
+
+      - name: Build Database Assistant
+        run: dotnet build ./SqlAadMigrationDeployer/SqlAadMigrationDeployer.csproj --configuration Release --no-restore
+
+      - name: Grant access to database to Test Api
+        run: dotnet run --project ./SqlAadMigrationDeployer/SqlAadMigrationDeployer.csproj add-managed-identity "${{ steps.appsDeploy.outputs.databaseConnectionString }}" "${{ steps.appsDeploy.outputs.managedIdentityName }}" "${{ steps.appsDeploy.outputs.managedIdentityAppId }}" "db_owner"
+
+      - name: Logout of Azure
+        run: |
+          az logout
+
