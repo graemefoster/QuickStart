@@ -17,6 +17,13 @@ resource containerApp 'Microsoft.App/containerApps@2022-06-01-preview' = {
         external: true
         targetPort: 3000
         transport: 'auto'
+        traffic: [
+          //by default don't send any traffic to the latest revision. We'll do blue/green, and bring it in when it's ready
+          {
+            latestRevision: true
+            weight: 0
+          }
+        ]
       }
       activeRevisionsMode: 'Multiple'
     }
