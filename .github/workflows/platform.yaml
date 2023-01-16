@@ -20,11 +20,11 @@ jobs:
     uses: ./.github/workflows/build-platform.yaml
     with:
       environment: test
-      RESOURCE_PREFIX: ${{ vars.RESOURCE_PREFIX }}
     secrets:
       AZURE_CREDENTIALS: ${{ secrets.AZURE_CREDENTIALS }}
       DEPLOYMENTPRINCIPAL_NAME: ${{ secrets.DEPLOYMENTPRINCIPAL_NAME }}
       APIM_PUBLISHER_EMAIL: ${{ secrets.APIM_PUBLISHER_EMAIL }}
+      RESOURCE_PREFIX: ${{ secrets.RESOURCE_PREFIX }}
 
   deploy-platform-prod:
     if: github.ref == 'refs/heads/main'
@@ -33,8 +33,8 @@ jobs:
     uses: ./.github/workflows/build-platform.yaml
     with:
       environment: prod
-      RESOURCE_PREFIX: ${{ vars.RESOURCE_PREFIX }}
     secrets:
       AZURE_CREDENTIALS: ${{ secrets.AZURE_CREDENTIALS }}
       DEPLOYMENTPRINCIPAL_NAME: ${{ secrets.DEPLOYMENTPRINCIPAL_NAME }}
       APIM_PUBLISHER_EMAIL: ${{ secrets.APIM_PUBLISHER_EMAIL }}
+      RESOURCE_PREFIX: ${{ secrets.RESOURCE_PREFIX }}

@@ -55,8 +55,8 @@ jobs:
       - name: 'Fetch ContainerApp Metadata'
         id: 'fetchContainerAppMetadata'
         run: |
-          echo "containerAppName=$(az deployment sub show -n "${{ vars.RESOURCE_PREFIX }}-test-apps" --query "properties.outputs.containerAppName.value" -o tsv)" >> $GITHUB_OUTPUT
-          echo "containerAppResourceGroup=$(az deployment sub show -n "${{ vars.RESOURCE_PREFIX }}-test-apps" --query "properties.outputs.containerAppResourceGroup.value" -o tsv)" >> $GITHUB_OUTPUT
+          echo "containerAppName=$(az deployment sub show -n "${{ secrets.RESOURCE_PREFIX }}-test-apps" --query "properties.outputs.containerAppName.value" -o tsv)" >> $GITHUB_OUTPUT
+          echo "containerAppResourceGroup=$(az deployment sub show -n "${{ secrets.RESOURCE_PREFIX }}-test-apps" --query "properties.outputs.containerAppResourceGroup.value" -o tsv)" >> $GITHUB_OUTPUT
         
       - run: az config set extension.use_dynamic_install=yes_without_prompt
 
@@ -82,11 +82,11 @@ jobs:
   #       # Uses the az cli to update the latest revision of the container-app. 
   #       # We need the name of the current revision so we can use it for the blue/green swap after happy testing
   #       run: |
-  #         REVISION_NAME=$(az containerapp show --name 'microservice-prod' --resource-group '${{ vars.RESOURCE_PREFIX }}-prod-rg' --query 'latestRevisionName' -o tsv | tr -d '\r')
+  #         REVISION_NAME=$(az containerapp show --name 'microservice-prod' --resource-group '${{ secrets.RESOURCE_PREFIX }}-prod-rg' --query 'latestRevisionName' -o tsv | tr -d '\r')
   #         echo "Latest revision in containerapp is ${REVISION_NAME}"
   #         NEW_REVISION_FQDN=$(az containerapp update \
   #           --name 'microservice-prod' \
-  #           --resource-group '${{ vars.RESOURCE_PREFIX }}-prod-rg' \
+  #           --resource-group '${{ secrets.RESOURCE_PREFIX }}-prod-rg' \
   #           --image "ghcr.io/${{ github.actor }}/sample-microservice:${{github.run_number}}" \
   #           --traffic-weight "latest=0,${REVISION_NAME}=100" \
   #           --query "latestRevisionFqdn" -o tsv | tr -d '\r')
@@ -115,6 +115,6 @@ jobs:
   #       run: |
   #         az containerapp update \
   #           --name 'microservice-prod' \
-  #           --resource-group '${{ vars.RESOURCE_PREFIX }}-prod-rg' \
+  #           --resource-group '${{ secrets.RESOURCE_PREFIX }}-prod-rg' \
   #           --traffic-weight "latest=100,${{ needs.deploy-to-production-green.outputs.previousRevisionName }}=0"          
       

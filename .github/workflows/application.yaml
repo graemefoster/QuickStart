@@ -50,7 +50,7 @@ jobs:
 
       - name: 'Fetch Apps Metadata'
         id: 'fetchAppMetadata'
-        run: echo "appName=$(az deployment sub show -n "${{ vars.RESOURCE_PREFIX }}-test-apps" --query "properties.outputs.appName.value" -o tsv)" >> $GITHUB_OUTPUT
+        run: echo "appName=$(az deployment sub show -n "${{ secrets.RESOURCE_PREFIX }}-test-apps" --query "properties.outputs.appName.value" -o tsv)" >> $GITHUB_OUTPUT
 
       - uses: azure/webapps-deploy@v2
         with: 
@@ -80,7 +80,7 @@ jobs:
 
       - name: 'Fetch Apps Metadata'
         id: 'fetchAppMetadata'
-        run: echo "appName=$(az deployment sub show -n "${{ vars.RESOURCE_PREFIX }}-prod-apps" --query "properties.outputs.appName.value" -o tsv)" >> $GITHUB_OUTPUT
+        run: echo "appName=$(az deployment sub show -n "${{ secrets.RESOURCE_PREFIX }}-prod-apps" --query "properties.outputs.appName.value" -o tsv)" >> $GITHUB_OUTPUT
 
       - uses: azure/webapps-deploy@v2
         with: 
@@ -104,7 +104,7 @@ jobs:
 
       - name: 'Fetch Apps Metadata'
         id: 'fetchAppMetadata'
-        run: echo "appName=$(az deployment sub show -n "${{ vars.RESOURCE_PREFIX }}-prod-apps" --query "properties.outputs.appName.value" -o tsv)" >> $GITHUB_OUTPUT
+        run: echo "appName=$(az deployment sub show -n "${{ secrets.RESOURCE_PREFIX }}-prod-apps" --query "properties.outputs.appName.value" -o tsv)" >> $GITHUB_OUTPUT
 
-      - run: az webapp deployment slot swap --slot green --action swap --name ${{ steps.fetchAppMetadata.outputs.appName }} --resource-group '${{ vars.RESOURCE_PREFIX }}-prod-rg'
+      - run: az webapp deployment slot swap --slot green --action swap --name ${{ steps.fetchAppMetadata.outputs.appName }} --resource-group '${{ secrets.RESOURCE_PREFIX }}-prod-rg'
 
