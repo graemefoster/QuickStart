@@ -33,6 +33,7 @@ jobs:
     uses: ./.github/workflows/build-platform.yaml
     with:
       environment: prod
+      singleResourceGroup: true
     secrets:
       AZURE_CREDENTIALS: ${{ secrets.AZURE_CREDENTIALS }}
       DEPLOYMENTPRINCIPAL_NAME: ${{ secrets.DEPLOYMENTPRINCIPAL_NAME }}
