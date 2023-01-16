@@ -16,8 +16,6 @@ on:
         required: true
       APIM_PUBLISHER_EMAIL:
         required: true
-      RESOURCE_PREFIX:
-        required: true
 
 jobs:
 
