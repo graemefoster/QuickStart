@@ -46,7 +46,7 @@ jobs:
   deploy-to-test:
     needs: package-app
     runs-on: ubuntu-latest
-    environment: Test
+    environment: test
     steps:
       - uses: azure/login@v1
         with:

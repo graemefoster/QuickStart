@@ -39,7 +39,7 @@ jobs:
   deploy-to-test:
     needs: build-and-test-app
     runs-on: ubuntu-latest
-    environment: Test
+    environment: test
     steps:
       - uses: azure/login@v1
         with:

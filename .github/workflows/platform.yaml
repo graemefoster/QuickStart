@@ -30,7 +30,7 @@ jobs:
       - deploy-platform-test
     uses: ./.github/workflows/build-platform.yaml
     with:
-      environment: production
+      environment: prod
       RESOURCE_PREFIX: ${{ vars.RESOURCE_PREFIX }}
     secrets:
       AZURE_CREDENTIALS: ${{ secrets.AZURE_CREDENTIALS }}

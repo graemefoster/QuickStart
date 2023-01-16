@@ -64,7 +64,7 @@ jobs:
       - build-database-deployer
       - build-and-test-api
     runs-on: ubuntu-latest
-    environment: Test
+    environment: test
     steps:
     - uses: actions/setup-dotnet@v3
       with:
