@@ -66,7 +66,7 @@ jobs:
       - name: "Deploy new revision to test"
         # Uses the az cli to update the latest revision of the container-app. This will direct all traffic to the new revision
         run: |
-          OLD_REVISION_NAME=$(az containerapp show --name '${{ steps.fetchContainerAppMetadata.outputs.containerAppName }}' --resource-group '${{ secrets.RESOURCE_PREFIX }}-test-rg' --query 'latestRevisionName' -o tsv | tr -d '\r')
+          OLD_REVISION_NAME=$(az containerapp show --name '${{ steps.fetchContainerAppMetadata.outputs.containerAppName }}' --resource-group '${{ secrets.RESOURCE_PREFIX }}-test-rg' --query 'properties.latestRevisionName' -o tsv | tr -d '\r')
           echo 'Current revision: $OLD_REVISION_NAME'
           
           az containerapp update \
@@ -108,7 +108,7 @@ jobs:
         # We need the name of the current revision so we can use it for the blue/green swap after happy testing
         run: |
 
-          OLD_REVISION_NAME=$(az containerapp show --name '${{ steps.fetchContainerAppMetadata.outputs.containerAppName }}' --resource-group '${{ secrets.RESOURCE_PREFIX }}-prod-rg' --query 'latestRevisionName' -o tsv | tr -d '\r')
+          OLD_REVISION_NAME=$(az containerapp show --name '${{ steps.fetchContainerAppMetadata.outputs.containerAppName }}' --resource-group '${{ secrets.RESOURCE_PREFIX }}-prod-rg' --query 'properties.latestRevisionName' -o tsv | tr -d '\r')
 
           #Explicitly set old revision traffic to 100% (instead of referring to it as latest)
           #This will stop the new revision getting any traffic
@@ -119,7 +119,7 @@ jobs:
             --resource-group '${{ steps.fetchContainerAppMetadata.outputs.containerAppResourceGroup }}' \
             --image "ghcr.io/${{ github.actor }}/sample-microservice:${{github.run_number}}"
 
-          NEW_REVISION_FQDN=$(az containerapp show --name '${{ steps.fetchContainerAppMetadata.outputs.containerAppName }}' --resource-group '${{ secrets.RESOURCE_PREFIX }}-prod-rg' --query 'latestRevisionFqdn' -o tsv | tr -d '\r')
+          NEW_REVISION_FQDN=$(az containerapp show --name '${{ steps.fetchContainerAppMetadata.outputs.containerAppName }}' --resource-group '${{ secrets.RESOURCE_PREFIX }}-prod-rg' --query 'properties.latestRevisionFqdn' -o tsv | tr -d '\r')
 
           echo "oldRevisionName=${OLD_REVISION_NAME}" >> $GITHUB_OUTPUT
           echo "New revision can be tested at https://${NEW_REVISION_FQDN}"
