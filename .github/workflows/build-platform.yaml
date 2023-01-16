@@ -6,9 +6,9 @@ on:
       environment:
         required: true
         type: string
+    vars:
       RESOURCE_PREFIX: 
         required: true
-        type: string
     secrets:
       AZURE_CREDENTIALS:
         required: true
@@ -34,7 +34,7 @@ jobs:
 
       - name: Extract Deployment ID
         id: extractDeploymentId
-        run: echo "DEPLOYMENTPRINCIPAL_ID=$(jq ".clientId" <<< $AZURE_CREDENTIALS | tr -d \")" >> $GITHUB_OUTPUT
+        run: echo "DEPLOYMENTPRINCIPAL_ID=$(jq ".clientId" <<< ${{secrets.AZURE_CREDENTIALS}} | tr -d \")" >> $GITHUB_OUTPUT
 
       - name: Deploy Platform
         uses: azure/arm-deploy@v1
@@ -43,9 +43,9 @@ jobs:
           scope: 'subscription'
           region: 'australiaeast'
           template: ./Platform/deploy-quickstart-platform.bicep
-          deploymentName: '${{ inputs.RESOURCE_PREFIX }}-${{ inputs.environment }}-platform'
+          deploymentName: '${{ vars.RESOURCE_PREFIX }}-${{ inputs.environment }}-platform'
           parameters: >
-            resourcePrefix=${{ inputs.RESOURCE_PREFIX }} 
+            resourcePrefix=${{ vars.RESOURCE_PREFIX }} 
             databaseAdministratorObjectId=${{ steps.extractDeploymentId.outputs.DEPLOYMENTPRINCIPAL_ID }} 
             databaseAdministratorName=${{ secrets.DEPLOYMENTPRINCIPAL_NAME }}
             environmentName=${{ inputs.environment }}
@@ -56,7 +56,7 @@ jobs:
         id: setup-aad
         run: >
           ./Platform/setup-aad.sh
-          ${{ inputs.RESOURCE_PREFIX }} 
+          ${{ vars.RESOURCE_PREFIX }} 
           ${{ inputs.environment }}
           ${{ steps.platformDeploy.outputs.uniqueness }}
 
@@ -67,9 +67,9 @@ jobs:
           scope: 'subscription'
           region: 'australiaeast'
           template: ./Platform/deploy-quickstart-apps.bicep
-          deploymentName: '${{ inputs.RESOURCE_PREFIX }}-${{ inputs.environment }}-apps'
+          deploymentName: '${{ vars.RESOURCE_PREFIX }}-${{ inputs.environment }}-apps'
           parameters: >
-            resourcePrefix=${{ inputs.RESOURCE_PREFIX }} 
+            resourcePrefix=${{ vars.RESOURCE_PREFIX }} 
             environmentName=${{ inputs.environment }}
             appClientId=${{ steps.setup-aad.outputs.applicationClientId }}
             apiClientId=${{ steps.setup-aad.outputs.apiClientId }}
@@ -84,9 +84,9 @@ jobs:
           scope: 'subscription'
           region: 'australiaeast'
           template: ./Platform/deploy-quickstart-apim.bicep
-          deploymentName: '${{ inputs.RESOURCE_PREFIX }}-${{ inputs.environment }}-apim'
+          deploymentName: '${{ vars.RESOURCE_PREFIX }}-${{ inputs.environment }}-apim'
           parameters: >
-            resourcePrefix=${{ inputs.RESOURCE_PREFIX }} 
+            resourcePrefix=${{ vars.RESOURCE_PREFIX }} 
             environmentName=${{ inputs.environment }}
           failOnStdErr: true
 
@@ -102,7 +102,7 @@ jobs:
         uses: graemefoster/azurediagramsgithubactionsdocker@v0.1.7
         with:
           subscriptionId: ${{ steps.diagram-prerequisistes.outputs.subscriptionId }}
-          resourceGroup: "${{ inputs.RESOURCE_PREFIX }}-${{ inputs.environment }}*"
+          resourceGroup: "${{ vars.RESOURCE_PREFIX }}-${{ inputs.environment }}*"
           outputFileName: "azurediagram.drawio"
           accessToken: ${{ steps.diagram-prerequisistes.outputs.token }}
           showRuntime: true
