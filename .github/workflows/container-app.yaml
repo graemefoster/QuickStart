@@ -112,7 +112,10 @@ jobs:
 
           #Explicitly set old revision traffic to 100% (instead of referring to it as latest)
           #This will stop the new revision getting any traffic
-          az containerapp ingress traffic set -n MyContainerapp -g MyResourceGroup --revision-weight $OLD_REVISION_NAME=100
+          az containerapp ingress traffic set \
+            --name '${{ steps.fetchContainerAppMetadata.outputs.containerAppName }}'  
+            -resource-group '${{ steps.fetchContainerAppMetadata.outputs.containerAppResourceGroup }}' 
+            --revision-weight $OLD_REVISION_NAME=100
 
           az containerapp update \
             --name '${{ steps.fetchContainerAppMetadata.outputs.containerAppName }}' \
