@@ -1,4 +1,4 @@
-name: Build Single Environment 
+name: Build Single Environment
 
 on:
   workflow_call:
@@ -17,11 +17,10 @@ on:
         required: true
       APIM_PUBLISHER_EMAIL:
         required: true
-      RESOURCE_PREFIX: 
+      RESOURCE_PREFIX:
         required: true
 
 jobs:
-
   deploy-platform:
     runs-on: ubuntu-latest
     concurrency: platform-${{ inputs.environment }}
@@ -34,7 +33,7 @@ jobs:
       - name: Login to Azure (Azure resources)
         uses: azure/login@v1
         with:
-          creds: ${{secrets.AZURE_CREDENTIALS}} 
+          creds: ${{secrets.AZURE_CREDENTIALS}}
 
       - name: Extract Deployment ID
         id: extractDeploymentId
@@ -42,12 +41,12 @@ jobs:
 
       - name: Deploy Platform
         uses: azure/arm-deploy@v1
-        id: 'platformDeploy'
+        id: "platformDeploy"
         with:
-          scope: 'subscription'
-          region: 'australiaeast'
+          scope: "subscription"
+          region: "australiaeast"
           template: ./Platform/deploy-quickstart-platform.bicep
-          deploymentName: '${{ secrets.RESOURCE_PREFIX }}-${{ inputs.environment }}-platform'
+          deploymentName: "${{ secrets.RESOURCE_PREFIX }}-${{ inputs.environment }}-platform"
           parameters: >
             resourcePrefix=${{ secrets.RESOURCE_PREFIX }} 
             databaseAdministratorObjectId=${{ steps.extractDeploymentId.outputs.DEPLOYMENTPRINCIPAL_ID }} 
@@ -67,12 +66,12 @@ jobs:
 
       - name: Deploy Applications and Databases
         uses: azure/arm-deploy@v1
-        id: 'appsDeploy'
+        id: "appsDeploy"
         with:
-          scope: 'subscription'
-          region: 'australiaeast'
+          scope: "subscription"
+          region: "australiaeast"
           template: ./Platform/deploy-quickstart-apps.bicep
-          deploymentName: '${{ secrets.RESOURCE_PREFIX }}-${{ inputs.environment }}-apps'
+          deploymentName: "${{ secrets.RESOURCE_PREFIX }}-${{ inputs.environment }}-apps"
           parameters: >
             resourcePrefix=${{ secrets.RESOURCE_PREFIX }} 
             environmentName=${{ inputs.environment }}
@@ -84,12 +83,12 @@ jobs:
 
       - name: Deploy Api into APIm
         uses: azure/arm-deploy@v1
-        id: 'configurationDeploy'
+        id: "configurationDeploy"
         with:
-          scope: 'subscription'
-          region: 'australiaeast'
+          scope: "subscription"
+          region: "australiaeast"
           template: ./Platform/deploy-quickstart-apim.bicep
-          deploymentName: '${{ secrets.RESOURCE_PREFIX }}-${{ inputs.environment }}-apim'
+          deploymentName: "${{ secrets.RESOURCE_PREFIX }}-${{ inputs.environment }}-apim"
           parameters: >
             resourcePrefix=${{ secrets.RESOURCE_PREFIX }} 
             environmentName=${{ inputs.environment }}
@@ -118,12 +117,12 @@ jobs:
       - uses: actions/upload-artifact@v3
         with:
           name: azure-diagram
-          path: './azurediagram-${{ inputs.environment }}.drawio.png'
+          path: "./azurediagram-${{ inputs.environment }}.drawio.png"
 
       - name: Setup dotnet
         uses: actions/setup-dotnet@v3
         with:
-          dotnet-version: '7.0.x'
+          dotnet-version: "7.0.x"
       - run: dotnet restore ./SqlAadMigrationDeployer/SqlAadMigrationDeployer.csproj
 
       - name: Build Database Assistant
@@ -135,4 +134,3 @@ jobs:
       - name: Logout of Azure
         run: |
           az logout
-

@@ -2,18 +2,17 @@ name: Diagram
 
 on:
   push:
-    branches: [ main ]
+    branches: [main]
     paths:
-      - 'Platform/**'
+      - "Platform/**"
   pull_request:
     paths:
-      - 'Platform/**'
+      - "Platform/**"
     branches:
       - main
   workflow_dispatch:
 
 jobs:
-
   generate-diagram:
     runs-on: ubuntu-latest
     environment: test
@@ -22,7 +21,7 @@ jobs:
       - name: Login to Azure (Azure resources)
         uses: azure/login@v1
         with:
-          creds: ${{secrets.AZURE_CREDENTIALS}} 
+          creds: ${{secrets.AZURE_CREDENTIALS}}
 
       - name: "Get access token to generate diagram"
         id: diagram-prerequisistes
@@ -47,7 +46,7 @@ jobs:
       - uses: actions/upload-artifact@v3
         with:
           name: azure-diagram
-          path: './azurediagram.drawio.png'
+          path: "./azurediagram.drawio.png"
 
       - name: Logout of Azure
         run: |

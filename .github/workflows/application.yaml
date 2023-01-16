@@ -1,39 +1,39 @@
 name: Application
 
 env:
-  AZURE_WEBAPP_PACKAGE_PATH: './packages'      # set this to the path to your web app project, defaults to the repository root
+  AZURE_WEBAPP_PACKAGE_PATH: "./packages" # set this to the path to your web app project, defaults to the repository root
 
 on:
   push:
-    branches: [ main ]
+    branches: [main]
     paths:
-      - 'Application/WebApp/**'
-      - '.github/workflows/application.yaml'
+      - "Application/WebApp/**"
+      - ".github/workflows/application.yaml"
   pull_request:
     paths:
-      - 'Application/WebApp/**'
-      - '.github/workflows/application.yaml'
+      - "Application/WebApp/**"
+      - ".github/workflows/application.yaml"
     branches:
       - main
   workflow_dispatch:
-    
+
 jobs:
   build-and-test-app:
     runs-on: ubuntu-latest
 
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
-    - uses: actions/checkout@v3
-    - uses: actions/setup-dotnet@v3
-      with:
-        dotnet-version: '7.0.x'
-    - run: dotnet restore
-    - run: dotnet build ./Application/WebApp/\SimpleMvcApp/\SimpleMvcApp.csproj --configuration Release --no-restore
-    - run: dotnet publish ./Application/WebApp/\SimpleMvcApp/\SimpleMvcApp.csproj -c Release -o '${{ env.AZURE_WEBAPP_PACKAGE_PATH }}/published-app'
-    - uses: actions/upload-artifact@v3
-      with:
-        name: app
-        path: '${{ env.AZURE_WEBAPP_PACKAGE_PATH }}/published-app/**'
+      - uses: actions/checkout@v3
+      - uses: actions/setup-dotnet@v3
+        with:
+          dotnet-version: "7.0.x"
+      - run: dotnet restore
+      - run: dotnet build ./Application/WebApp/\SimpleMvcApp/\SimpleMvcApp.csproj --configuration Release --no-restore
+      - run: dotnet publish ./Application/WebApp/\SimpleMvcApp/\SimpleMvcApp.csproj -c Release -o '${{ env.AZURE_WEBAPP_PACKAGE_PATH }}/published-app'
+      - uses: actions/upload-artifact@v3
+        with:
+          name: app
+          path: "${{ env.AZURE_WEBAPP_PACKAGE_PATH }}/published-app/**"
 
   deploy-to-test:
     needs: build-and-test-app
@@ -45,27 +45,27 @@ jobs:
         with:
           creds: ${{ secrets.AZURE_CREDENTIALS }}
 
-      - name: 'Run Azure webapp deploy action using publish profile credentials'
+      - name: "Run Azure webapp deploy action using publish profile credentials"
         uses: actions/download-artifact@v3
         with:
           name: app
           path: app
 
-      - name: 'Fetch Apps Metadata'
-        id: 'fetchAppMetadata'
+      - name: "Fetch Apps Metadata"
+        id: "fetchAppMetadata"
         run: echo "appName=$(az deployment sub show -n "${{ secrets.RESOURCE_PREFIX }}-test-apps" --query "properties.outputs.appName.value" -o tsv)" >> $GITHUB_OUTPUT
 
       - uses: azure/webapps-deploy@v2
-        with: 
+        with:
           app-name: ${{ steps.fetchAppMetadata.outputs.appName }}
-          package: './app/'
+          package: "./app/"
 
       - name: logout
         run: |
           az logout
 
   deploy-to-production-green:
-    needs: 
+    needs:
       - deploy-to-test
     runs-on: ubuntu-latest
     environment: prod
@@ -75,21 +75,21 @@ jobs:
       - uses: azure/login@v1
         with:
           creds: ${{ secrets.AZURE_CREDENTIALS }}
-          
-      - name: 'Run Azure webapp deploy action using publish profile credentials'
+
+      - name: "Run Azure webapp deploy action using publish profile credentials"
         uses: actions/download-artifact@v3
         with:
           name: app
           path: app
 
-      - name: 'Fetch Apps Metadata'
-        id: 'fetchAppMetadata'
+      - name: "Fetch Apps Metadata"
+        id: "fetchAppMetadata"
         run: echo "appName=$(az deployment sub show -n "${{ secrets.RESOURCE_PREFIX }}-prod-apps" --query "properties.outputs.appName.value" -o tsv)" >> $GITHUB_OUTPUT
 
       - uses: azure/webapps-deploy@v2
-        with: 
+        with:
           app-name: ${{ steps.fetchAppMetadata.outputs.appName }}
-          package: './app/'
+          package: "./app/"
 
       - name: logout
         run: |
@@ -101,16 +101,14 @@ jobs:
     runs-on: ubuntu-latest
     environment: prod
     steps:
-
       - uses: azure/login@v1
         with:
           creds: ${{ secrets.AZURE_CREDENTIALS }}
 
-      - name: 'Fetch Apps Metadata'
-        id: 'fetchAppMetadata'
+      - name: "Fetch Apps Metadata"
+        id: "fetchAppMetadata"
         run: |
           echo "appName=$(az deployment sub show -n "${{ secrets.RESOURCE_PREFIX }}-prod-apps" --query "properties.outputs.appName.value" -o tsv)" >> $GITHUB_OUTPUT
           echo "appResourceGroupName=$(az deployment sub show -n "${{ secrets.RESOURCE_PREFIX }}-prod-apps" --query "properties.outputs.appResourceGroupName.value" -o tsv)" >> $GITHUB_OUTPUT
 
       - run: az webapp deployment slot swap --slot green --action swap --name '${{ steps.fetchAppMetadata.outputs.appName }}' --resource-group '${{ steps.fetchAppMetadata.outputs.appResourceGroupName }}'
-

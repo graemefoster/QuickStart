@@ -2,20 +2,19 @@ name: Platform
 
 on:
   push:
-    branches: [ main ]
+    branches: [main]
     paths:
-      - 'Platform/**'
-      - '.github/workflows/*platform*'
+      - "Platform/**"
+      - ".github/workflows/*platform*"
   pull_request:
     paths:
-      - 'Platform/**'
-      - '.github/workflows/*platform*'
+      - "Platform/**"
+      - ".github/workflows/*platform*"
     branches:
       - main
   workflow_dispatch:
 
 jobs:
-
   deploy-platform-test:
     uses: ./.github/workflows/build-platform.yaml
     with:

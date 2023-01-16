@@ -7,11 +7,11 @@ on:
     branches: [main]
     paths:
       - "Application/StaticApp/**"
-      - '.github/workflows/static-app.yaml'
+      - ".github/workflows/static-app.yaml"
   pull_request:
     paths:
       - "Application/StaticApp/**"
-      - '.github/workflows/static-app.yaml'
+      - ".github/workflows/static-app.yaml"
     branches:
       - main
   workflow_dispatch:
@@ -53,8 +53,8 @@ jobs:
           name: app
           path: app
 
-      - name: 'Fetch Spa Metadata'
-        id: 'fetchSpaMetadata'
+      - name: "Fetch Spa Metadata"
+        id: "fetchSpaMetadata"
         run: |
           echo "spaName=$(az deployment sub show -n "${{ secrets.RESOURCE_PREFIX }}-test-apps" --query "properties.outputs.spaName.value" -o tsv)" >> $GITHUB_OUTPUT
 
@@ -84,8 +84,8 @@ jobs:
           name: app
           path: app
 
-      - name: 'Fetch Spa Metadata'
-        id: 'fetchSpaMetadata'
+      - name: "Fetch Spa Metadata"
+        id: "fetchSpaMetadata"
         run: |
           echo "spaName=$(az deployment sub show -n "${{ secrets.RESOURCE_PREFIX }}-prod-apps" --query "properties.outputs.spaName.value" -o tsv)" >> $GITHUB_OUTPUT
           echo "spaResourceGroupName=$(az deployment sub show -n "${{ secrets.RESOURCE_PREFIX }}-prod-apps" --query "properties.outputs.spaResourceGroupName.value" -o tsv)" >> $GITHUB_OUTPUT
@@ -95,7 +95,7 @@ jobs:
           app-name: ${{ steps.fetchSpaMetadata.outputs.appName }}
           package: "./app/"
           slot-name: "green"
-          
+
       - name: logout
         run: |
           az logout
@@ -110,8 +110,8 @@ jobs:
         with:
           creds: ${{ secrets.AZURE_CREDENTIALS }}
 
-      - name: 'Fetch Spa Metadata'
-        id: 'fetchSpaMetadata'
+      - name: "Fetch Spa Metadata"
+        id: "fetchSpaMetadata"
         run: |
           echo "spaName=$(az deployment sub show -n "${{ secrets.RESOURCE_PREFIX }}-prod-apps" --query "properties.outputs.spaName.value" -o tsv)" >> $GITHUB_OUTPUT
           echo "spaResourceGroupName=$(az deployment sub show -n "${{ secrets.RESOURCE_PREFIX }}-prod-apps" --query "properties.outputs.spaResourceGroupName.value" -o tsv)" >> $GITHUB_OUTPUT

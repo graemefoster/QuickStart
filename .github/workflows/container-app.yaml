@@ -5,11 +5,11 @@ on:
     branches: [main]
     paths:
       - "Application/MicroService/**"
-      - '.github/workflows/container-app.yaml'
+      - ".github/workflows/container-app.yaml"
   pull_request:
     paths:
       - "Application/MicroService/**"
-      - '.github/workflows/container-app.yaml'
+      - ".github/workflows/container-app.yaml"
     branches:
       - main
   workflow_dispatch:
@@ -55,12 +55,12 @@ jobs:
         with:
           creds: ${{ secrets.AZURE_CREDENTIALS }}
 
-      - name: 'Fetch ContainerApp Metadata'
-        id: 'fetchContainerAppMetadata'
+      - name: "Fetch ContainerApp Metadata"
+        id: "fetchContainerAppMetadata"
         run: |
           echo "containerAppName=$(az deployment sub show -n "${{ secrets.RESOURCE_PREFIX }}-test-apps" --query "properties.outputs.containerAppName.value" -o tsv)" >> $GITHUB_OUTPUT
           echo "containerAppResourceGroup=$(az deployment sub show -n "${{ secrets.RESOURCE_PREFIX }}-test-apps" --query "properties.outputs.containerAppResourceGroup.value" -o tsv)" >> $GITHUB_OUTPUT
-        
+
       - run: az config set extension.use_dynamic_install=yes_without_prompt
 
       - name: "Deploy new revision to test"
@@ -82,15 +82,15 @@ jobs:
         with:
           creds: ${{ secrets.AZURE_CREDENTIALS }}
 
-      - name: 'Fetch ContainerApp Metadata'
-        id: 'fetchContainerAppMetadata'
+      - name: "Fetch ContainerApp Metadata"
+        id: "fetchContainerAppMetadata"
         run: |
           echo "containerAppName=$(az deployment sub show -n "${{ secrets.RESOURCE_PREFIX }}-prod-apps" --query "properties.outputs.containerAppName.value" -o tsv)" >> $GITHUB_OUTPUT
           echo "containerAppResourceGroup=$(az deployment sub show -n "${{ secrets.RESOURCE_PREFIX }}-prod-apps" --query "properties.outputs.containerAppResourceGroup.value" -o tsv)" >> $GITHUB_OUTPUT
 
       - name: "Deploy new revision to production green slot"
         id: "deploy-new-revision"
-        # Uses the az cli to update the latest revision of the container-app. 
+        # Uses the az cli to update the latest revision of the container-app.
         # We need the name of the current revision so we can use it for the blue/green swap after happy testing
         run: |
           REVISION_NAME=$(az containerapp show --name '${{ steps.fetchContainerAppMetadata.outputs.containerAppName }}' --resource-group '${{ steps.fetchContainerAppMetadata.outputs.containerAppResourceGroup }}' --query 'latestRevisionName' -o tsv | tr -d '\r')
@@ -128,5 +128,4 @@ jobs:
           az containerapp update \
             --name '${{ needs.deploy-to-production-green.outputs.containerAppName }}' \
             --resource-group '${{ needs.deploy-to-production-green.outputs.containerAppResourceGroup }}' \
-            --traffic-weight "latest=100,${{ needs.deploy-to-production-green.outputs.previousRevisionName }}=0"          
-      
+            --traffic-weight "latest=100,${{ needs.deploy-to-production-green.outputs.previousRevisionName }}=0"
