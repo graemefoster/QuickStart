@@ -63,39 +63,53 @@ jobs:
         run: |
           az logout
 
-  # deploy-to-production-green:
-  #   needs:
-  #     - deploy-to-test
-  #   runs-on: ubuntu-latest
-  #   environment: Production
-  #   if: github.ref == 'refs/heads/main'
-  #   steps:
-  #     - uses: azure/login@v1
-  #       with:
-  #         creds: ${{ secrets.AZURE_CREDENTIALS }}
-  #     - name: "Run Azure webapp deploy action using publish profile credentials"
-  #       uses: actions/download-artifact@v3
-  #       with:
-  #         name: app
-  #         path: app
+  deploy-to-production-green:
+    needs:
+      - deploy-to-test
+    runs-on: ubuntu-latest
+    environment: Production
+    if: github.ref == 'refs/heads/main'
+    steps:
+      - uses: azure/login@v1
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
 
-  #     - uses: azure/webapps-deploy@v2
-  #       with:
-  #         app-name: ${{ secrets.AZURE_SPA_NAME }}
-  #         package: "./app/"
-  #         slot-name: "green"
+      - name: "Run Azure webapp deploy action using publish profile credentials"
+        uses: actions/download-artifact@v3
+        with:
+          name: app
+          path: app
+
+      - name: 'Fetch Spa Metadata'
+        id: 'fetchSpaMetadata'
+        run: |
+          echo "spaName=$(az deployment sub show -n "${{ secrets.RESOURCE_PREFIX }}-prod-apps" --query "properties.outputs.spaName.value" -o tsv)" >> $GITHUB_OUTPUT
+          echo "spaResourceGroupName=$(az deployment sub show -n "${{ secrets.RESOURCE_PREFIX }}-prod-apps" --query "properties.outputs.spaResourceGroupName.value" -o tsv)" >> $GITHUB_OUTPUT
+
+      - uses: azure/webapps-deploy@v2
+        with:
+          app-name: ${{ steps.fetchSpaMetadata.outputs.appName }}
+          package: "./app/"
+          slot-name: "green"
           
-  #     - name: logout
-  #       run: |
-  #         az logout
+      - name: logout
+        run: |
+          az logout
 
-  # deploy-to-production:
-  #   needs:
-  #     - deploy-to-production-green
-  #   runs-on: ubuntu-latest
-  #   environment: Production
-  #   steps:
-  #     - uses: azure/login@v1
-  #       with:
-  #         creds: ${{ secrets.AZURE_CREDENTIALS }}
-  #     - run: az webapp deployment slot swap --slot green --action swap --name ${{ secrets.AZURE_SPA_NAME }} --resource-group '${{ secrets.RESOURCE_PREFIX }}-prod-rg'
+  deploy-to-production:
+    needs:
+      - deploy-to-production-green
+    runs-on: ubuntu-latest
+    environment: Production
+    steps:
+      - uses: azure/login@v1
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
+
+      - name: 'Fetch Spa Metadata'
+        id: 'fetchSpaMetadata'
+        run: |
+          echo "spaName=$(az deployment sub show -n "${{ secrets.RESOURCE_PREFIX }}-prod-apps" --query "properties.outputs.spaName.value" -o tsv)" >> $GITHUB_OUTPUT
+          echo "spaResourceGroupName=$(az deployment sub show -n "${{ secrets.RESOURCE_PREFIX }}-prod-apps" --query "properties.outputs.spaResourceGroupName.value" -o tsv)" >> $GITHUB_OUTPUT
+
+      - run: az webapp deployment slot swap --slot green --action swap --name ${{ steps.fetchSpaMetadata.outputs.appName }} --resource-group ${{ steps.fetchSpaMetadata.outputs.appResourceGroupName }}
