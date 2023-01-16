@@ -42,6 +42,7 @@ jobs:
     needs: build-and-test-app
     runs-on: ubuntu-latest
     environment: test
+    concurrency: spa-test
     steps:
       - uses: azure/login@v1
         with:
@@ -70,6 +71,7 @@ jobs:
       - deploy-to-test
     runs-on: ubuntu-latest
     environment: prod
+    concurrency: spa-prod
     if: github.ref == 'refs/heads/main'
     steps:
       - uses: azure/login@v1

@@ -66,6 +66,7 @@ jobs:
       - build-and-test-api
     runs-on: ubuntu-latest
     environment: test
+    concurrency: api-test
     steps:
       - uses: actions/setup-dotnet@v3
         with:
@@ -114,6 +115,7 @@ jobs:
       - deploy-to-test
     runs-on: ubuntu-latest
     environment: prod
+    concurrency: api-prod
     if: github.ref == 'refs/heads/main'
     steps:
       - uses: actions/setup-dotnet@v3

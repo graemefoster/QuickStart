@@ -38,6 +38,7 @@ jobs:
   deploy-to-test:
     needs: build-and-test-app
     runs-on: ubuntu-latest
+    concurrency: app-test
     environment: test
     steps:
       - uses: azure/login@v1
@@ -68,6 +69,7 @@ jobs:
       - deploy-to-test
     runs-on: ubuntu-latest
     environment: prod
+    concurrency: app-prod
     if: github.ref == 'refs/heads/main'
     steps:
       - uses: azure/login@v1

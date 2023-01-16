@@ -49,6 +49,7 @@ jobs:
     needs: package-app
     runs-on: ubuntu-latest
     environment: test
+    concurrency: containerapp-test
     steps:
       - uses: azure/login@v1
         with:
@@ -75,6 +76,7 @@ jobs:
     runs-on: ubuntu-latest
     if: github.ref == 'refs/heads/main'
     environment: prod
+    concurrency: containerapp-prod
     steps:
       - uses: azure/login@v1
         with:
@@ -113,6 +115,7 @@ jobs:
     needs:
       - deploy-to-production-green
     runs-on: ubuntu-latest
+    concurrency: containerapp-prod
     if: github.ref == 'refs/heads/main'
     environment: Production
     steps:
