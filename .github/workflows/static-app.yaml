@@ -92,7 +92,7 @@ jobs:
 
       - uses: azure/webapps-deploy@v2
         with:
-          app-name: ${{ steps.fetchSpaMetadata.outputs.appName }}
+          app-name: ${{ steps.fetchSpaMetadata.outputs.spaName }}
           package: "./app/"
           slot-name: "green"
 
