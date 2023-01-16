@@ -117,7 +117,7 @@ jobs:
     runs-on: ubuntu-latest
     concurrency: containerapp-prod
     if: github.ref == 'refs/heads/main'
-    environment: Production
+    environment: prod
     steps:
       - uses: azure/login@v1
         with:
