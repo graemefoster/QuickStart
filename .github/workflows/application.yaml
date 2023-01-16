@@ -108,5 +108,5 @@ jobs:
           echo "appName=$(az deployment sub show -n "${{ secrets.RESOURCE_PREFIX }}-prod-apps" --query "properties.outputs.appName.value" -o tsv)" >> $GITHUB_OUTPUT
           echo "appResourceGroupName=$(az deployment sub show -n "${{ secrets.RESOURCE_PREFIX }}-prod-apps" --query "properties.outputs.appResourceGroupName.value" -o tsv)" >> $GITHUB_OUTPUT
 
-      - run: az webapp deployment slot swap --slot green --action swap --name ${{ steps.fetchAppMetadata.outputs.appName }} --resource-group ${{ steps.fetchAppMetadata.outputs.appResourceGroupName }}
+      - run: az webapp deployment slot swap --slot green --action swap --name '${{ steps.fetchAppMetadata.outputs.appName }}' --resource-group '${{ steps.fetchAppMetadata.outputs.appResourceGroupName }}'
 
