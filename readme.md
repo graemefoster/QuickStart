@@ -12,7 +12,7 @@ Most starter templates focus on the infrastructure. But few stitch everything to
 QuickStart tries to do that for a simple scenario: 
  - A sample Azure Web-Application 
  - with an Api / Database
- - and a micro service (deployed in the new Azure Container Apps)
+ - and a micro service (deployed as an Azure Container Apps)
  - using OIDC / OAUTH, and scopes and roles. 
  
  The aim is to not just create the resources, but wire them up securely, and provide sample blue / greeen deployment pipelines against a variety of CI / CD systems.
