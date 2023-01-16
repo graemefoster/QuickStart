@@ -78,8 +78,8 @@ jobs:
             --resource-group '${{ steps.fetchContainerAppMetadata.outputs.containerAppResourceGroup }}' \
             --revision-weight latest=100
 
-          az containerapp revision deactivate 
-            --revision $OLD_REVISION_NAME
+          az containerapp revision deactivate \
+            --revision $OLD_REVISION_NAME \
             --resource-group '${{ steps.fetchContainerAppMetadata.outputs.containerAppResourceGroup }}' 
 
   deploy-to-production-green:
@@ -150,7 +150,7 @@ jobs:
             --resource-group '${{ needs.deploy-to-production-green.outputs.containerAppResourceGroup }}' \
             --revision-weight latest=100
           
-          az containerapp revision deactivate 
-            --revision '${{ needs.deploy-to-production-green.outputs.oldRevisionName }}'
+          az containerapp revision deactivate \
+            --revision '${{ needs.deploy-to-production-green.outputs.oldRevisionName }}' \
             --resource-group '${{ needs.deploy-to-production-green.outputs.containerAppResourceGroup }}' 
 
