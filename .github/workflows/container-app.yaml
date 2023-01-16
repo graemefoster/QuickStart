@@ -128,8 +128,6 @@ jobs:
           echo "New revision can be tested at https://${NEW_REVISION_FQDN}"
 
     outputs:
-      containerAppName: ${{ steps.fetchContainerAppMetadata.outputs.containerAppName }}
-      containerAppResourceGroup: ${{ steps.fetchContainerAppMetadata.outputs.containerAppResourceGroup }}
       oldRevisionName: ${{ steps.deploy-new-revision.outputs.oldRevisionName }}
 
   blue-green-swap:
@@ -146,15 +144,21 @@ jobs:
 
       - run: az config set extension.use_dynamic_install=yes_without_prompt
 
+      - name: "Fetch ContainerApp Metadata"
+        id: "fetchContainerAppMetadata"
+        run: |
+          echo "containerAppName=$(az deployment sub show -n "${{ secrets.RESOURCE_PREFIX }}-prod-apps" --query "properties.outputs.containerAppName.value" -o tsv)" >> $GITHUB_OUTPUT
+          echo "containerAppResourceGroup=$(az deployment sub show -n "${{ secrets.RESOURCE_PREFIX }}-prod-apps" --query "properties.outputs.containerAppResourceGroup.value" -o tsv)" >> $GITHUB_OUTPUT
+
       - name: "Activate new revision"
         # Change the weights so the new revision takes all the traffic and the previous none (a class blue/green switch)
         run: |
           az containerapp ingress traffic set \
-            --name '${{ needs.deploy-to-production-green.outputs.containerAppName }}' \
-            --resource-group '${{ needs.deploy-to-production-green.outputs.containerAppResourceGroup }}' \
+            --name '${{ steps.fetchContainerAppMetadata.outputs.containerAppName }}' \
+            --resource-group '${{ steps.fetchContainerAppMetadata.outputs.containerAppResourceGroup }}' \
             --revision-weight latest=100
           
           az containerapp revision deactivate \
             --revision '${{ needs.deploy-to-production-green.outputs.oldRevisionName }}' \
-            --resource-group '${{ needs.deploy-to-production-green.outputs.containerAppResourceGroup }}' 
+            --resource-group '${{ steps.fetchContainerAppMetadata.outputs.containerAppResourceGroup }}' 
 
