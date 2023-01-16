@@ -66,14 +66,21 @@ jobs:
       - name: "Deploy new revision to test"
         # Uses the az cli to update the latest revision of the container-app. This will direct all traffic to the new revision
         run: |
+          OLD_REVISION_NAME=$(az containerapp show --name '${{ steps.fetchContainerAppMetadata.outputs.containerAppName }}' --resource-group '${{ secrets.RESOURCE_PREFIX }}-test-rg' --query 'latestRevisionName' -o tsv | tr -d '\r')
+          
           az containerapp update \
             --name '${{ steps.fetchContainerAppMetadata.outputs.containerAppName }}' \
             --resource-group '${{ steps.fetchContainerAppMetadata.outputs.containerAppResourceGroup }}' \
             --image "ghcr.io/${{ github.actor }}/sample-microservice:${{github.run_number}}"
+
           az containerapp ingress traffic set \
             --name '${{ steps.fetchContainerAppMetadata.outputs.containerAppName }}' \
             --resource-group '${{ steps.fetchContainerAppMetadata.outputs.containerAppResourceGroup }}' \
             --revision-weight latest=100
+
+          az containerapp revision deactivate 
+            --revision $OLD_REVISION_NAME
+            --resource-group '${{ steps.fetchContainerAppMetadata.outputs.containerAppResourceGroup }}' 
 
   deploy-to-production-green:
     needs: deploy-to-test
@@ -113,12 +120,13 @@ jobs:
 
           NEW_REVISION_FQDN=$(az containerapp show --name '${{ steps.fetchContainerAppMetadata.outputs.containerAppName }}' --resource-group '${{ secrets.RESOURCE_PREFIX }}-prod-rg' --query 'latestRevisionFqdn' -o tsv | tr -d '\r')
 
-          echo "newRevisionFqdn=${NEW_REVISION_FQDN}" >> $GITHUB_OUTPUT
+          echo "oldRevisionName=${OLD_REVISION_NAME}" >> $GITHUB_OUTPUT
           echo "New revision can be tested at https://${NEW_REVISION_FQDN}"
 
     outputs:
       containerAppName: ${{ steps.fetchContainerAppMetadata.outputs.containerAppName }}
       containerAppResourceGroup: ${{ steps.fetchContainerAppMetadata.outputs.containerAppResourceGroup }}
+      oldRevisionName: ${{ steps.deploy-new-revision.outputs.oldRevisionName }}
 
   blue-green-swap:
     needs:
@@ -141,3 +149,8 @@ jobs:
             --name '${{ needs.deploy-to-production-green.outputs.containerAppName }}' \
             --resource-group '${{ needs.deploy-to-production-green.outputs.containerAppResourceGroup }}' \
             --revision-weight latest=100
+          
+          az containerapp revision deactivate 
+            --revision '${{ needs.deploy-to-production-green.outputs.oldRevisionName }}'
+            --resource-group '${{ needs.deploy-to-production-green.outputs.containerAppResourceGroup }}' 
+
