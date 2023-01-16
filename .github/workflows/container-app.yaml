@@ -67,6 +67,7 @@ jobs:
         # Uses the az cli to update the latest revision of the container-app. This will direct all traffic to the new revision
         run: |
           OLD_REVISION_NAME=$(az containerapp show --name '${{ steps.fetchContainerAppMetadata.outputs.containerAppName }}' --resource-group '${{ secrets.RESOURCE_PREFIX }}-test-rg' --query 'latestRevisionName' -o tsv | tr -d '\r')
+          echo 'Current revision: $OLD_REVISION_NAME'
           
           az containerapp update \
             --name '${{ steps.fetchContainerAppMetadata.outputs.containerAppName }}' \
@@ -79,7 +80,7 @@ jobs:
             --revision-weight latest=100
 
           az containerapp revision deactivate \
-            --revision $OLD_REVISION_NAME \
+            --revision '$OLD_REVISION_NAME' \
             --resource-group '${{ steps.fetchContainerAppMetadata.outputs.containerAppResourceGroup }}' 
 
   deploy-to-production-green:
