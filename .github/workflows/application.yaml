@@ -95,7 +95,7 @@ jobs:
     needs:
       - deploy-to-production-green
     runs-on: ubuntu-latest
-    environment: Production
+    environment: prod
     steps:
 
       - uses: azure/login@v1
