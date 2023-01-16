@@ -5,9 +5,11 @@ on:
     branches: [main]
     paths:
       - "Application/MicroService/**"
+      - '.github/workflows/container-app.yaml'
   pull_request:
     paths:
       - "Application/MicroService/**"
+      - '.github/workflows/container-app.yaml'
     branches:
       - main
   workflow_dispatch:

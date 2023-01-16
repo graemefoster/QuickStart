@@ -7,9 +7,11 @@ on:
     branches: [main]
     paths:
       - "Application/StaticApp/**"
+      - '.github/workflows/static-app.yaml'
   pull_request:
     paths:
       - "Application/StaticApp/**"
+      - '.github/workflows/static-app.yaml'
     branches:
       - main
   workflow_dispatch:

@@ -8,9 +8,11 @@ on:
     branches: [ main ]
     paths:
       - 'Application/WebApp/**'
+      - '.github/workflows/application.yaml'
   pull_request:
     paths:
       - 'Application/WebApp/**'
+      - '.github/workflows/application.yaml'
     branches:
       - main
   workflow_dispatch:
