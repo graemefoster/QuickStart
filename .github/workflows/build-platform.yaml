@@ -24,6 +24,7 @@ jobs:
 
   deploy-platform:
     runs-on: ubuntu-latest
+    concurrency: platform-${{ inputs.environment }}
     environment: ${{ inputs.environment }}
 
     steps:
