@@ -49,6 +49,7 @@ output microserviceFqdn string = inr.outputs.microserviceFqdn
 output containerAppName string = inr.outputs.containerAppName
 output containerAppResourceGroup string = inr.outputs.containerAppResourceGroup
 output appResourceGroupName string = inr.outputs.appResourceGroupName
+output apiResourceGroupName string = inr.outputs.apiResourceGroupName
 output appKeyVaultName string = inr.outputs.appKeyVaultName
 output appApiKeySecretName string = inr.outputs.appApiKeySecretName
 output spaResourceGroupName string = inr.outputs.spaResourceGroupName

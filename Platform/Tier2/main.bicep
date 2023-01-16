@@ -157,3 +157,5 @@ output spaApiKeySecretName string = SpaDeployment.outputs.apiKeySecretName
 output databaseConnectionString string = ApiDeployment.outputs.databaseConnectionString
 output managedIdentityAppId string = ApiDeployment.outputs.managedIdentityAppId
 output managedIdentityName string = ApiDeployment.outputs.managedIdentityName
+
+output apiResourceGroupName string = singleResourceGroupDeployment ? platformResourceGroupName : apiRgName
