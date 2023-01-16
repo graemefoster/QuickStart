@@ -33,7 +33,7 @@ jobs:
 
       - name: Extract Deployment ID
         id: extractDeploymentId
-        run: echo "DEPLOYMENTPRINCIPAL_ID=$(jq ".clientId" <<< ${{secrets.AZURE_CREDENTIALS}} | tr -d \")" >> $GITHUB_OUTPUT
+        run: echo "DEPLOYMENTPRINCIPAL_ID=$(jq ".clientId" <<< '${{secrets.AZURE_CREDENTIALS}}' | tr -d \")" >> $GITHUB_OUTPUT
 
       - name: Deploy Platform
         uses: azure/arm-deploy@v1
