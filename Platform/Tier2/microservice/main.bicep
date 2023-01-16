@@ -18,6 +18,7 @@ resource containerApp 'Microsoft.App/containerApps@2022-06-01-preview' = {
         targetPort: 3000
         transport: 'auto'
       }
+      activeRevisionsMode: 'Multiple'
     }
     template: {
       containers: [
