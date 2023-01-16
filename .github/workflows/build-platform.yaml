@@ -98,7 +98,7 @@ jobs:
           echo "subscriptionId=$(az account show --query "id" --output tsv)" >> $GITHUB_OUTPUT
 
       - name: Generate Digram
-        uses: graemefoster/azurediagramsgithubactionsdocker@v0.1.7
+        uses: graemefoster/azurediagramsgithubactionsdocker@v0.1.10
         with:
           subscriptionId: ${{ steps.diagram-prerequisistes.outputs.subscriptionId }}
           resourceGroup: "${{ secrets.RESOURCE_PREFIX }}-${{ inputs.environment }}*"
