@@ -94,8 +94,8 @@ jobs:
     - name: 'Fetch Api Metadata'
       id: 'fetchApiMetadata'
       run: |
-        echo "apiName=$(az deployment sub show -n "${{ secrets.RESOURCE_PREFIX }}-test-apps" --query "properties.outputs.apiName.value" -o tsv)" >> $GITHUB_OUTPUT
-        echo "databaseConnectionString=$(az deployment sub show -n "${{ secrets.RESOURCE_PREFIX }}-test-apps" --query "properties.outputs.databaseConnectionString.value" -o tsv)" >> $GITHUB_OUTPUT
+        echo "apiName=$(az deployment sub show -n "${{ vars.RESOURCE_PREFIX }}-test-apps" --query "properties.outputs.apiName.value" -o tsv)" >> $GITHUB_OUTPUT
+        echo "databaseConnectionString=$(az deployment sub show -n "${{ vars.RESOURCE_PREFIX }}-test-apps" --query "properties.outputs.databaseConnectionString.value" -o tsv)" >> $GITHUB_OUTPUT
 
     - name: 'Update Database'
       run: dotnet ./database-deployer/SqlAadMigrationDeployer.dll migrate "${{ steps.fetchApiMetadata.outputs.databaseConnectionString }}" "./database-script/build-database.sql"
@@ -160,5 +160,5 @@ jobs:
       - uses: azure/login@v1
         with:
           creds: ${{ secrets.AZURE_CREDENTIALS }}
-      - run: az webapp deployment slot swap --slot green --action swap --name ${{ secrets.AZURE_WEBAPI_NAME }} --resource-group '${{ secrets.RESOURCE_PREFIX }}-prod-rg' 
+      - run: az webapp deployment slot swap --slot green --action swap --name ${{ secrets.AZURE_WEBAPI_NAME }} --resource-group '${{ vars.RESOURCE_PREFIX }}-prod-rg' 
 

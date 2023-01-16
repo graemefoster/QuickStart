@@ -53,7 +53,7 @@ jobs:
       - name: 'Fetch Spa Metadata'
         id: 'fetchSpaMetadata'
         run: |
-          echo "spaName=$(az deployment sub show -n "${{ secrets.RESOURCE_PREFIX }}-test-apps" --query "properties.outputs.spaName.value" -o tsv)" >> $GITHUB_OUTPUT
+          echo "spaName=$(az deployment sub show -n "${{ vars.RESOURCE_PREFIX }}-test-apps" --query "properties.outputs.spaName.value" -o tsv)" >> $GITHUB_OUTPUT
 
       - uses: azure/webapps-deploy@v2
         with:
@@ -98,4 +98,4 @@ jobs:
   #     - uses: azure/login@v1
   #       with:
   #         creds: ${{ secrets.AZURE_CREDENTIALS }}
-  #     - run: az webapp deployment slot swap --slot green --action swap --name ${{ secrets.AZURE_SPA_NAME }} --resource-group '${{ secrets.RESOURCE_PREFIX }}-prod-rg'
+  #     - run: az webapp deployment slot swap --slot green --action swap --name ${{ secrets.AZURE_SPA_NAME }} --resource-group '${{ vars.RESOURCE_PREFIX }}-prod-rg'

@@ -18,115 +18,21 @@ jobs:
     uses: ./.github/workflows/build-platform.yaml
     with:
       environment: test
+      RESOURCE_PREFIX: ${{ vars.RESOURCE_PREFIX }}
     secrets:
       AZURE_CREDENTIALS: ${{ secrets.AZURE_CREDENTIALS }}
-      DEPLOYMENTPRINCIPAL_ID: ${{ secrets.DEPLOYMENTPRINCIPAL_ID }} 
       DEPLOYMENTPRINCIPAL_NAME: ${{ secrets.DEPLOYMENTPRINCIPAL_NAME }}
       APIM_PUBLISHER_EMAIL: ${{ secrets.APIM_PUBLISHER_EMAIL }}
-      RESOURCE_PREFIX: ${{ secrets.RESOURCE_PREFIX }}
 
-  # deploy-platform-prod:
-  #   runs-on: ubuntu-latest
-  #   environment: Production
-  #   if: github.ref == 'refs/heads/main'
-  #   needs:
-  #     - deploy-platform-test
-  #   env:
-  #     SEPARATE_AAD_LOGIN: ${{ secrets.AAD_AZURE_CREDENTIALS != null && secrets.AAD_AZURE_CREDENTIALS != '' }}
-
-  #   steps:
-  #     - name: Fetch source code
-  #       uses: actions/checkout@v3
-
-  #     - name: Login to Azure (Azure resources)
-  #       uses: azure/login@v1
-  #       with:
-  #         creds: ${{secrets.AZURE_CREDENTIALS}} 
-
-  #     - name: Deploy Production Platform
-  #       uses: azure/arm-deploy@v1
-  #       id: 'platformDeploy'
-  #       with:
-  #         scope: 'subscription'
-  #         region: 'australiaeast'
-  #         template: ./Platform/deploy-quickstart-platform.bicep
-  #         parameters: >
-  #           resourcePrefix=${{ secrets.RESOURCE_PREFIX }} 
-  #           databaseAdministratorObjectId=${{ secrets.DEPLOYMENTPRINCIPAL_ID }} 
-  #           databaseAdministratorName=${{ secrets.DEPLOYMENTPRINCIPAL_NAME }}
-  #           environmentName=prod
-  #           apimPublisherEmail=${{ secrets.APIM_PUBLISHER_EMAIL }}
-  #           deploymentName=quickstart-${{ secrets.RESOURCE_PREFIX }}
-  #         failOnStdErr: false
-
-  #     - name: Deploy Production Applications and Databases
-  #       uses: azure/arm-deploy@v1
-  #       id: 'appsDeploy'
-  #       with:
-  #         scope: 'subscription'
-  #         region: 'australiaeast'
-  #         template: ./Platform/deploy-quickstart-apps.bicep
-  #         parameters: >
-  #           environmentName=prod
-  #           platformName=quickstart-${{ secrets.RESOURCE_PREFIX }}
-  #         failOnStdErr: false
-
-  #     - name: Logout of Azure
-  #       if: ${{ env.SEPARATE_AAD_LOGIN }}
-  #       run: |
-  #         az logout
-
-  #     - name: Login to Azure (AAD Principals)
-  #       if: ${{ env.SEPARATE_AAD_LOGIN }}
-  #       uses: azure/login@v1
-  #       with:
-  #         creds: ${{secrets.AAD_AZURE_CREDENTIALS}}
-
-  #     - name: Create AAD Applications for production web-app / web-api
-  #       id: setup-prod-aad
-  #       run: >
-  #         ./Platform/setup-aad.sh 
-  #         ${{ steps.appsDeploy.outputs.applicationHostname }}
-  #         ${{ steps.appsDeploy.outputs.apiHostname }}
-  #         ${{ steps.appsDeploy.outputs.spaHostname }}
-
-  #     - name: Logout of Azure
-  #       if: ${{ env.SEPARATE_AAD_LOGIN }}
-  #       run: |
-  #         az logout
-
-  #     - name: Login to Azure (Azure resources)
-  #       if: ${{ env.SEPARATE_AAD_LOGIN }}
-  #       uses: azure/login@v1
-  #       with:
-  #         creds: ${{secrets.AZURE_CREDENTIALS}} 
-
-  #     - name: Configure Production Applications
-  #       uses: azure/arm-deploy@v1
-  #       id: 'productionConfigurationDeploy'
-  #       with:
-  #         scope: 'subscription'
-  #         region: 'australiaeast'
-  #         template: ./Platform/deploy-quickstart-apps-configuration.bicep
-  #         parameters: >
-  #           appClientId=${{ steps.setup-prod-aad.outputs.applicationClientId }}
-  #           apiClientId=${{ steps.setup-prod-aad.outputs.apiClientId }}
-  #           appClientSecret=${{ steps.setup-prod-aad.outputs.applicationClientSecret }}
-  #           environmentName=prod
-  #         failOnStdErr: true
-
-  #     - name: Setup dotnet
-  #       uses: actions/setup-dotnet@v3
-  #       with:
-  #         dotnet-version: '7.0.x'
-  #     - run: dotnet restore ./SqlAadMigrationDeployer/SqlAadMigrationDeployer.csproj
-
-  #     - name: Build Database Migrator
-  #       run: dotnet build ./SqlAadMigrationDeployer/SqlAadMigrationDeployer.csproj --configuration Release --no-restore
-
-  #     - name: Grant access to database to Production Api
-  #       run: dotnet run --project ./SqlAadMigrationDeployer/SqlAadMigrationDeployer.csproj add-managed-identity "${{ steps.appsDeploy.outputs.databaseConnectionString }}" "${{ steps.appsDeploy.outputs.managedIdentityName }}" "${{ steps.appsDeploy.outputs.managedIdentityAppId }}" "db_owner"
-
-  #     - name: Logout of Azure
-  #       run: |
-  #         az logout
+  deploy-platform-prod:
+    if: github.ref == 'refs/heads/main'
+    needs:
+      - deploy-platform-test
+    uses: ./.github/workflows/build-platform.yaml
+    with:
+      environment: production
+      RESOURCE_PREFIX: ${{ vars.RESOURCE_PREFIX }}
+    secrets:
+      AZURE_CREDENTIALS: ${{ secrets.AZURE_CREDENTIALS }}
+      DEPLOYMENTPRINCIPAL_NAME: ${{ secrets.DEPLOYMENTPRINCIPAL_NAME }}
+      APIM_PUBLISHER_EMAIL: ${{ secrets.APIM_PUBLISHER_EMAIL }}

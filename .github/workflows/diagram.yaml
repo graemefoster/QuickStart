@@ -36,7 +36,7 @@ jobs:
         uses: graemefoster/azurediagramsgithubactionsdocker@v0.1.8
         with:
           subscriptionId: ${{ steps.diagram-prerequisistes.outputs.subscriptionId }}
-          resourceGroup: "${{ secrets.RESOURCE_PREFIX }}-test*"
+          resourceGroup: "${{ vars.RESOURCE_PREFIX }}-test*"
           outputFileName: "azurediagram.drawio"
           accessToken: ${{ steps.diagram-prerequisistes.outputs.token }}
           showRuntime: true
