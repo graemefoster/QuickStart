@@ -95,10 +95,12 @@ jobs:
         # Uses the az cli to update the latest revision of the container-app.
         # We need the name of the current revision so we can use it for the blue/green swap after happy testing
         run: |
-          NEW_REVISION_FQDN=$(az containerapp update \
+          az containerapp update \
             --name '${{ steps.fetchContainerAppMetadata.outputs.containerAppName }}' \
             --resource-group '${{ steps.fetchContainerAppMetadata.outputs.containerAppResourceGroup }}' \
-            --image "ghcr.io/${{ github.actor }}/sample-microservice:${{github.run_number}}")
+            --image "ghcr.io/${{ github.actor }}/sample-microservice:${{github.run_number}}"
+          
+          NEW_REVISION_FQDN=$(az containerapp show --name 'microservice-prod' --resource-group '${{ secrets.RESOURCE_PREFIX }}-prod-rg' --query 'latestRevisionFqdn' -o tsv | tr -d '\r')
 
           echo "newRevisionFqdn=${NEW_REVISION_FQDN}" >> $GITHUB_OUTPUT
           echo "New revision can be tested at https://${NEW_REVISION_FQDN}"
