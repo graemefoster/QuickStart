@@ -111,7 +111,7 @@ jobs:
       containerAppResourceGroup: ${{ steps.fetchContainerAppMetadata.outputs.containerAppResourceGroup }}
       previousRevisionName: ${{ steps.deploy-new-revision.outputs.previousRevisionName }}
 
-  deploy-to-production:
+  blue-green-swap:
     needs:
       - deploy-to-production-green
     runs-on: ubuntu-latest

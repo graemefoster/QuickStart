@@ -95,7 +95,7 @@ jobs:
         run: |
           az logout
 
-  deploy-to-production:
+  blue-green-swap:
     needs:
       - deploy-to-production-green
     runs-on: ubuntu-latest
