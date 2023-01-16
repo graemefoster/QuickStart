@@ -102,8 +102,8 @@ jobs:
             --traffic-weight "latest=0,${REVISION_NAME}=100" \
             --query "latestRevisionFqdn" -o tsv | tr -d '\r')
 
-          echo "newRevisionFqdn::${NEW_REVISION_FQDN}" >> $GITHUB_OUTPUT
-          echo "previousRevisionName::${REVISION_NAME}" >> $GITHUB_OUTPUT
+          echo "newRevisionFqdn=${NEW_REVISION_FQDN}" >> $GITHUB_OUTPUT
+          echo "previousRevisionName=${REVISION_NAME}" >> $GITHUB_OUTPUT
           echo "New revision can be tested at https://${NEW_REVISION_FQDN}"
 
     outputs:
