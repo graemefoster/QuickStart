@@ -113,15 +113,17 @@ jobs:
     needs:
       - deploy-to-test
     runs-on: ubuntu-latest
-    environment: Production
+    environment: prod
     if: github.ref == 'refs/heads/main'
     steps:
     - uses: actions/setup-dotnet@v3
       with:
         dotnet-version: '7.0.x'
+
     - uses: azure/login@v1
       with:
         creds: ${{ secrets.AZURE_CREDENTIALS }}
+
     - name: 'Download package'
       uses: actions/download-artifact@v3
       with:
@@ -161,7 +163,7 @@ jobs:
     needs:
       - deploy-to-production-green
     runs-on: ubuntu-latest
-    environment: Production
+    environment: prod
     steps:
       - uses: azure/login@v1
         with:
