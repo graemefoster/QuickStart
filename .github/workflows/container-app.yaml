@@ -100,7 +100,7 @@ jobs:
             --resource-group '${{ steps.fetchContainerAppMetadata.outputs.containerAppResourceGroup }}' \
             --image "ghcr.io/${{ github.actor }}/sample-microservice:${{github.run_number}}"
           
-          NEW_REVISION_FQDN=$(az containerapp show --name 'microservice-prod' --resource-group '${{ secrets.RESOURCE_PREFIX }}-prod-rg' --query 'latestRevisionFqdn' -o tsv | tr -d '\r')
+          NEW_REVISION_FQDN=$(az containerapp show --name '${{ steps.fetchContainerAppMetadata.outputs.containerAppName }}' --resource-group '${{ secrets.RESOURCE_PREFIX }}-prod-rg' --query 'latestRevisionFqdn' -o tsv | tr -d '\r')
 
           echo "newRevisionFqdn=${NEW_REVISION_FQDN}" >> $GITHUB_OUTPUT
           echo "New revision can be tested at https://${NEW_REVISION_FQDN}"
