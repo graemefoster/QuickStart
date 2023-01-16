@@ -70,6 +70,10 @@ jobs:
             --name '${{ steps.fetchContainerAppMetadata.outputs.containerAppName }}' \
             --resource-group '${{ steps.fetchContainerAppMetadata.outputs.containerAppResourceGroup }}' \
             --image "ghcr.io/${{ github.actor }}/sample-microservice:${{github.run_number}}"
+          az containerapp ingress traffic set \
+            --name '${{ steps.fetchContainerAppMetadata.outputs.containerAppName }}' \
+            --resource-group '${{ steps.fetchContainerAppMetadata.outputs.containerAppResourceGroup }}' \
+            --revision-weight latest=100
 
   deploy-to-production-green:
     needs: deploy-to-test
@@ -99,7 +103,7 @@ jobs:
             --name '${{ steps.fetchContainerAppMetadata.outputs.containerAppName }}' \
             --resource-group '${{ steps.fetchContainerAppMetadata.outputs.containerAppResourceGroup }}' \
             --image "ghcr.io/${{ github.actor }}/sample-microservice:${{github.run_number}}"
-          
+
           NEW_REVISION_FQDN=$(az containerapp show --name '${{ steps.fetchContainerAppMetadata.outputs.containerAppName }}' --resource-group '${{ secrets.RESOURCE_PREFIX }}-prod-rg' --query 'latestRevisionFqdn' -o tsv | tr -d '\r')
 
           echo "newRevisionFqdn=${NEW_REVISION_FQDN}" >> $GITHUB_OUTPUT
@@ -126,7 +130,7 @@ jobs:
       - name: "Activate new revision"
         # Change the weights so the new revision takes all the traffic and the previous none (a class blue/green switch)
         run: |
-            az containerapp ingress traffic set \
-              -n '${{ needs.deploy-to-production-green.outputs.containerAppName }}' \
-              -g '${{ needs.deploy-to-production-green.outputs.containerAppResourceGroup }}' \
-              --revision-weight latest=100
+          az containerapp ingress traffic set \
+            --name '${{ needs.deploy-to-production-green.outputs.containerAppName }}' \
+            --resource-group '${{ needs.deploy-to-production-green.outputs.containerAppResourceGroup }}' \
+            --revision-weight latest=100
