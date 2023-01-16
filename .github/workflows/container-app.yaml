@@ -88,28 +88,24 @@ jobs:
           echo "containerAppName=$(az deployment sub show -n "${{ secrets.RESOURCE_PREFIX }}-prod-apps" --query "properties.outputs.containerAppName.value" -o tsv)" >> $GITHUB_OUTPUT
           echo "containerAppResourceGroup=$(az deployment sub show -n "${{ secrets.RESOURCE_PREFIX }}-prod-apps" --query "properties.outputs.containerAppResourceGroup.value" -o tsv)" >> $GITHUB_OUTPUT
 
+      - run: az config set extension.use_dynamic_install=yes_without_prompt
+
       - name: "Deploy new revision to production green slot"
         id: "deploy-new-revision"
         # Uses the az cli to update the latest revision of the container-app.
         # We need the name of the current revision so we can use it for the blue/green swap after happy testing
         run: |
-          REVISION_NAME=$(az containerapp show --name '${{ steps.fetchContainerAppMetadata.outputs.containerAppName }}' --resource-group '${{ steps.fetchContainerAppMetadata.outputs.containerAppResourceGroup }}' --query 'latestRevisionName' -o tsv | tr -d '\r')
-          echo "Latest revision in containerapp is ${REVISION_NAME}"
           NEW_REVISION_FQDN=$(az containerapp update \
             --name '${{ steps.fetchContainerAppMetadata.outputs.containerAppName }}' \
             --resource-group '${{ steps.fetchContainerAppMetadata.outputs.containerAppResourceGroup }}' \
-            --image "ghcr.io/${{ github.actor }}/sample-microservice:${{github.run_number}}" \
-            --traffic-weight "latest=0,${REVISION_NAME}=100" \
-            --query "latestRevisionFqdn" -o tsv | tr -d '\r')
+            --image "ghcr.io/${{ github.actor }}/sample-microservice:${{github.run_number}}")
 
           echo "newRevisionFqdn=${NEW_REVISION_FQDN}" >> $GITHUB_OUTPUT
-          echo "previousRevisionName=${REVISION_NAME}" >> $GITHUB_OUTPUT
           echo "New revision can be tested at https://${NEW_REVISION_FQDN}"
 
     outputs:
       containerAppName: ${{ steps.fetchContainerAppMetadata.outputs.containerAppName }}
       containerAppResourceGroup: ${{ steps.fetchContainerAppMetadata.outputs.containerAppResourceGroup }}
-      previousRevisionName: ${{ steps.deploy-new-revision.outputs.previousRevisionName }}
 
   blue-green-swap:
     needs:
@@ -128,7 +124,7 @@ jobs:
       - name: "Activate new revision"
         # Change the weights so the new revision takes all the traffic and the previous none (a class blue/green switch)
         run: |
-          az containerapp update \
-            --name '${{ needs.deploy-to-production-green.outputs.containerAppName }}' \
-            --resource-group '${{ needs.deploy-to-production-green.outputs.containerAppResourceGroup }}' \
-            --traffic-weight "latest=100,${{ needs.deploy-to-production-green.outputs.previousRevisionName }}=0"
+            az containerapp ingress traffic set \
+              -n '${{ needs.deploy-to-production-green.outputs.containerAppName }}' \
+              -g '${{ needs.deploy-to-production-green.outputs.containerAppResourceGroup }}' \
+              --revision-weight latest=100
