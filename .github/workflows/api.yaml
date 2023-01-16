@@ -1,63 +1,62 @@
 name: Api
 
 env:
-  PACKAGE_PATH: './packages'      # set this to the path to your web app project, defaults to the repository root
+  PACKAGE_PATH: "./packages" # set this to the path to your web app project, defaults to the repository root
 
 on:
   push:
-    branches: [ main ]
+    branches: [main]
     paths:
-      - 'Application/Api/**'
+      - "Application/Api/**"
   pull_request:
     paths:
-      - 'Application/Api/**'
+      - "Application/Api/**"
     branches:
       - main
   workflow_dispatch:
-    
-jobs:
 
+jobs:
   build-database-deployer:
     runs-on: ubuntu-latest
 
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
-    - uses: actions/checkout@v3
-    - uses: actions/setup-dotnet@v3
-      with:
-        dotnet-version: '7.0.x'
-    - run: dotnet restore
-    - run: dotnet build ./SqlAadMigrationDeployer/SqlAadMigrationDeployer.csproj --configuration Release --no-restore
-    - run: dotnet publish ./SqlAadMigrationDeployer/SqlAadMigrationDeployer.csproj -c Release -o '${{ env.PACKAGE_PATH }}/database-deployer'
-    - uses: actions/upload-artifact@v3
-      name: 'Upload Database Deployer package'
-      with:
-        name: database-deployer
-        path: '${{ env.PACKAGE_PATH }}/database-deployer/**'
+      - uses: actions/checkout@v3
+      - uses: actions/setup-dotnet@v3
+        with:
+          dotnet-version: "7.0.x"
+      - run: dotnet restore
+      - run: dotnet build ./SqlAadMigrationDeployer/SqlAadMigrationDeployer.csproj --configuration Release --no-restore
+      - run: dotnet publish ./SqlAadMigrationDeployer/SqlAadMigrationDeployer.csproj -c Release -o '${{ env.PACKAGE_PATH }}/database-deployer'
+      - uses: actions/upload-artifact@v3
+        name: "Upload Database Deployer package"
+        with:
+          name: database-deployer
+          path: "${{ env.PACKAGE_PATH }}/database-deployer/**"
 
   build-and-test-api:
     runs-on: ubuntu-latest
 
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
-    - uses: actions/checkout@v3
-    - uses: actions/setup-dotnet@v3
-      with:
-        dotnet-version: '7.0.x'
-    - run: dotnet restore
-    - run: dotnet build ./Application/Api/SimpleApiWithDatabase/SimpleApiWithDatabase.csproj --configuration Release --no-restore
-    - run: dotnet test ./Application/Api/ApiTests/ApiTests.csproj --no-restore
-    - run: dotnet publish ./Application/Api/SimpleApiWithDatabase/SimpleApiWithDatabase.csproj -c Release -o '${{ env.PACKAGE_PATH }}/published-api'
-    - uses: actions/upload-artifact@v3
-      name: 'Upload Api package'
-      with:
-        name: api
-        path: '${{ env.PACKAGE_PATH }}/published-api/**'
-    - uses: actions/upload-artifact@v3
-      name: 'Upload Database script'
-      with:
-        name: database-script
-        path: './Application/DatabaseUpgrades/*.sql'
+      - uses: actions/checkout@v3
+      - uses: actions/setup-dotnet@v3
+        with:
+          dotnet-version: "7.0.x"
+      - run: dotnet restore
+      - run: dotnet build ./Application/Api/SimpleApiWithDatabase/SimpleApiWithDatabase.csproj --configuration Release --no-restore
+      - run: dotnet test ./Application/Api/ApiTests/ApiTests.csproj --no-restore
+      - run: dotnet publish ./Application/Api/SimpleApiWithDatabase/SimpleApiWithDatabase.csproj -c Release -o '${{ env.PACKAGE_PATH }}/published-api'
+      - uses: actions/upload-artifact@v3
+        name: "Upload Api package"
+        with:
+          name: api
+          path: "${{ env.PACKAGE_PATH }}/published-api/**"
+      - uses: actions/upload-artifact@v3
+        name: "Upload Database script"
+        with:
+          name: database-script
+          path: "./Application/DatabaseUpgrades/*.sql"
 
   deploy-to-test:
     needs:
@@ -66,48 +65,47 @@ jobs:
     runs-on: ubuntu-latest
     environment: test
     steps:
-    - uses: actions/setup-dotnet@v3
-      with:
-        dotnet-version: '7.0.x'
-    - uses: azure/login@v1
-      with:
-        creds: ${{ secrets.AZURE_CREDENTIALS }}
+      - uses: actions/setup-dotnet@v3
+        with:
+          dotnet-version: "7.0.x"
+      - uses: azure/login@v1
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
 
-    - name: 'Download package'
-      uses: actions/download-artifact@v3
-      with:
-        name: api
-        path: api
+      - name: "Download package"
+        uses: actions/download-artifact@v3
+        with:
+          name: api
+          path: api
 
-    - name: 'Download database script'
-      uses: actions/download-artifact@v3
-      with:
-        name: database-script
-        path: database-script
+      - name: "Download database script"
+        uses: actions/download-artifact@v3
+        with:
+          name: database-script
+          path: database-script
 
-    - name: 'Download database deployer'
-      uses: actions/download-artifact@v3
-      with:
-        name: database-deployer
-        path: database-deployer
+      - name: "Download database deployer"
+        uses: actions/download-artifact@v3
+        with:
+          name: database-deployer
+          path: database-deployer
 
-    - name: 'Fetch Api Metadata'
-      id: 'fetchApiMetadata'
-      run: |
-        echo "apiName=$(az deployment sub show -n "${{ secrets.RESOURCE_PREFIX }}-test-apps" --query "properties.outputs.apiName.value" -o tsv)" >> $GITHUB_OUTPUT
-        echo "databaseConnectionString=$(az deployment sub show -n "${{ secrets.RESOURCE_PREFIX }}-test-apps" --query "properties.outputs.databaseConnectionString.value" -o tsv)" >> $GITHUB_OUTPUT
+      - name: "Fetch Api Metadata"
+        id: "fetchApiMetadata"
+        run: |
+          echo "apiName=$(az deployment sub show -n "${{ secrets.RESOURCE_PREFIX }}-test-apps" --query "properties.outputs.apiName.value" -o tsv)" >> $GITHUB_OUTPUT
+          echo "databaseConnectionString=$(az deployment sub show -n "${{ secrets.RESOURCE_PREFIX }}-test-apps" --query "properties.outputs.databaseConnectionString.value" -o tsv)" >> $GITHUB_OUTPUT
 
-    - name: 'Update Database'
-      run: dotnet ./database-deployer/SqlAadMigrationDeployer.dll migrate "${{ steps.fetchApiMetadata.outputs.databaseConnectionString }}" "./database-script/build-database.sql"
+      - name: "Update Database"
+        run: dotnet ./database-deployer/SqlAadMigrationDeployer.dll migrate "${{ steps.fetchApiMetadata.outputs.databaseConnectionString }}" "./database-script/build-database.sql"
 
-    - uses: azure/webapps-deploy@v2
-      with: 
-        app-name: ${{ steps.fetchApiMetadata.outputs.apiName }}
-        package: './api/'
-    - name: logout
-      run: |
-        az logout
-
+      - uses: azure/webapps-deploy@v2
+        with:
+          app-name: ${{ steps.fetchApiMetadata.outputs.apiName }}
+          package: "./api/"
+      - name: logout
+        run: |
+          az logout
 
   deploy-to-production-green:
     needs:
@@ -116,48 +114,48 @@ jobs:
     environment: prod
     if: github.ref == 'refs/heads/main'
     steps:
-    - uses: actions/setup-dotnet@v3
-      with:
-        dotnet-version: '7.0.x'
+      - uses: actions/setup-dotnet@v3
+        with:
+          dotnet-version: "7.0.x"
 
-    - uses: azure/login@v1
-      with:
-        creds: ${{ secrets.AZURE_CREDENTIALS }}
+      - uses: azure/login@v1
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
 
-    - name: 'Download package'
-      uses: actions/download-artifact@v3
-      with:
-        name: api
-        path: api
-    - name: 'Download database script'
-      uses: actions/download-artifact@v3
-      with:
-        name: database-script
-        path: database-script
+      - name: "Download package"
+        uses: actions/download-artifact@v3
+        with:
+          name: api
+          path: api
+      - name: "Download database script"
+        uses: actions/download-artifact@v3
+        with:
+          name: database-script
+          path: database-script
 
-    - name: 'Download database deployer'
-      uses: actions/download-artifact@v3
-      with:
-        name: database-deployer
-        path: database-deployer
+      - name: "Download database deployer"
+        uses: actions/download-artifact@v3
+        with:
+          name: database-deployer
+          path: database-deployer
 
-    - name: 'Fetch Api Metadata'
-      id: 'fetchApiMetadata'
-      run: |
-        echo "apiName=$(az deployment sub show -n "${{ secrets.RESOURCE_PREFIX }}-prod-apps" --query "properties.outputs.apiName.value" -o tsv)" >> $GITHUB_OUTPUT
-        echo "databaseConnectionString=$(az deployment sub show -n "${{ secrets.RESOURCE_PREFIX }}-prod-apps" --query "properties.outputs.databaseConnectionString.value" -o tsv)" >> $GITHUB_OUTPUT
+      - name: "Fetch Api Metadata"
+        id: "fetchApiMetadata"
+        run: |
+          echo "apiName=$(az deployment sub show -n "${{ secrets.RESOURCE_PREFIX }}-prod-apps" --query "properties.outputs.apiName.value" -o tsv)" >> $GITHUB_OUTPUT
+          echo "databaseConnectionString=$(az deployment sub show -n "${{ secrets.RESOURCE_PREFIX }}-prod-apps" --query "properties.outputs.databaseConnectionString.value" -o tsv)" >> $GITHUB_OUTPUT
 
-    - name: 'Update Database'
-      run: dotnet ./database-deployer/SqlAadMigrationDeployer.dll migrate "${{ steps.fetchApiMetadata.outputs.databaseConnectionString }}" "./database-script/build-database.sql"
+      - name: "Update Database"
+        run: dotnet ./database-deployer/SqlAadMigrationDeployer.dll migrate "${{ steps.fetchApiMetadata.outputs.databaseConnectionString }}" "./database-script/build-database.sql"
 
-    - uses: azure/webapps-deploy@v2
-      with: 
-        app-name: ${{ steps.fetchApiMetadata.outputs.apiName }}
-        package: './api/'
-        slot-name: 'green'
-    - name: logout
-      run: |
-        az logout
+      - uses: azure/webapps-deploy@v2
+        with:
+          app-name: ${{ steps.fetchApiMetadata.outputs.apiName }}
+          package: "./api/"
+          slot-name: "green"
+      - name: logout
+        run: |
+          az logout
 
   deploy-to-production:
     needs:
@@ -169,10 +167,10 @@ jobs:
         with:
           creds: ${{ secrets.AZURE_CREDENTIALS }}
 
-      - name: 'Fetch Api Metadata'
-        id: 'fetchApiMetadata'
+      - name: "Fetch Api Metadata"
+        id: "fetchApiMetadata"
         run: |
           echo "apiName=$(az deployment sub show -n "${{ secrets.RESOURCE_PREFIX }}-prod-apps" --query "properties.outputs.apiName.value" -o tsv)" >> $GITHUB_OUTPUT
           echo "apiResourceGroupName=$(az deployment sub show -n "${{ secrets.RESOURCE_PREFIX }}-prod-apps" --query "properties.outputs.apiResourceGroupName.value" -o tsv)" >> $GITHUB_OUTPUT
 
-      - run: az webapp deployment slot swap --slot green --action swap --name  ${{ steps.fetchApiMetadata.outputs.apiName }} --resource-group ${{ steps.fetchApiMetadata.outputs.apiResourceGroupName }}
+      - run: az webapp deployment slot swap --slot green --action swap --name '${{ steps.fetchApiMetadata.outputs.apiName }}' --resource-group '${{ steps.fetchApiMetadata.outputs.apiResourceGroupName }}'
