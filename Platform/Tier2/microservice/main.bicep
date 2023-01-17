@@ -17,6 +17,12 @@ resource containerApp 'Microsoft.App/containerApps@2022-06-01-preview' = {
         external: true
         targetPort: 3000
         transport: 'auto'
+        traffic: [
+          {
+            latestRevision: true
+            weight: 100
+          }
+        ]
       }
       activeRevisionsMode: 'Multiple'
     }
