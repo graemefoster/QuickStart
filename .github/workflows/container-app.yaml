@@ -58,15 +58,15 @@ jobs:
       - name: "Fetch ContainerApp Metadata"
         id: "fetchContainerAppMetadata"
         run: |
-          echo "containerAppName=$(az deployment sub show -n "${{ secrets.RESOURCE_PREFIX }}-test-apps" --query "properties.outputs.containerAppName.value" -o tsv)" >> $GITHUB_OUTPUT
-          echo "containerAppResourceGroup=$(az deployment sub show -n "${{ secrets.RESOURCE_PREFIX }}-test-apps" --query "properties.outputs.containerAppResourceGroup.value" -o tsv)" >> $GITHUB_OUTPUT
+          echo "containerAppName=$(az deployment sub show -n "${{ vars.RESOURCE_PREFIX }}-test-apps" --query "properties.outputs.containerAppName.value" -o tsv)" >> $GITHUB_OUTPUT
+          echo "containerAppResourceGroup=$(az deployment sub show -n "${{ vars.RESOURCE_PREFIX }}-test-apps" --query "properties.outputs.containerAppResourceGroup.value" -o tsv)" >> $GITHUB_OUTPUT
 
       - run: az config set extension.use_dynamic_install=yes_without_prompt
 
       - name: "Deploy new revision to test"
         # Uses the az cli to update the latest revision of the container-app. This will direct all traffic to the new revision
         run: |
-          OLD_REVISION_NAME=$(az containerapp show --name '${{ steps.fetchContainerAppMetadata.outputs.containerAppName }}' --resource-group '${{ secrets.RESOURCE_PREFIX }}-test-rg' --query 'properties.latestRevisionName' -o tsv | tr -d '\r')
+          OLD_REVISION_NAME=$(az containerapp show --name '${{ steps.fetchContainerAppMetadata.outputs.containerAppName }}' --resource-group '${{ vars.RESOURCE_PREFIX }}-test-rg' --query 'properties.latestRevisionName' -o tsv | tr -d '\r')
           echo "Current revision: $OLD_REVISION_NAME"
           
           az containerapp update \
@@ -97,8 +97,8 @@ jobs:
       - name: "Fetch ContainerApp Metadata"
         id: "fetchContainerAppMetadata"
         run: |
-          echo "containerAppName=$(az deployment sub show -n "${{ secrets.RESOURCE_PREFIX }}-prod-apps" --query "properties.outputs.containerAppName.value" -o tsv)" >> $GITHUB_OUTPUT
-          echo "containerAppResourceGroup=$(az deployment sub show -n "${{ secrets.RESOURCE_PREFIX }}-prod-apps" --query "properties.outputs.containerAppResourceGroup.value" -o tsv)" >> $GITHUB_OUTPUT
+          echo "containerAppName=$(az deployment sub show -n "${{ vars.RESOURCE_PREFIX }}-prod-apps" --query "properties.outputs.containerAppName.value" -o tsv)" >> $GITHUB_OUTPUT
+          echo "containerAppResourceGroup=$(az deployment sub show -n "${{ vars.RESOURCE_PREFIX }}-prod-apps" --query "properties.outputs.containerAppResourceGroup.value" -o tsv)" >> $GITHUB_OUTPUT
 
       - run: az config set extension.use_dynamic_install=yes_without_prompt
 
@@ -108,7 +108,7 @@ jobs:
         # We need the name of the current revision so we can use it for the blue/green swap after happy testing
         run: |
 
-          OLD_REVISION_NAME=$(az containerapp show --name '${{ steps.fetchContainerAppMetadata.outputs.containerAppName }}' --resource-group '${{ secrets.RESOURCE_PREFIX }}-prod-rg' --query 'properties.latestRevisionName' -o tsv | tr -d '\r')
+          OLD_REVISION_NAME=$(az containerapp show --name '${{ steps.fetchContainerAppMetadata.outputs.containerAppName }}' --resource-group '${{ vars.RESOURCE_PREFIX }}-prod-rg' --query 'properties.latestRevisionName' -o tsv | tr -d '\r')
 
           #Explicitly set old revision traffic to 100% (instead of referring to it as latest)
           #This will stop the new revision getting any traffic
@@ -122,7 +122,7 @@ jobs:
             --resource-group '${{ steps.fetchContainerAppMetadata.outputs.containerAppResourceGroup }}' \
             --image "ghcr.io/${{ github.actor }}/sample-microservice:${{github.run_number}}"
 
-          NEW_REVISION_FQDN=$(az containerapp show --name '${{ steps.fetchContainerAppMetadata.outputs.containerAppName }}' --resource-group '${{ secrets.RESOURCE_PREFIX }}-prod-rg' --query 'properties.latestRevisionFqdn' -o tsv | tr -d '\r')
+          NEW_REVISION_FQDN=$(az containerapp show --name '${{ steps.fetchContainerAppMetadata.outputs.containerAppName }}' --resource-group '${{ vars.RESOURCE_PREFIX }}-prod-rg' --query 'properties.latestRevisionFqdn' -o tsv | tr -d '\r')
 
           echo "oldRevisionName=${OLD_REVISION_NAME}" >> $GITHUB_OUTPUT
           echo "New revision can be tested at https://${NEW_REVISION_FQDN}"
@@ -147,8 +147,8 @@ jobs:
       - name: "Fetch ContainerApp Metadata"
         id: "fetchContainerAppMetadata"
         run: |
-          echo "containerAppName=$(az deployment sub show -n "${{ secrets.RESOURCE_PREFIX }}-prod-apps" --query "properties.outputs.containerAppName.value" -o tsv)" >> $GITHUB_OUTPUT
-          echo "containerAppResourceGroup=$(az deployment sub show -n "${{ secrets.RESOURCE_PREFIX }}-prod-apps" --query "properties.outputs.containerAppResourceGroup.value" -o tsv)" >> $GITHUB_OUTPUT
+          echo "containerAppName=$(az deployment sub show -n "${{ vars.RESOURCE_PREFIX }}-prod-apps" --query "properties.outputs.containerAppName.value" -o tsv)" >> $GITHUB_OUTPUT
+          echo "containerAppResourceGroup=$(az deployment sub show -n "${{ vars.RESOURCE_PREFIX }}-prod-apps" --query "properties.outputs.containerAppResourceGroup.value" -o tsv)" >> $GITHUB_OUTPUT
 
       - name: "Activate new revision"
         # Change the weights so the new revision takes all the traffic and the previous none (a class blue/green switch)

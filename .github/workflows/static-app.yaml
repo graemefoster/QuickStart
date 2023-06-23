@@ -56,7 +56,7 @@ jobs:
       - name: "Fetch Spa Metadata"
         id: "fetchSpaMetadata"
         run: |
-          echo "spaName=$(az deployment sub show -n "${{ secrets.RESOURCE_PREFIX }}-test-apps" --query "properties.outputs.spaName.value" -o tsv)" >> $GITHUB_OUTPUT
+          echo "spaName=$(az deployment sub show -n "${{ vars.RESOURCE_PREFIX }}-test-apps" --query "properties.outputs.spaName.value" -o tsv)" >> $GITHUB_OUTPUT
 
       - uses: azure/webapps-deploy@v2
         with:
@@ -87,8 +87,8 @@ jobs:
       - name: "Fetch Spa Metadata"
         id: "fetchSpaMetadata"
         run: |
-          echo "spaName=$(az deployment sub show -n "${{ secrets.RESOURCE_PREFIX }}-prod-apps" --query "properties.outputs.spaName.value" -o tsv)" >> $GITHUB_OUTPUT
-          echo "spaResourceGroupName=$(az deployment sub show -n "${{ secrets.RESOURCE_PREFIX }}-prod-apps" --query "properties.outputs.spaResourceGroupName.value" -o tsv)" >> $GITHUB_OUTPUT
+          echo "spaName=$(az deployment sub show -n "${{ vars.RESOURCE_PREFIX }}-prod-apps" --query "properties.outputs.spaName.value" -o tsv)" >> $GITHUB_OUTPUT
+          echo "spaResourceGroupName=$(az deployment sub show -n "${{ vars.RESOURCE_PREFIX }}-prod-apps" --query "properties.outputs.spaResourceGroupName.value" -o tsv)" >> $GITHUB_OUTPUT
 
       - uses: azure/webapps-deploy@v2
         with:
@@ -113,7 +113,7 @@ jobs:
       - name: "Fetch Spa Metadata"
         id: "fetchSpaMetadata"
         run: |
-          echo "spaName=$(az deployment sub show -n "${{ secrets.RESOURCE_PREFIX }}-prod-apps" --query "properties.outputs.spaName.value" -o tsv)" >> $GITHUB_OUTPUT
-          echo "spaResourceGroupName=$(az deployment sub show -n "${{ secrets.RESOURCE_PREFIX }}-prod-apps" --query "properties.outputs.spaResourceGroupName.value" -o tsv)" >> $GITHUB_OUTPUT
+          echo "spaName=$(az deployment sub show -n "${{ vars.RESOURCE_PREFIX }}-prod-apps" --query "properties.outputs.spaName.value" -o tsv)" >> $GITHUB_OUTPUT
+          echo "spaResourceGroupName=$(az deployment sub show -n "${{ vars.RESOURCE_PREFIX }}-prod-apps" --query "properties.outputs.spaResourceGroupName.value" -o tsv)" >> $GITHUB_OUTPUT
 
       - run: az webapp deployment slot swap --slot green --action swap --name '${{ steps.fetchSpaMetadata.outputs.spaName }}' --resource-group '${{ steps.fetchSpaMetadata.outputs.spaResourceGroupName }}'

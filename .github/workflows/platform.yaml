@@ -23,7 +23,7 @@ jobs:
       AZURE_CREDENTIALS: ${{ secrets.AZURE_CREDENTIALS }}
       DEPLOYMENTPRINCIPAL_NAME: ${{ secrets.DEPLOYMENTPRINCIPAL_NAME }}
       APIM_PUBLISHER_EMAIL: ${{ secrets.APIM_PUBLISHER_EMAIL }}
-      RESOURCE_PREFIX: ${{ secrets.RESOURCE_PREFIX }}
+      RESOURCE_PREFIX: ${{ vars.RESOURCE_PREFIX }}
 
   deploy-platform-prod:
     if: github.ref == 'refs/heads/main'
@@ -37,4 +37,4 @@ jobs:
       AZURE_CREDENTIALS: ${{ secrets.AZURE_CREDENTIALS }}
       DEPLOYMENTPRINCIPAL_NAME: ${{ secrets.DEPLOYMENTPRINCIPAL_NAME }}
       APIM_PUBLISHER_EMAIL: ${{ secrets.APIM_PUBLISHER_EMAIL }}
-      RESOURCE_PREFIX: ${{ secrets.RESOURCE_PREFIX }}
+      RESOURCE_PREFIX: ${{ vars.RESOURCE_PREFIX }}
