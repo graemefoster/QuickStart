@@ -181,5 +181,5 @@ output appHostname string = WebApi.properties.hostNames[0]
 output appSlotHostname string = deploySlot ? WebApiGreen.properties.hostNames[0] : ''
 output managedIdentityName string = ManagedIdentity.name
 output managedIdentityAppId string = ManagedIdentity.properties.clientId
-output appInsightsKey string = reference(WebAppAppInsights.id).InstrumentationKey
+output appInsightsKey string = WebAppAppInsights.properties.InstrumentationKey
 output databaseConnectionString string = database.outputs.apiDatabaseConnectionString
